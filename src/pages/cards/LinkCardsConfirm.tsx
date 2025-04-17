@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/custom/Button";
 import { CheckCircle2 } from "lucide-react";
+import { useApolloMutation } from "@/hooks/useApolloMutation";
+import { LINK_CARDS } from "@/graphql/cards";
+import { toast } from "@/hooks/use-toast";
+import { LinkCardsData, LinkCardsVariables } from "@/graphql/types";
 
 interface CardField {
   id: string;
@@ -23,8 +27,11 @@ const LinkCardsConfirm = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<FormData | null>(null);
   const [cards, setCards] = useState<string[]>([]);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  
+  const { mutate, loading: isSubmitting } = useApolloMutation<LinkCardsData, LinkCardsVariables>(
+    LINK_CARDS
+  );
   
   useEffect(() => {
     // Retrieve form data from session storage
@@ -61,17 +68,36 @@ const LinkCardsConfirm = () => {
     navigate("/cards/link");
   };
   
-  const handleConfirm = () => {
-    setIsSubmitting(true);
+  const handleConfirm = async () => {
+    if (!formData) return;
     
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setIsSuccess(true);
+    try {
+      const cardInputs = cards.map(cardNumber => ({
+        card_number: cardNumber,
+        profile_number: formData.profileNumber,
+        processed_by: formData.processedBy,
+        invoice_number: formData.invoiceNumber
+      }));
       
-      // Clear the form data from session storage
+      await mutate({
+        variables: {
+          cards: cardInputs
+        }
+      });
+      
+      setIsSuccess(true);
       sessionStorage.removeItem("linkCardsFormData");
-    }, 1500);
+      toast({
+        title: "Success",
+        description: `${cards.length} cards have been linked successfully.`
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to link cards. Please try again.",
+        variant: "destructive"
+      });
+    }
   };
   
   const handleDone = () => {
