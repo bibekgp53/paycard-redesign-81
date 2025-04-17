@@ -1,7 +1,7 @@
 
 import { DocumentNode, MutationHookOptions, TypedDocumentNode, useMutation } from '@apollo/client';
 
-export function useCustomMutation<TData = any, TVariables = any>(
+export function useApolloMutation<TData = any, TVariables = any>(
   mutation: DocumentNode | TypedDocumentNode<TData, TVariables>,
   options?: MutationHookOptions<TData, TVariables>
 ) {

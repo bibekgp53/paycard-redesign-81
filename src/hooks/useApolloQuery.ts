@@ -1,7 +1,7 @@
 
 import { DocumentNode, TypedDocumentNode, QueryHookOptions, useQuery } from '@apollo/client';
 
-export function useCustomQuery<TData = any, TVariables = any>(
+export function useApolloQuery<TData = any, TVariables = any>(
   query: DocumentNode | TypedDocumentNode<TData, TVariables>,
   options?: QueryHookOptions<TData, TVariables>
 ) {
