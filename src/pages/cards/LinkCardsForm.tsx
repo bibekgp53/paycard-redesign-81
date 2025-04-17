@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/custom/Button";
 import { Input } from "@/components/ui/custom/Input";
@@ -42,14 +43,31 @@ const LinkCardsForm = () => {
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [profileOptions, setProfileOptions] = useState([
+    { value: "", label: "Select a profile" }
+  ]);
 
-  const profileOptions = [
-    { value: "", label: "Select a profile" },
-    ...(profilesData?.profiles.map(profile => ({
-      value: profile.profile_number,
-      label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}`
-    })) || [])
-  ];
+  // Use useEffect to handle profile data loading and errors
+  useEffect(() => {
+    if (profilesData) {
+      const options = [
+        { value: "", label: "Select a profile" },
+        ...(profilesData.profiles.map(profile => ({
+          value: profile.profile_number,
+          label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}`
+        })) || [])
+      ];
+      setProfileOptions(options);
+    }
+    
+    if (profilesError) {
+      toast({
+        title: "Error",
+        description: "Failed to load profiles. Please try again.",
+        variant: "destructive",
+      });
+    }
+  }, [profilesData, profilesError]);
 
   const handleProfileChange = (value: string) => {
     setFormData({ ...formData, profileNumber: value });
@@ -149,19 +167,6 @@ const LinkCardsForm = () => {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-gray-500">Loading profiles...</p>
-      </div>
-    );
-  }
-
-  if (profilesError) {
-    toast({
-      title: "Error",
-      description: "Failed to load profiles. Please try again.",
-      variant: "destructive",
-    });
-    return (
-      <div className="flex items-center justify-center h-64">
-        <p className="text-red-500">Error loading profiles</p>
       </div>
     );
   }
