@@ -6,7 +6,7 @@ import { Select } from "@/components/ui/custom/Select";
 import { RadioGroup } from "@/components/ui/custom/RadioGroup";
 import { useApolloQuery } from "@/hooks/useApolloQuery";
 import { GET_PROFILES } from "@/graphql/profiles";
-import { GetProfilesData } from "@/graphql/types";
+import { GetProfilesData, Profile } from "@/graphql/types";
 import { toast } from "@/hooks/use-toast";
 import { CardNumberInputs } from "./components/CardNumberInputs";
 import { SequenceInputs } from "./components/SequenceInputs";
@@ -24,21 +24,6 @@ interface FormData {
   endSequence: string;
   processedBy: string;
   invoiceNumber: string;
-}
-
-interface Profile {
-  id: string;
-  profile_number: string;
-  name: string | null;
-  business_name: string | null;
-}
-
-interface GetProfilesData {
-  profilesCollection: {
-    edges: Array<{
-      node: Profile;
-    }>;
-  };
 }
 
 const LinkCardsForm = () => {
