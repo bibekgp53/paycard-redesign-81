@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/custom/Button";
@@ -27,6 +26,21 @@ interface FormData {
   invoiceNumber: string;
 }
 
+interface Profile {
+  id: string;
+  profile_number: string;
+  name: string | null;
+  business_name: string | null;
+}
+
+interface GetProfilesData {
+  profilesCollection: {
+    edges: Array<{
+      node: Profile;
+    }>;
+  };
+}
+
 const LinkCardsForm = () => {
   const navigate = useNavigate();
   const { data: profilesData, loading: loadingProfiles, error: profilesError } = 
@@ -47,12 +61,11 @@ const LinkCardsForm = () => {
     { value: "", label: "Select a profile" }
   ]);
 
-  // Use useEffect to handle profile data loading and errors
   useEffect(() => {
     if (profilesData) {
       const options = [
         { value: "", label: "Select a profile" },
-        ...(profilesData.profiles.map(profile => ({
+        ...(profilesData.profilesCollection.edges.map(({ node: profile }) => ({
           value: profile.profile_number,
           label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}`
         })) || [])

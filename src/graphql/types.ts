@@ -21,12 +21,16 @@ export interface GetCardsData {
 export interface Profile {
   id: string;
   profile_number: string;
-  name?: string;
-  business_name?: string;
+  name?: string | null;
+  business_name?: string | null;
 }
 
 export interface GetProfilesData {
-  profiles: Profile[];
+  profilesCollection: {
+    edges: Array<{
+      node: Profile;
+    }>;
+  };
 }
 
 export interface LinkCardsData {
