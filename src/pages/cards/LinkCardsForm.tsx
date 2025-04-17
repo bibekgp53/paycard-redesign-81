@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Plus, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/custom/Button";
 import { Input } from "@/components/ui/custom/Input";
 import { Select } from "@/components/ui/custom/Select";
@@ -9,6 +8,8 @@ import { useApolloQuery } from "@/hooks/useApolloQuery";
 import { GET_PROFILES } from "@/graphql/profiles";
 import { GetProfilesData } from "@/graphql/types";
 import { toast } from "@/hooks/use-toast";
+import { CardNumberInputs } from "./components/CardNumberInputs";
+import { SequenceInputs } from "./components/SequenceInputs";
 
 interface CardField {
   id: string;
@@ -41,7 +42,6 @@ const LinkCardsForm = () => {
   });
   
   const [errors, setErrors] = useState<Record<string, string>>({});
-  
 
   const profileOptions = [
     { value: "", label: "Select a profile" },
@@ -58,7 +58,7 @@ const LinkCardsForm = () => {
   const handleInputMethodChange = (value: string) => {
     setFormData({ ...formData, inputMethod: value });
   };
-  
+
   const handleCardNumberChange = (id: string, value: string) => {
     const updatedCardNumbers = formData.cardNumbers.map((card) =>
       card.id === id ? { ...card, value } : card
@@ -90,7 +90,7 @@ const LinkCardsForm = () => {
   const handleChange = (field: "processedBy" | "invoiceNumber", value: string) => {
     setFormData({ ...formData, [field]: value });
   };
-  
+
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
     
@@ -135,12 +135,11 @@ const LinkCardsForm = () => {
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-  
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      // Store form data in session storage for the confirmation page
       sessionStorage.setItem("linkCardsFormData", JSON.stringify(formData));
       navigate("/cards/link/confirm");
     }
@@ -195,58 +194,20 @@ const LinkCardsForm = () => {
           />
           
           {formData.inputMethod === "cardNumbers" ? (
-            <div className="space-y-4 mb-6">
-              <h2 className="text-lg font-semibold text-paycard-navy">Card Numbers</h2>
-              
-              {formData.cardNumbers.map((card) => (
-                <div key={card.id} className="flex items-start space-x-2">
-                  <div className="flex-1">
-                    <Input
-                      label={card.id === "1" ? "Card Number/Tracking Number" : ""}
-                      placeholder="Enter card number"
-                      value={card.value}
-                      onChange={(e) => handleCardNumberChange(card.id, e.target.value)}
-                      error={errors[`cardNumber-${card.id}`]}
-                    />
-                  </div>
-                  {formData.cardNumbers.length > 1 && (
-                    <button
-                      type="button"
-                      className="mt-8 p-2 text-gray-500 hover:text-paycard-red"
-                      onClick={() => removeCardNumberField(card.id)}
-                    >
-                      <Trash2 size={20} />
-                    </button>
-                  )}
-                </div>
-              ))}
-              
-              <Button
-                type="button"
-                variant="outline"
-                iconLeft={<Plus size={16} />}
-                onClick={addCardNumberField}
-              >
-                Add Another Card
-              </Button>
-            </div>
+            <CardNumberInputs
+              cardNumbers={formData.cardNumbers}
+              errors={errors}
+              onCardNumberChange={handleCardNumberChange}
+              onAddCard={addCardNumberField}
+              onRemoveCard={removeCardNumberField}
+            />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              <Input
-                label="Start Sequence"
-                placeholder="Enter start sequence"
-                value={formData.startSequence}
-                onChange={(e) => handleSequenceChange("startSequence", e.target.value)}
-                error={errors.startSequence}
-              />
-              <Input
-                label="End Sequence"
-                placeholder="Enter end sequence"
-                value={formData.endSequence}
-                onChange={(e) => handleSequenceChange("endSequence", e.target.value)}
-                error={errors.endSequence}
-              />
-            </div>
+            <SequenceInputs
+              startSequence={formData.startSequence}
+              endSequence={formData.endSequence}
+              errors={errors}
+              onSequenceChange={handleSequenceChange}
+            />
           )}
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
