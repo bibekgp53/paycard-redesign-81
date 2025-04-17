@@ -79,11 +79,13 @@ const LinkCardsConfirm = () => {
         status: "linked"
       }));
       
-      await mutate({
+      const result = await mutate({
         variables: {
           cards: cardInputs
         }
       });
+      
+      console.log("Mutation result:", result);
       
       setIsSuccess(true);
       sessionStorage.removeItem("linkCardsFormData");

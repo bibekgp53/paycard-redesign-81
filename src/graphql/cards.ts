@@ -13,8 +13,8 @@ export const GET_CARDS = gql`
 `;
 
 export const LINK_CARDS = gql`
-  mutation LinkCards($cards: [CardInsertInput!]!) {
-    insertCards(objects: $cards) {
+  mutation LinkCards($cards: [cards_insert_input!]!) {
+    insert_cards(objects: $cards) {
       returning {
         id
         card_number
