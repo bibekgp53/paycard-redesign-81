@@ -6,7 +6,6 @@ import { CheckCircle2 } from "lucide-react";
 import { useApolloMutation } from "@/hooks/useApolloMutation";
 import { LINK_CARDS } from "@/graphql/cards";
 import { toast } from "@/hooks/use-toast";
-import { LinkCardsData, LinkCardsVariables } from "@/graphql/types";
 
 interface CardField {
   id: string;
@@ -29,7 +28,7 @@ const LinkCardsConfirm = () => {
   const [cards, setCards] = useState<string[]>([]);
   const [isSuccess, setIsSuccess] = useState(false);
   
-  const { mutate, loading: isSubmitting } = useApolloMutation<LinkCardsData, LinkCardsVariables>(
+  const { mutate, loading: isSubmitting, error } = useApolloMutation(
     LINK_CARDS
   );
   
@@ -76,7 +75,8 @@ const LinkCardsConfirm = () => {
         card_number: cardNumber,
         profile_number: formData.profileNumber,
         processed_by: formData.processedBy,
-        invoice_number: formData.invoiceNumber
+        invoice_number: formData.invoiceNumber,
+        status: "linked"
       }));
       
       await mutate({
@@ -92,6 +92,7 @@ const LinkCardsConfirm = () => {
         description: `${cards.length} cards have been linked successfully.`
       });
     } catch (error) {
+      console.error("Error linking cards:", error);
       toast({
         title: "Error",
         description: "Failed to link cards. Please try again.",
@@ -113,7 +114,7 @@ const LinkCardsConfirm = () => {
       <div className="bg-white shadow-md rounded-lg p-6">
         {isSuccess ? (
           <div className="text-center py-8">
-            <CheckCircle2 className="mx-auto h-16 w-16 text-paycard-green mb-4" />
+            <CheckCircle2 className="mx-auto h-16 w-16 text-green-500 mb-4" />
             <h1 className="text-2xl font-bold text-paycard-navy mb-2">
               Cards Linked Successfully
             </h1>
@@ -157,10 +158,10 @@ const LinkCardsConfirm = () => {
                   Cards to be Linked
                 </h3>
                 
-                <div className="max-h-60 overflow-y-auto border border-paycard-navy-200 rounded-md p-3">
+                <div className="max-h-60 overflow-y-auto border border-gray-200 rounded-md p-3">
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2">
                     {cards.map((card, index) => (
-                      <div key={index} className="text-sm bg-paycard-navy-100 p-2 rounded">
+                      <div key={index} className="text-sm bg-gray-100 p-2 rounded">
                         {card}
                       </div>
                     ))}

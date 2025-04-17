@@ -8,18 +8,21 @@ export const GET_CARDS = gql`
       card_number
       status
       profile_number
-      processed_by
-      invoice_number
     }
   }
 `;
 
 export const LINK_CARDS = gql`
-  mutation LinkCards($cards: [CardInput!]!) {
-    linkCards(cards: $cards) {
-      id
-      card_number
-      status
+  mutation LinkCards($cards: [CardInsertInput!]!) {
+    insertCards(objects: $cards) {
+      returning {
+        id
+        card_number
+        status
+        profile_number
+        processed_by
+        invoice_number
+      }
     }
   }
 `;
