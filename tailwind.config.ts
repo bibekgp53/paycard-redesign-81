@@ -61,7 +61,33 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				// PayCard Design System Colors
+				paycard: {
+					// Brand Colors
+					salmon: '#F47A71',
+					navy: '#0F1F38',
+					white: '#FFFFFF',
+					// Status Colors
+					blue: '#6C87BC',
+					green: '#8CBC85',
+					orange: '#F8BE53',
+					red: '#F17173',
+					// Navy Shades
+					'navy-900': '#183358',
+					'navy-800': '#224780',
+					'navy-700': '#2C58A5',
+					'navy-600': '#366FC9',
+					'navy-500': '#5A88D3',
+					'navy-400': '#7FA4DD',
+					'navy-300': '#A4A8E7',
+					'navy-200': '#C8DBF0',
+					'navy-150': '#EDF2FA',
+					'navy-100': '#F6F9FD',
 				}
+			},
+			fontFamily: {
+				'gilroy': ['Gilroy', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
