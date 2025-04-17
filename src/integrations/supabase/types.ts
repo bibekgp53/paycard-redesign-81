@@ -9,7 +9,86 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      cards: {
+        Row: {
+          card_number: string
+          created_at: string
+          id: string
+          invoice_number: string | null
+          processed_by: string | null
+          profile_number: string | null
+          sequence_number: string | null
+          status: Database["public"]["Enums"]["card_status"]
+          tracking_number: string | null
+          updated_at: string
+        }
+        Insert: {
+          card_number: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          processed_by?: string | null
+          profile_number?: string | null
+          sequence_number?: string | null
+          status?: Database["public"]["Enums"]["card_status"]
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Update: {
+          card_number?: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          processed_by?: string | null
+          profile_number?: string | null
+          sequence_number?: string | null
+          status?: Database["public"]["Enums"]["card_status"]
+          tracking_number?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "cards_profile_number_fkey"
+            columns: ["profile_number"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["profile_number"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          business_name: string | null
+          created_at: string
+          email: string | null
+          id: string
+          name: string | null
+          phone: string | null
+          profile_number: string
+          updated_at: string
+        }
+        Insert: {
+          business_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          phone?: string | null
+          profile_number: string
+          updated_at?: string
+        }
+        Update: {
+          business_name?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string | null
+          phone?: string | null
+          profile_number?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -18,7 +97,7 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      card_status: "inactive" | "active" | "suspended" | "linked"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -133,6 +212,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      card_status: ["inactive", "active", "suspended", "linked"],
+    },
   },
 } as const
