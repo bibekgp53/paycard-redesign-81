@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2 } from "lucide-react";
@@ -6,6 +5,10 @@ import { Button } from "@/components/ui/custom/Button";
 import { Input } from "@/components/ui/custom/Input";
 import { Select } from "@/components/ui/custom/Select";
 import { RadioGroup } from "@/components/ui/custom/RadioGroup";
+import { useApolloQuery } from "@/hooks/useApolloQuery";
+import { GET_PROFILES } from "@/graphql/profiles";
+import { GetProfilesData } from "@/graphql/types";
+import { toast } from "@/hooks/use-toast";
 
 interface CardField {
   id: string;
@@ -22,15 +25,10 @@ interface FormData {
   invoiceNumber: string;
 }
 
-const profileOptions = [
-  { value: "", label: "Select a profile" },
-  { value: "PRF001", label: "PRF001 - Company A" },
-  { value: "PRF002", label: "PRF002 - Company B" },
-  { value: "PRF003", label: "PRF003 - Company C" },
-];
-
 const LinkCardsForm = () => {
   const navigate = useNavigate();
+  const { data: profilesData, loading: loadingProfiles, error: profilesError } = 
+    useApolloQuery<GetProfilesData>(GET_PROFILES);
   
   const [formData, setFormData] = useState<FormData>({
     profileNumber: "",
@@ -44,6 +42,15 @@ const LinkCardsForm = () => {
   
   const [errors, setErrors] = useState<Record<string, string>>({});
   
+
+  const profileOptions = [
+    { value: "", label: "Select a profile" },
+    ...(profilesData?.profiles.map(profile => ({
+      value: profile.profile_number,
+      label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}`
+    })) || [])
+  ];
+
   const handleProfileChange = (value: string) => {
     setFormData({ ...formData, profileNumber: value });
   };
@@ -139,6 +146,27 @@ const LinkCardsForm = () => {
     }
   };
   
+  if (loadingProfiles) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-gray-500">Loading profiles...</p>
+      </div>
+    );
+  }
+
+  if (profilesError) {
+    toast({
+      title: "Error",
+      description: "Failed to load profiles. Please try again.",
+      variant: "destructive",
+    });
+    return (
+      <div className="flex items-center justify-center h-64">
+        <p className="text-red-500">Error loading profiles</p>
+      </div>
+    );
+  }
+
   return (
     <div className="max-w-3xl mx-auto">
       <div className="bg-white shadow-md rounded-lg p-6">

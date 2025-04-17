@@ -1,4 +1,3 @@
-
 export interface Card {
   id: string;
   card_number: string;
@@ -17,6 +16,17 @@ export interface CardInput {
 
 export interface GetCardsData {
   cards: Card[];
+}
+
+export interface Profile {
+  id: string;
+  profile_number: string;
+  name?: string;
+  business_name?: string;
+}
+
+export interface GetProfilesData {
+  profiles: Profile[];
 }
 
 export interface LinkCardsData {
