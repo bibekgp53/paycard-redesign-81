@@ -1,7 +1,11 @@
+
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@apollo/client";
+import { GET_USER_HEADER } from "@/graphql/user";
+import { UserHeader } from "@/graphql/types";
 import { 
   Breadcrumb,
   BreadcrumbItem,
@@ -28,7 +32,8 @@ export function CardLoads() {
   const [effectiveDate, setEffectiveDate] = useState<"immediate" | "delay">("immediate");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const pageSize = 10;
-
+  
+  const { data: userHeader } = useQuery<UserHeader>(GET_USER_HEADER);
   const { data: cards, isLoading } = useLoadAllocatedCards();
   const { data: clientSettings } = useLoadClient();
 
@@ -138,13 +143,14 @@ export function CardLoads() {
           {clientSettings ? (
             clientSettings.profile.fromBalance > 0 ? (
               <span className="block mt-2 text-sm">
+                The balance available on your profile is R {userHeader?.balanceAccount.toFixed(2) || '0.00'} | 
                 Minimum load amount: R{clientSettings.details.clientMinCardLoad.toFixed(2)} | 
                 Maximum balance: R{clientSettings.details.clientMaxBalance.toFixed(2)} | 
                 Transfer fee: R{clientSettings.details.clientTransferFee.toFixed(2)}
               </span>
             ) : (
               <span className="block mt-2 text-sm">
-                The balance available on your profile is R {clientSettings.profile.fromBalance.toFixed(2)}
+                The balance available on your profile is R {userHeader?.balanceAccount.toFixed(2) || '0.00'}
               </span>
             )
           ) : null}
