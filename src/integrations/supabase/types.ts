@@ -171,15 +171,12 @@ export type Database = {
         }[]
       }
       search_load_allocated: {
-        Args:
-          | { search_term?: string }
-          | {
-              search_term?: string
-              account_from?: boolean
-              transfer_from_account_id?: number
-              limit?: number
-              offset?: number
-            }
+        Args: {
+          account_from?: boolean
+          transfer_from_account_id?: number
+          limit?: number
+          offset?: number
+        }
         Returns: {
           id: string
           accountcardid: number
