@@ -1,8 +1,10 @@
-
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 // Mock data - will be replaced with API data later
 const mockData = [
@@ -12,8 +14,27 @@ const mockData = [
 ];
 
 export default function CardLoads() {
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const accountFrom = searchParams.get("accountFrom");
+
+  const handleBack = () => {
+    navigate(`/load-funds-from/to?accountFrom=${accountFrom}`);
+  };
+
   return (
     <div className="space-y-6">
+      <div className="flex items-center gap-4 mb-2">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          onClick={handleBack}
+          className="h-8 w-8"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+      </div>
+
       <Card className="bg-white p-6">
         <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
         <p className="text-gray-600">

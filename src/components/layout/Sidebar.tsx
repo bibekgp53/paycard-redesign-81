@@ -14,7 +14,7 @@ export function Sidebar() {
     { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
       { label: "Allocate Cards", path: "/cards/allocate" }
     ]},
-    { icon: Wallet, label: "Funds Management", path: "/load-funds-from", submenuItems: [
+    { icon: Wallet, label: "Funds", path: "/load-funds-from", submenuItems: [
       { label: "Load Funds to Cards", path: "/load-funds-from" }
     ]},
     { icon: Users, label: "Profiles", path: "/profiles" },
