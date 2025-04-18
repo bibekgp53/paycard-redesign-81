@@ -15,6 +15,9 @@ import AllocateCardsDetails from "./pages/cards/AllocateCardsDetails";
 import AllocateCardsConfirm from "./pages/cards/AllocateCardsConfirm";
 import { MainLayout } from "./components/layout/MainLayout";
 import AllocateCardsComplete from "./pages/cards/AllocateCardsComplete";
+import LoadFundsFrom from "./pages/funds/LoadFundsFrom";
+import LoadFundsTo from "./pages/funds/LoadFundsTo";
+import CardLoads from "./pages/funds/CardLoads";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +39,11 @@ const App = () => (
             <Route path="/cards/allocate/details" element={<MainLayout><AllocateCardsDetails /></MainLayout>} />
             <Route path="/cards/allocate/confirm" element={<MainLayout><AllocateCardsConfirm /></MainLayout>} />
             <Route path="/cards/allocate/complete" element={<MainLayout><AllocateCardsComplete /></MainLayout>} />
+            
+            {/* Funds Management */}
+            <Route path="/load-funds-from" element={<MainLayout><LoadFundsFrom /></MainLayout>} />
+            <Route path="/load-funds-from/to" element={<MainLayout><LoadFundsTo /></MainLayout>} />
+            <Route path="/load-funds-from/card-loads" element={<MainLayout><CardLoads /></MainLayout>} />
             
             {/* Default page for unimplemented sections */}
             <Route path="/cards" element={<MainLayout><Dashboard /></MainLayout>} />

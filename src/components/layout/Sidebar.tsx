@@ -1,5 +1,5 @@
 
-import { CreditCard, Users, FileText, Settings, Home } from "lucide-react";
+import { CreditCard, Users, FileText, Settings, Home, Wallet } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export function Sidebar() {
@@ -13,6 +13,9 @@ export function Sidebar() {
     { icon: Home, label: "Dashboard", path: "/dashboard" },
     { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
       { label: "Allocate Cards", path: "/cards/allocate" }
+    ]},
+    { icon: Wallet, label: "Funds Management", path: "/load-funds-from", submenuItems: [
+      { label: "Load Funds to Cards", path: "/load-funds-from" }
     ]},
     { icon: Users, label: "Profiles", path: "/profiles" },
     { icon: FileText, label: "Reports", path: "/reports" },
