@@ -38,7 +38,7 @@ export function CardLoads() {
     transferFromAccountId: 0
   });
   const { data: cards, isLoading } = useLoadAllocatedCards();
-  const clientSettings = loadClientData?.getloadclient;
+  const clientSettings = loadClientData?.get_load_client;
 
   const handleLoadFundsClick = () => {
     navigate(`/load-funds-from`);

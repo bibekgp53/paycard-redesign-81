@@ -9,7 +9,7 @@ interface LoadClientQueryVariables {
 }
 
 export const useLoadClientQuery = (variables?: LoadClientQueryVariables) => {
-  return useQuery<{ getloadclient: ClientSettings }, LoadClientQueryVariables>(
+  return useQuery<{ get_load_client: ClientSettings }, LoadClientQueryVariables>(
     GET_LOAD_CLIENT,
     { variables }
   );
