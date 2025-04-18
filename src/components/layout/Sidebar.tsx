@@ -15,6 +15,9 @@ export function Sidebar() {
   
   const menuItems = [
     { icon: Wallet, label: "PayCard", path: "/dashboard" },
+    { icon: Wallet, label: "Funds", path: "/load-funds-from", submenuItems: [
+      { label: "Load Funds to Cards", path: "/load-funds-from" }
+    ]},
     { icon: Users, label: "Profiles", path: "/profiles" },
     { icon: FileText, label: "Reports", path: "/reports" },
     { icon: Settings, label: "Settings", path: "/settings" },
@@ -38,6 +41,25 @@ export function Sidebar() {
                 <item.icon size={18} className="mr-3" />
                 {item.label}
               </Link>
+              {item.submenuItems && (
+                <ul className="ml-7 mt-2 space-y-2">
+                  {item.submenuItems.map((subItem) => (
+                    <li key={subItem.path}>
+                      <Link
+                        to={subItem.path}
+                        className={`flex items-center p-2 rounded-md transition-colors ${
+                          isActive(subItem.path)
+                            ? "bg-paycard-salmon text-white"
+                            : "hover:bg-paycard-navy-800"
+                        }`}
+                      >
+                        <Wallet size={16} className="mr-3" />
+                        {subItem.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>
@@ -45,3 +67,4 @@ export function Sidebar() {
     </aside>
   );
 }
+
