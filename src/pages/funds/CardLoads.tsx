@@ -10,7 +10,6 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { SearchInput } from "./components/SearchInput";
 import { LoadEffectiveDate } from "./components/LoadEffectiveDate";
 import { CardsTable } from "./components/CardsTable";
 import { CardsPagination } from "./components/CardsPagination";
@@ -24,14 +23,13 @@ interface AmountInputs {
 
 export function CardLoads() {
   const navigate = useNavigate();
-  const [searchTerm, setSearchTerm] = useState("");
   const [amountInputs, setAmountInputs] = useState<AmountInputs>({});
   const [page, setPage] = useState(1);
   const [effectiveDate, setEffectiveDate] = useState<"immediate" | "delay">("immediate");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const pageSize = 10; // Updated to show 10 rows per page
+  const pageSize = 10;
 
-  const { data: cards, isLoading } = useLoadAllocatedCards(searchTerm);
+  const { data: cards, isLoading } = useLoadAllocatedCards();
   const { data: clientSettings } = useLoadClient();
 
   const handleLoadFundsClick = () => {
@@ -154,13 +152,6 @@ export function CardLoads() {
       </Card>
 
       <Card className="bg-white p-6">
-        <div className="mb-6">
-          <SearchInput 
-            searchTerm={searchTerm}
-            onSearchChange={setSearchTerm}
-          />
-        </div>
-        
         <CardsTable
           cards={paginatedCards}
           isLoading={isLoading}

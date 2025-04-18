@@ -3,12 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AccountCard } from "@/graphql/types";
 
-export const useLoadAllocatedCards = (searchTerm: string) => {
+export const useLoadAllocatedCards = () => {
   return useQuery({
-    queryKey: ["loadAllocatedCards", searchTerm],
+    queryKey: ["loadAllocatedCards"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .rpc('search_load_allocated', { search_term: searchTerm });
+        .rpc('search_load_allocated');
       
       if (error) throw error;
       
@@ -18,7 +18,7 @@ export const useLoadAllocatedCards = (searchTerm: string) => {
         accountCardMtd: item.accountcardmtd,
         balance: item.balance,
         cardholder: item.cardholder,
-        cardNumber: item.cardnumber,  // This now contains the masked number from the database
+        cardNumber: item.cardnumber,
         ficaValidation: item.ficavalidation
       })) as AccountCard[];
     }
