@@ -12,7 +12,8 @@ export const useLoadClient = () => {
       
       const clientData = Array.isArray(data) ? data[0] : data;
       
-      // Using the actual account data instead of hardcoded values
+      // The Supabase function returns clientmincardload, clientmaxbalance, clienttransferfee
+      // Need to adapt these property names to match our ClientSettings type
       return {
         details: {
           clientMinCardLoad: clientData.clientmincardload,
@@ -20,7 +21,10 @@ export const useLoadClient = () => {
           clientTransferFee: clientData.clienttransferfee
         },
         profile: {
-          fromBalance: clientData.frombalance || 0, // We'll fetch this from the database
+          // The 'frombalance' property doesn't exist in the response
+          // Using a default value of 1000 for now as requested
+          fromBalance: 1000,
+          // Generate an account number from the ID
           fromAccount: Number(clientData.id) || 0
         }
       } as ClientSettings;
