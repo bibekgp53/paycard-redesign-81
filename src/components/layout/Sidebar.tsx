@@ -56,6 +56,19 @@ export function Sidebar() {
               Link Cards
             </Link>
           </li>
+          <li>
+            <Link
+              to="/cards/allocate"
+              className={`flex items-center p-3 rounded-md transition-colors ${
+                isActive("/cards/allocate")
+                  ? "bg-paycard-salmon text-white"
+                  : "hover:bg-paycard-navy-800"
+              }`}
+            >
+              <CreditCard size={18} className="mr-3" />
+              Allocate Cards
+            </Link>
+          </li>
         </ul>
       </div>
     </aside>
