@@ -40,3 +40,27 @@ export interface LinkCardsData {
 export interface LinkCardsVariables {
   cards: CardInput[];
 }
+
+export interface UserHeader {
+  balanceAccount: number;
+  accountNumber: number;
+  fullName: string;
+}
+
+export interface GetUserHeaderData {
+  userHeader: UserHeader;
+}
+
+export interface ClientSettings {
+  details: {
+    clientMinCardLoad: number;
+    clientMaxBalance: number;
+    clientTransferFee: number;
+  };
+  fromBalance: number;
+  fromAccount: number;
+}
+
+export interface GetLoadClientData {
+  loadClient: ClientSettings;
+}

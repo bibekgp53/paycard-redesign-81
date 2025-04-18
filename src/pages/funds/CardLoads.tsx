@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
@@ -53,7 +52,7 @@ interface AmountInputs {
   [key: string]: number | null;
 }
 
-const CardLoads = () => {
+export function CardLoads() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
@@ -203,13 +202,19 @@ const CardLoads = () => {
         <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
         <p className="text-gray-600">
           Load funds into cards from your profile or transfer funds from a stopped card.
-          {clientSettings && (
-            <span className="block mt-2 text-sm">
-              Minimum load amount: ${clientSettings.clientMinCardLoad.toFixed(2)} | 
-              Maximum balance: ${clientSettings.clientMaxBalance.toFixed(2)} | 
-              Transfer fee: ${clientSettings.clientTransferFee.toFixed(2)}
-            </span>
-          )}
+          {clientSettings ? (
+            clientSettings.fromBalance > 0 ? (
+              <span className="block mt-2 text-sm">
+                Minimum load amount: R{clientSettings.clientMinCardLoad.toFixed(2)} | 
+                Maximum balance: R{clientSettings.clientMaxBalance.toFixed(2)} | 
+                Transfer fee: R{clientSettings.clientTransferFee.toFixed(2)}
+              </span>
+            ) : (
+              <span className="block mt-2 text-sm">
+                The balance available on your profile is R {clientSettings.fromBalance.toFixed(2)}
+              </span>
+            )
+          ) : null}
         </p>
       </Card>
 
@@ -371,6 +376,6 @@ const CardLoads = () => {
       </Card>
     </div>
   );
-};
+}
 
 export default CardLoads;

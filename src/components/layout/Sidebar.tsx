@@ -1,9 +1,14 @@
-
 import { CreditCard, Users, FileText, Settings, Wallet, UserCircle, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
+import { useQuery } from "@apollo/client";
+import { GET_USER_HEADER } from "@/graphql/user";
+import { GetUserHeaderData } from "@/graphql/types";
 
 export function Sidebar() {
   const location = useLocation();
+  const { data: userHeaderData } = useQuery<GetUserHeaderData>({
+    query: GET_USER_HEADER
+  });
   
   const isActive = (path: string) => {
     if (path === "/") {
@@ -39,8 +44,8 @@ export function Sidebar() {
           <Link to="/" className="mb-4 block">
             <span className="text-xl font-bold">Standard Bank PayCard</span>
           </Link>
-          <div className="text-sm text-gray-300 pl-3">
-            Your Balance: <span className="font-bold">R 0.00</span>
+          <div className="text-sm text-gray-300 p-3">
+            Your Balance: <span className="font-bold">R {userHeaderData?.userHeader?.balanceAccount.toFixed(2) || '0.00'}</span>
           </div>
         </div>
 
@@ -91,7 +96,7 @@ export function Sidebar() {
             </button>
             <div className="flex items-center">
               <UserCircle size={24} className="mr-2" />
-              <span className="text-sm">Admin User</span>
+              <span className="text-sm">{userHeaderData?.userHeader?.fullName || 'Admin User'}</span>
             </div>
             <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
               <LogOut size={20} />
