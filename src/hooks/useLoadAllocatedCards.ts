@@ -8,7 +8,12 @@ export const useLoadAllocatedCards = () => {
     queryKey: ["loadAllocatedCards"],
     queryFn: async () => {
       const { data, error } = await supabase
-        .rpc('search_load_allocated');
+        .rpc('search_load_allocated', {
+          account_from: false,
+          transfer_from_account_id: 0,
+          limit: 100,
+          offset: 0
+        });
       
       if (error) throw error;
       
