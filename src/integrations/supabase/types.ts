@@ -9,6 +9,42 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      account_cards: {
+        Row: {
+          account_card_id: number
+          account_card_mtd: number
+          balance: number
+          card_number: string
+          cardholder: string
+          created_at: string
+          fica_validation: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          account_card_id: number
+          account_card_mtd: number
+          balance: number
+          card_number: string
+          cardholder: string
+          created_at?: string
+          fica_validation: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          account_card_id?: number
+          account_card_mtd?: number
+          balance?: number
+          card_number?: string
+          cardholder?: string
+          created_at?: string
+          fica_validation?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cards: {
         Row: {
           card_number: string
@@ -56,6 +92,33 @@ export type Database = {
           },
         ]
       }
+      client_settings: {
+        Row: {
+          client_max_balance: number
+          client_min_card_load: number
+          client_transfer_fee: number
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          client_max_balance: number
+          client_min_card_load: number
+          client_transfer_fee: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Update: {
+          client_max_balance?: number
+          client_min_card_load?: number
+          client_transfer_fee?: number
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           business_name: string | null
@@ -94,7 +157,31 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_load_client: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          id: string
+          clientmincardload: number
+          clientmaxbalance: number
+          clienttransferfee: number
+          createdat: string
+          updatedat: string
+        }[]
+      }
+      search_load_allocated: {
+        Args: { search_term?: string }
+        Returns: {
+          id: string
+          accountcardid: number
+          accountcardmtd: number
+          balance: number
+          cardholder: string
+          cardnumber: string
+          ficavalidation: string
+          createdat: string
+          updatedat: string
+        }[]
+      }
     }
     Enums: {
       card_status: "inactive" | "active" | "suspended" | "linked"
