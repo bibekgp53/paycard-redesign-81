@@ -19,7 +19,6 @@ export const useLoadClient = () => {
   return useQuery({
     queryKey: ["loadClient"],
     queryFn: async () => {
-      // Call the function with explicit parameters to avoid ambiguity
       const { data, error } = await supabase.rpc('get_load_client', {
         account_from: false,
         transfer_from_account_id: 0
@@ -32,7 +31,6 @@ export const useLoadClient = () => {
       
       console.log("Received client settings:", data);
       
-      // The Supabase function should return the data in the expected format directly
       return data as LoadClientResponse;
     }
   });
