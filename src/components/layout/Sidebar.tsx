@@ -11,7 +11,10 @@ export function Sidebar() {
   
   const menuItems = [
     { icon: Home, label: "Dashboard", path: "/dashboard" },
-    { icon: CreditCard, label: "Cards", path: "/cards" },
+    { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
+      { label: "Link Cards", path: "/cards/link" },
+      { label: "Allocate Cards", path: "/cards/allocate" }
+    ]},
     { icon: Users, label: "Profiles", path: "/profiles" },
     { icon: FileText, label: "Reports", path: "/reports" },
     { icon: Settings, label: "Settings", path: "/settings" },
@@ -35,6 +38,25 @@ export function Sidebar() {
                 <item.icon size={18} className="mr-3" />
                 {item.label}
               </Link>
+              {item.submenuItems && (
+                <ul className="ml-7 mt-2 space-y-2">
+                  {item.submenuItems.map((subItem) => (
+                    <li key={subItem.path}>
+                      <Link
+                        to={subItem.path}
+                        className={`flex items-center p-2 rounded-md transition-colors ${
+                          isActive(subItem.path)
+                            ? "bg-paycard-salmon text-white"
+                            : "hover:bg-paycard-navy-800"
+                        }`}
+                      >
+                        <CreditCard size={16} className="mr-3" />
+                        {subItem.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ul>
@@ -54,19 +76,6 @@ export function Sidebar() {
             >
               <CreditCard size={18} className="mr-3" />
               Link Cards
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/cards/allocate"
-              className={`flex items-center p-3 rounded-md transition-colors ${
-                isActive("/cards/allocate")
-                  ? "bg-paycard-salmon text-white"
-                  : "hover:bg-paycard-navy-800"
-              }`}
-            >
-              <CreditCard size={18} className="mr-3" />
-              Allocate Cards
             </Link>
           </li>
         </ul>
