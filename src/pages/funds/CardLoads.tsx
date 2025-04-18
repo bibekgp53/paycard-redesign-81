@@ -14,7 +14,9 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { InfoIcon } from "lucide-react";
 
 interface AccountCard {
   id: string;
@@ -33,11 +35,16 @@ interface ClientSettings {
   clientTransferFee: number;
 }
 
+interface AmountInputs {
+  [key: string]: number | null;
+}
+
 export default function CardLoads() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
   const accountFrom = searchParams.get("accountFrom");
+  const [amountInputs, setAmountInputs] = useState<AmountInputs>({});
 
   const { data: cards, isLoading } = useQuery({
     queryKey: ["loadAllocatedCards", searchTerm],
@@ -87,6 +94,45 @@ export default function CardLoads() {
     navigate(`/load-funds-from/to?accountFrom=${accountFrom}`);
   };
 
+  const handleAmountChange = (cardId: string, value: string) => {
+    const numValue = value === "" ? null : parseFloat(value);
+    setAmountInputs(prev => ({
+      ...prev,
+      [cardId]: numValue
+    }));
+  };
+
+  const getTooltipMessage = (cardBalance: number) => {
+    if (!clientSettings) return "";
+    
+    const maxAllowedLoad = clientSettings.clientMaxBalance - cardBalance;
+    const minLoad = clientSettings.clientMinCardLoad;
+    
+    return `The load amount must be R ${minLoad.toFixed(2)} - R ${maxAllowedLoad.toFixed(2)}`;
+  };
+
+  const getFeeForCard = (cardId: string) => {
+    const amount = amountInputs[cardId];
+    
+    if (amount === undefined || amount === null) {
+      return "R 0.00";
+    }
+    
+    if (clientSettings && cards) {
+      const card = cards.find(c => c.id === cardId);
+      if (card) {
+        const minAmount = clientSettings.clientMinCardLoad;
+        const maxAmount = clientSettings.clientMaxBalance - card.balance;
+        
+        if (amount >= minAmount && amount <= maxAmount) {
+          return `R ${clientSettings.clientTransferFee.toFixed(2)}`;
+        }
+      }
+    }
+    
+    return "R 0.00";
+  };
+
   return (
     <div className="space-y-6">
       <Breadcrumb>
@@ -130,42 +176,60 @@ export default function CardLoads() {
           />
         </div>
         <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>NAME</TableHead>
-                <TableHead>CARD NUMBER</TableHead>
-                <TableHead>AMOUNT</TableHead>
-                <TableHead>FEE</TableHead>
-                <TableHead>NOTIFY VIA SMS</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {isLoading ? (
+          <TooltipProvider>
+            <Table>
+              <TableHeader>
                 <TableRow>
-                  <TableCell colSpan={5} className="text-center">Loading...</TableCell>
+                  <TableHead>NAME</TableHead>
+                  <TableHead>CARD NUMBER</TableHead>
+                  <TableHead>AMOUNT</TableHead>
+                  <TableHead>FEE</TableHead>
+                  <TableHead>NOTIFY VIA SMS</TableHead>
                 </TableRow>
-              ) : cards?.map((card) => (
-                <TableRow key={card.id}>
-                  <TableCell>{card.cardholder}</TableCell>
-                  <TableCell>{card.cardNumber}</TableCell>
-                  <TableCell>
-                    <Input
-                      type="number"
-                      placeholder="0.00"
-                      className="w-32"
-                      min={clientSettings?.clientMinCardLoad || 0}
-                      step="0.01"
-                    />
-                  </TableCell>
-                  <TableCell>${clientSettings?.clientTransferFee.toFixed(2)}</TableCell>
-                  <TableCell>
-                    <Checkbox />
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+              </TableHeader>
+              <TableBody>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center">Loading...</TableCell>
+                  </TableRow>
+                ) : cards?.map((card) => (
+                  <TableRow key={card.id}>
+                    <TableCell>{card.cardholder}</TableCell>
+                    <TableCell>{card.cardNumber}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <div className="relative w-32">
+                              <Input
+                                type="number"
+                                placeholder="0.00"
+                                className="w-full pr-6"
+                                value={amountInputs[card.id] || ""}
+                                onChange={(e) => handleAmountChange(card.id, e.target.value)}
+                                min={clientSettings?.clientMinCardLoad || 0}
+                                step="0.01"
+                              />
+                              <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
+                                <InfoIcon className="h-4 w-4 text-gray-400" />
+                              </div>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>{getTooltipMessage(card.balance)}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </div>
+                    </TableCell>
+                    <TableCell>{getFeeForCard(card.id)}</TableCell>
+                    <TableCell>
+                      <Checkbox />
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TooltipProvider>
         </div>
       </Card>
     </div>
