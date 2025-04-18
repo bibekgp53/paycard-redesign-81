@@ -1,4 +1,3 @@
-
 import { CreditCard, Users, FileText, Settings, Wallet, UserCircle, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -19,7 +18,6 @@ export function Sidebar() {
   };
   
   const menuItems = [
-    { icon: Wallet, label: "PayCard", path: "/" },
     { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
       { label: "Link Cards", path: "/cards/link" },
       { label: "Allocate Cards", path: "/cards/allocate" }
@@ -38,8 +36,8 @@ export function Sidebar() {
         {/* Logo and Balance Section */}
         <div className="flex flex-col items-center mb-6">
           <Link to="/" className="flex items-center justify-center mb-4">
-            <img src="/paycard-logo.svg" alt="PayCard Logo" className="h-8" />
-            <span className="ml-2 text-xl font-bold">PayCard</span>
+            <img src="/paycard-logo.svg" alt="Standard Bank Logo" className="h-8" />
+            <span className="ml-2 text-xl font-bold">Standard Bank</span>
           </Link>
           <div className="text-center">
             <p className="text-sm text-gray-300">Your Balance</p>
