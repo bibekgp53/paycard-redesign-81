@@ -46,7 +46,17 @@ export default function CardLoads() {
         .rpc('search_load_allocated', { search_term: searchTerm });
       
       if (error) throw error;
-      return data as AccountCard[];
+      
+      // Map the snake_case database response to our camelCase interface
+      return data.map((item) => ({
+        id: item.id,
+        accountCardId: item.accountcardid,
+        accountCardMtd: item.accountcardmtd,
+        balance: item.balance,
+        cardholder: item.cardholder,
+        cardNumber: item.cardnumber,
+        ficaValidation: item.ficavalidation
+      })) as AccountCard[];
     }
   });
 
@@ -55,7 +65,17 @@ export default function CardLoads() {
     queryFn: async () => {
       const { data, error } = await supabase.rpc('get_load_client');
       if (error) throw error;
-      return data[0] as ClientSettings;
+      
+      // Map the snake_case database response to our camelCase interface
+      if (data && data.length > 0) {
+        return {
+          id: data[0].id,
+          clientMinCardLoad: data[0].clientmincardload,
+          clientMaxBalance: data[0].clientmaxbalance,
+          clientTransferFee: data[0].clienttransferfee
+        } as ClientSettings;
+      }
+      return null;
     }
   });
 
