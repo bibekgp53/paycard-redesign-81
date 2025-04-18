@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { useQuery } from "@apollo/client";
 import { GET_USER_HEADER } from "@/graphql/user";
 import { UserHeader } from "@/graphql/types";
+import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { 
   Breadcrumb,
   BreadcrumbItem,
@@ -16,7 +17,6 @@ import {
 import { LoadEffectiveDate } from "./components/LoadEffectiveDate";
 import { CardsTable } from "./components/CardsTable";
 import { CardsPagination } from "./components/CardsPagination";
-import { useLoadClient } from "@/hooks/useLoadClient";
 import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
 import { AccountCard, ClientSettings } from "@/graphql/types";
 
@@ -33,8 +33,9 @@ export function CardLoads() {
   const pageSize = 10;
   
   const { data: userHeader } = useQuery<UserHeader>(GET_USER_HEADER);
+  const { data: loadClientData } = useLoadClientQuery();
   const { data: cards, isLoading } = useLoadAllocatedCards();
-  const { data: clientSettings } = useLoadClient();
+  const clientSettings = loadClientData?.getLoadClient;
 
   const handleLoadFundsClick = () => {
     navigate(`/load-funds-from`);
