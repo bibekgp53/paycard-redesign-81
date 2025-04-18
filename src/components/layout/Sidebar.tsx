@@ -1,3 +1,4 @@
+
 import { CreditCard, Users, FileText, Settings, Wallet, UserCircle, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -34,13 +35,12 @@ export function Sidebar() {
     <aside className="bg-paycard-navy text-white w-64 min-h-screen p-4 hidden md:block flex flex-col">
       <div className="mb-8">
         {/* Logo and Balance Section */}
-        <div className="flex flex-col items-center mb-6">
-          <Link to="/" className="mb-4">
+        <div className="mb-6 pl-3">
+          <Link to="/" className="mb-4 block">
             <span className="text-xl font-bold">Standard Bank PayCard</span>
           </Link>
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-300">Your Balance:</span>
-            <span className="font-bold">R 0.00</span>
+          <div className="text-sm text-gray-300 pl-3">
+            Your Balance: <span className="font-bold">R 0.00</span>
           </div>
         </div>
 
