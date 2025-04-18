@@ -6,8 +6,8 @@ export function Sidebar() {
   const location = useLocation();
   
   const isActive = (path: string) => {
-    if (path === "/dashboard") {
-      return location.pathname === path;
+    if (path === "/") {
+      return location.pathname === "/";
     }
     if (path === "/cards") {
       return location.pathname.startsWith("/cards");
@@ -21,7 +21,7 @@ export function Sidebar() {
   };
   
   const menuItems = [
-    { icon: Wallet, label: "PayCard", path: "/dashboard" },
+    { icon: Wallet, label: "PayCard", path: "/" },
     { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
       { label: "Link Cards", path: "/cards/link" },
       { label: "Allocate Cards", path: "/cards/allocate" }
