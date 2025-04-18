@@ -1,29 +1,34 @@
+
 import { Card } from "@/components/ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Users, Search, ArrowLeft } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Users, Search } from "lucide-react";
+import { 
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default function LoadFundsTo() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const accountFrom = searchParams.get("accountFrom");
 
-  const handleBack = () => {
-    navigate("/load-funds-from");
-  };
-
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4 mb-2">
-        <Button 
-          variant="ghost" 
-          size="icon" 
-          onClick={handleBack}
-          className="h-8 w-8"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-      </div>
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink href="/load-funds-from">Load Funds From</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>To</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <Card className="bg-white p-6">
         <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
