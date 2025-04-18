@@ -25,16 +25,24 @@ export default function CardLoads() {
   const [searchParams] = useSearchParams();
   const accountFrom = searchParams.get("accountFrom");
 
+  const handleLoadFundsClick = () => {
+    navigate(`/load-funds-from`);
+  };
+
+  const handleToClick = () => {
+    navigate(`/load-funds-from/to?accountFrom=${accountFrom}`);
+  };
+
   return (
     <div className="space-y-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/load-funds-from">Load Funds From</BreadcrumbLink>
+            <BreadcrumbLink onClick={handleLoadFundsClick}>Load Funds From</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
-            <BreadcrumbLink href={`/load-funds-from/to?accountFrom=${accountFrom}`}>To</BreadcrumbLink>
+            <BreadcrumbLink onClick={handleToClick}>To</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>

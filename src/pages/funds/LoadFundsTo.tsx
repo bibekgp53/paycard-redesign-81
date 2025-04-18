@@ -16,12 +16,16 @@ export default function LoadFundsTo() {
   const [searchParams] = useSearchParams();
   const accountFrom = searchParams.get("accountFrom");
 
+  const handleLoadFundsClick = () => {
+    navigate(`/load-funds-from`);
+  };
+
   return (
     <div className="space-y-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
-            <BreadcrumbLink href="/load-funds-from">Load Funds From</BreadcrumbLink>
+            <BreadcrumbLink onClick={handleLoadFundsClick}>Load Funds From</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
