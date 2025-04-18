@@ -63,3 +63,14 @@ export interface ClientSettings {
 export interface GetLoadClientData {
   loadClient: ClientSettings;
 }
+
+// Adding the AccountCard interface that was missing
+export interface AccountCard {
+  id: string;
+  accountCardId: number;
+  accountCardMtd: number;
+  balance: number;
+  cardholder: string;
+  cardNumber: string;
+  ficaValidation: string;
+}
