@@ -1,19 +1,9 @@
+
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AccountCard, ClientSettings } from "@/graphql/types";
-
-// Helper function to mask card number
-const maskCardNumber = (cardNumber: string) => {
-  if (cardNumber.length <= 6) return cardNumber; // If card number is too short, return as is
-  
-  const firstTwoDigits = cardNumber.slice(0, 2);
-  const lastFourDigits = cardNumber.slice(-4);
-  const maskedPart = '*'.repeat(cardNumber.length - 6);
-  
-  return `${firstTwoDigits}${maskedPart}${lastFourDigits}`;
-};
 
 interface CardsTableProps {
   cards: AccountCard[];
@@ -63,7 +53,7 @@ export const CardsTable = ({
             ) : cards.map((card) => (
               <TableRow key={card.id}>
                 <TableCell>{card.cardholder}</TableCell>
-                <TableCell>{maskCardNumber(card.cardNumber)}</TableCell>
+                <TableCell>{card.maskedCardNumber}</TableCell>
                 <TableCell>
                   <div className="flex items-center">
                     <Tooltip>

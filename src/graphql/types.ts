@@ -1,4 +1,3 @@
-
 export interface Card {
   id: string;
   card_number: string;
@@ -72,5 +71,6 @@ export interface AccountCard {
   balance: number;
   cardholder: string;
   cardNumber: string;
+  maskedCardNumber: string;
   ficaValidation: string;
 }

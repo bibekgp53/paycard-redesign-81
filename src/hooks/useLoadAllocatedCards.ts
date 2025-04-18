@@ -19,6 +19,7 @@ export const useLoadAllocatedCards = (searchTerm: string) => {
         balance: item.balance,
         cardholder: item.cardholder,
         cardNumber: item.cardnumber,
+        maskedCardNumber: item.masked_cardnumber,
         ficaValidation: item.ficavalidation
       })) as AccountCard[];
     }
