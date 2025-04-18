@@ -46,6 +46,8 @@ interface ClientSettings {
   clientMinCardLoad: number;
   clientMaxBalance: number;
   clientTransferFee: number;
+  fromBalance: number;
+  fromAccount: number;
 }
 
 interface AmountInputs {
@@ -96,7 +98,9 @@ export function CardLoads() {
           id: data[0].id,
           clientMinCardLoad: data[0].clientmincardload,
           clientMaxBalance: data[0].clientmaxbalance,
-          clientTransferFee: data[0].clienttransferfee
+          clientTransferFee: data[0].clienttransferfee,
+          fromBalance: data[0].frombalance || 0,
+          fromAccount: data[0].fromaccount || 0
         } as ClientSettings;
       }
       return null;

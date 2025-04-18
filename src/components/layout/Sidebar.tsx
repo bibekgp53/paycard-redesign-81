@@ -1,3 +1,4 @@
+
 import { CreditCard, Users, FileText, Settings, Wallet, UserCircle, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@apollo/client";
@@ -6,9 +7,7 @@ import { GetUserHeaderData } from "@/graphql/types";
 
 export function Sidebar() {
   const location = useLocation();
-  const { data: userHeaderData } = useQuery<GetUserHeaderData>({
-    query: GET_USER_HEADER
-  });
+  const { data: userHeaderData } = useQuery<GetUserHeaderData>(GET_USER_HEADER);
   
   const isActive = (path: string) => {
     if (path === "/") {
