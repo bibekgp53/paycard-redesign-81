@@ -1,3 +1,4 @@
+
 import { CreditCard, Users, FileText, Settings, Wallet } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -57,7 +58,8 @@ export function Sidebar() {
                       <Link
                         to={subItem.path}
                         className={`flex items-center p-2 rounded-md transition-colors ${
-                          location.pathname === subItem.path
+                          location.pathname === subItem.path || 
+                          (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"))
                             ? "bg-paycard-salmon text-white"
                             : "hover:bg-paycard-navy-800"
                         }`}
