@@ -15,6 +15,10 @@ export function Sidebar() {
   
   const menuItems = [
     { icon: Wallet, label: "PayCard", path: "/dashboard" },
+    { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
+      { label: "Link Cards", path: "/cards/link" },
+      { label: "Allocate Cards", path: "/cards/allocate" }
+    ]},
     { icon: Wallet, label: "Funds", path: "/load-funds-from", submenuItems: [
       { label: "Load Funds to Cards", path: "/load-funds-from" }
     ]},
@@ -53,7 +57,7 @@ export function Sidebar() {
                             : "hover:bg-paycard-navy-800"
                         }`}
                       >
-                        <Wallet size={16} className="mr-3" />
+                        <item.icon size={16} className="mr-3" />
                         {subItem.label}
                       </Link>
                     </li>
