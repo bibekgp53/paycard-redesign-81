@@ -1,7 +1,5 @@
 import { useState, useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -16,6 +14,8 @@ import { SearchInput } from "./components/SearchInput";
 import { LoadEffectiveDate } from "./components/LoadEffectiveDate";
 import { CardsTable } from "./components/CardsTable";
 import { CardsPagination } from "./components/CardsPagination";
+import { useLoadClient } from "@/hooks/useLoadClient";
+import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
 import { AccountCard, ClientSettings } from "@/graphql/types";
 
 interface AmountInputs {
@@ -24,58 +24,15 @@ interface AmountInputs {
 
 export function CardLoads() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
-  const accountFrom = searchParams.get("accountFrom");
   const [amountInputs, setAmountInputs] = useState<AmountInputs>({});
   const [page, setPage] = useState(1);
   const [effectiveDate, setEffectiveDate] = useState<"immediate" | "delay">("immediate");
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
-  const pageSize = 5;
+  const pageSize = 10; // Updated to show 10 rows per page
 
-  const { data: cards, isLoading } = useQuery({
-    queryKey: ["loadAllocatedCards", searchTerm],
-    queryFn: async () => {
-      const { data, error } = await supabase
-        .rpc('search_load_allocated', { search_term: searchTerm });
-      
-      if (error) throw error;
-      
-      // Map the snake_case database response to our camelCase interface
-      return data.map((item) => ({
-        id: item.id,
-        accountCardId: item.accountcardid,
-        accountCardMtd: item.accountcardmtd,
-        balance: item.balance,
-        cardholder: item.cardholder,
-        cardNumber: item.cardnumber,
-        ficaValidation: item.ficavalidation
-      })) as AccountCard[];
-    }
-  });
-
-  const { data: clientSettings } = useQuery({
-    queryKey: ["loadClient"],
-    queryFn: async () => {
-      const { data, error } = await supabase.rpc('get_load_client');
-      if (error) throw error;
-      
-      // The response is returning an array of objects, so we need to access the first item
-      const clientData = Array.isArray(data) ? data[0] : data;
-      
-      return {
-        details: {
-          clientMinCardLoad: clientData.clientmincardload,
-          clientMaxBalance: clientData.clientmaxbalance,
-          clientTransferFee: clientData.clienttransferfee
-        },
-        profile: {
-          fromBalance: 1000, // Setting a default balance of 1000
-          fromAccount: Number(clientData.id?.substring(0, 8)) || 123456789
-        }
-      } as ClientSettings;
-    }
-  });
+  const { data: cards, isLoading } = useLoadAllocatedCards(searchTerm);
+  const { data: clientSettings } = useLoadClient();
 
   const handleLoadFundsClick = () => {
     navigate(`/load-funds-from`);
@@ -125,7 +82,6 @@ export function CardLoads() {
     return "R 0.00";
   };
 
-  // Calculate totals for amount and fee
   const totals = useMemo(() => {
     if (!cards || !clientSettings) return { amount: 0, fee: 0 };
     
@@ -152,11 +108,16 @@ export function CardLoads() {
     return cards.slice(startIndex, startIndex + pageSize);
   }, [cards, page, pageSize]);
 
-  // Calculate total pages
   const totalPages = useMemo(() => {
     if (!cards) return 1;
     return Math.ceil(cards.length / pageSize);
   }, [cards, pageSize]);
+
+  const handleContinue = () => {
+    // Implement the continue functionality
+    // This will be implemented based on the next steps in the flow
+    console.log('Continue clicked', { effectiveDate, selectedDate, amountInputs });
+  };
 
   return (
     <div className="space-y-6">
@@ -193,17 +154,10 @@ export function CardLoads() {
       </Card>
 
       <Card className="bg-white p-6">
-        <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
+        <div className="mb-6">
           <SearchInput 
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
-          />
-          
-          <LoadEffectiveDate
-            effectiveDate={effectiveDate}
-            selectedDate={selectedDate}
-            onEffectiveDateChange={setEffectiveDate}
-            onSelectedDateChange={setSelectedDate}
           />
         </div>
         
@@ -227,10 +181,22 @@ export function CardLoads() {
           />
         )}
         
-        <div className="mt-6 flex justify-end">
-          <Button className="bg-paycard-salmon hover:bg-paycard-salmon-600">
-            Process Load
-          </Button>
+        <div className="mt-6 space-y-6">
+          <LoadEffectiveDate
+            effectiveDate={effectiveDate}
+            selectedDate={selectedDate}
+            onEffectiveDateChange={setEffectiveDate}
+            onSelectedDateChange={setSelectedDate}
+          />
+          
+          <div className="flex justify-end">
+            <Button 
+              onClick={handleContinue}
+              className="bg-paycard-salmon hover:bg-paycard-salmon-600"
+            >
+              Continue
+            </Button>
+          </div>
         </div>
       </Card>
     </div>
