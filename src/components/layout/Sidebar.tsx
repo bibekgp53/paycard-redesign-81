@@ -35,13 +35,12 @@ export function Sidebar() {
       <div className="mb-8">
         {/* Logo and Balance Section */}
         <div className="flex flex-col items-center mb-6">
-          <Link to="/" className="flex items-center justify-center mb-4">
-            <img src="/paycard-logo.svg" alt="Standard Bank Logo" className="h-8" />
-            <span className="ml-2 text-xl font-bold">Standard Bank</span>
+          <Link to="/" className="mb-4">
+            <span className="text-xl font-bold">Standard Bank PayCard</span>
           </Link>
-          <div className="text-center">
-            <p className="text-sm text-gray-300">Your Balance</p>
-            <p className="text-xl font-bold">R 0.00</p>
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-300">Your Balance:</span>
+            <span className="font-bold">R 0.00</span>
           </div>
         </div>
 
@@ -83,21 +82,21 @@ export function Sidebar() {
             </li>
           ))}
         </ul>
-      </div>
 
-      {/* User Section at Bottom */}
-      <div className="mt-auto border-t border-paycard-navy-800 pt-4">
-        <div className="flex items-center justify-between mb-4">
-          <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
-            <Bell size={20} />
-          </button>
-          <div className="flex items-center">
-            <UserCircle size={24} className="mr-2" />
-            <span className="text-sm">Admin User</span>
+        {/* User Section at Bottom */}
+        <div className="mt-auto border-t border-paycard-navy-800 pt-4">
+          <div className="flex items-center justify-between mb-4">
+            <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
+              <Bell size={20} />
+            </button>
+            <div className="flex items-center">
+              <UserCircle size={24} className="mr-2" />
+              <span className="text-sm">Admin User</span>
+            </div>
+            <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
+              <LogOut size={20} />
+            </button>
           </div>
-          <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
-            <LogOut size={20} />
-          </button>
         </div>
       </div>
     </aside>
