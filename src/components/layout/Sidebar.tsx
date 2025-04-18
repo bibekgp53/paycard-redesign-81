@@ -1,5 +1,5 @@
 
-import { CreditCard, Users, FileText, Settings, Wallet } from "lucide-react";
+import { CreditCard, Users, FileText, Settings, Wallet, UserCircle, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export function Sidebar() {
@@ -13,7 +13,6 @@ export function Sidebar() {
       return location.pathname.startsWith("/cards");
     }
     if (path === "/load-funds-from") {
-      // Consider it active for all load-funds-from routes
       return location.pathname.startsWith("/load-funds-from");
     }
     return location.pathname === path;
@@ -34,10 +33,22 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="bg-paycard-navy text-white w-64 min-h-screen p-4 hidden md:block">
+    <aside className="bg-paycard-navy text-white w-64 min-h-screen p-4 hidden md:block flex flex-col">
       <div className="mb-8">
-        <h2 className="text-xl font-bold mb-6">Navigation</h2>
-        <ul className="space-y-2">
+        {/* Logo and Balance Section */}
+        <div className="flex flex-col items-center mb-6">
+          <Link to="/" className="flex items-center justify-center mb-4">
+            <img src="/paycard-logo.svg" alt="PayCard Logo" className="h-8" />
+            <span className="ml-2 text-xl font-bold">PayCard</span>
+          </Link>
+          <div className="text-center">
+            <p className="text-sm text-gray-300">Your Balance</p>
+            <p className="text-xl font-bold">R 0.00</p>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <ul className="space-y-2 flex-1">
           {menuItems.map((item) => (
             <li key={item.path}>
               <Link
@@ -74,6 +85,22 @@ export function Sidebar() {
             </li>
           ))}
         </ul>
+      </div>
+
+      {/* User Section at Bottom */}
+      <div className="mt-auto border-t border-paycard-navy-800 pt-4">
+        <div className="flex items-center justify-between mb-4">
+          <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
+            <Bell size={20} />
+          </button>
+          <div className="flex items-center">
+            <UserCircle size={24} className="mr-2" />
+            <span className="text-sm">Admin User</span>
+          </div>
+          <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
+            <LogOut size={20} />
+          </button>
+        </div>
       </div>
     </aside>
   );
