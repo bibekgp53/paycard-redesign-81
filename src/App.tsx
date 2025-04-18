@@ -14,6 +14,7 @@ import AllocateCards from "./pages/cards/AllocateCards";
 import AllocateCardsDetails from "./pages/cards/AllocateCardsDetails";
 import AllocateCardsConfirm from "./pages/cards/AllocateCardsConfirm";
 import { MainLayout } from "./components/layout/MainLayout";
+import AllocateCardsComplete from "./pages/cards/AllocateCardsComplete";
 
 const queryClient = new QueryClient();
 
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/cards/allocate" element={<MainLayout><AllocateCards /></MainLayout>} />
             <Route path="/cards/allocate/details" element={<MainLayout><AllocateCardsDetails /></MainLayout>} />
             <Route path="/cards/allocate/confirm" element={<MainLayout><AllocateCardsConfirm /></MainLayout>} />
+            <Route path="/cards/allocate/complete" element={<MainLayout><AllocateCardsComplete /></MainLayout>} />
             
             {/* Default page for unimplemented sections */}
             <Route path="/cards" element={<MainLayout><Dashboard /></MainLayout>} />

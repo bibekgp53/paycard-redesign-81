@@ -1,6 +1,7 @@
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/custom/Button";
+import { ArrowLeft } from "lucide-react";
 
 export default function AllocateCardsConfirm() {
   const location = useLocation();
@@ -12,13 +13,20 @@ export default function AllocateCardsConfirm() {
   };
 
   const handleConfirm = () => {
-    // Handle confirmation logic here
-    navigate("/cards");
+    navigate("/cards/allocate/complete");
   };
 
   return (
     <div className="max-w-5xl mx-auto">
       <div className="bg-white shadow-md rounded-lg p-6">
+        <button 
+          onClick={handleBack}
+          className="mb-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+          aria-label="Go back"
+        >
+          <ArrowLeft size={24} className="text-paycard-navy" />
+        </button>
+
         <h1 className="text-2xl font-bold text-paycard-navy mb-8 text-center">
           Confirm allocation
         </h1>
@@ -48,13 +56,7 @@ export default function AllocateCardsConfirm() {
           </table>
         </div>
 
-        <div className="flex justify-center gap-4 mt-8">
-          <Button
-            variant="secondary"
-            onClick={handleBack}
-          >
-            BACK
-          </Button>
+        <div className="flex justify-end mt-8">
           <Button
             variant="primary"
             onClick={handleConfirm}
