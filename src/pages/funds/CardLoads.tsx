@@ -35,7 +35,7 @@ export function CardLoads() {
   const { data: userHeader } = useQuery<UserHeader>(GET_USER_HEADER);
   const { data: loadClientData } = useLoadClientQuery();
   const { data: cards, isLoading } = useLoadAllocatedCards();
-  const clientSettings = loadClientData?.getLoadClient;
+  const clientSettings = loadClientData?.get_load_client;
 
   const handleLoadFundsClick = () => {
     navigate(`/load-funds-from`);

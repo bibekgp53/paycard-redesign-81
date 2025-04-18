@@ -3,7 +3,7 @@ import { gql } from '@apollo/client';
 
 export const GET_LOAD_CLIENT = gql`
   query GetLoadClient {
-    getLoadClient {
+    get_load_client {
       details {
         clientMinCardLoad
         clientMaxBalance
