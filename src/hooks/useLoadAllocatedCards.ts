@@ -15,7 +15,12 @@ export const useLoadAllocatedCards = () => {
           offset: 0
         });
       
-      if (error) throw error;
+      if (error) {
+        console.error("Error loading allocated cards:", error);
+        throw error;
+      }
+      
+      console.log("Received data from backend:", data);
       
       return data.map((item) => ({
         id: item.id,
