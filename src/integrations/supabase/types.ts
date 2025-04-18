@@ -170,6 +170,10 @@ export type Database = {
           updatedat: string
         }[]
       }
+      mask_card_number: {
+        Args: { card_number: string }
+        Returns: string
+      }
       search_load_allocated: {
         Args: {
           account_from?: boolean
