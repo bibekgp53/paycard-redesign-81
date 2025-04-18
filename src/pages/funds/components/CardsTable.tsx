@@ -53,7 +53,7 @@ export const CardsTable = ({
             ) : cards.map((card) => (
               <TableRow key={card.id}>
                 <TableCell>{card.cardholder}</TableCell>
-                <TableCell>{card.maskedCardNumber}</TableCell>
+                <TableCell>{card.cardNumber}</TableCell>
                 <TableCell>
                   <div className="flex items-center">
                     <Tooltip>
