@@ -12,6 +12,10 @@ export function Sidebar() {
     if (path === "/cards") {
       return location.pathname.startsWith("/cards");
     }
+    if (path === "/load-funds-from") {
+      // Only consider it active for the exact path, not for sub-routes
+      return location.pathname === "/load-funds-from";
+    }
     return location.pathname === path;
   };
   
@@ -54,7 +58,7 @@ export function Sidebar() {
                       <Link
                         to={subItem.path}
                         className={`flex items-center p-2 rounded-md transition-colors ${
-                          isActive(subItem.path)
+                          location.pathname === subItem.path
                             ? "bg-paycard-salmon text-white"
                             : "hover:bg-paycard-navy-800"
                         }`}

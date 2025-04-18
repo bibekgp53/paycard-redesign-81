@@ -1,3 +1,4 @@
+
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -119,6 +120,22 @@ const CardLoads = () => {
       return amount >= minAmount && amount <= maxAmount;
     }
     return true;
+  };
+
+  // This is the missing function that was causing the error
+  const getFeeForCard = (cardId: string): string => {
+    const amount = amountInputs[cardId];
+    if (amount === undefined || amount === null || !clientSettings) {
+      return "R 0.00";
+    }
+    
+    // Only calculate fee if amount is valid
+    const card = cards?.find(c => c.id === cardId);
+    if (card && isAmountValid(cardId, card.balance)) {
+      return `R ${clientSettings.clientTransferFee.toFixed(2)}`;
+    }
+    
+    return "R 0.00";
   };
 
   return (
