@@ -6,9 +6,11 @@ export function Sidebar() {
   const location = useLocation();
   
   const isActive = (path: string) => {
-    if (path === "/load-funds-from") {
-      // Match any path starting with /load-funds-from
-      return location.pathname.startsWith(path);
+    if (path === "/dashboard") {
+      return location.pathname === path;
+    }
+    if (path === "/cards") {
+      return location.pathname.startsWith("/cards");
     }
     return location.pathname === path;
   };
@@ -71,4 +73,3 @@ export function Sidebar() {
     </aside>
   );
 }
-

@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -16,7 +15,6 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useState, useMemo } from "react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { InfoIcon } from "lucide-react";
 
 interface AccountCard {
   id: string;
@@ -39,7 +37,7 @@ interface AmountInputs {
   [key: string]: number | null;
 }
 
-export default function CardLoads() {
+const CardLoads = () => {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [searchTerm, setSearchTerm] = useState("");
@@ -108,29 +106,19 @@ export default function CardLoads() {
     const maxAllowedLoad = clientSettings.clientMaxBalance - cardBalance;
     const minLoad = clientSettings.clientMinCardLoad;
     
-    return `The load amount must be R ${minLoad.toFixed(2)} - R ${maxAllowedLoad.toFixed(2)}`;
+    return `Load amount must be between R ${minLoad.toFixed(2)} - R ${maxAllowedLoad.toFixed(2)}`;
   };
 
-  const getFeeForCard = (cardId: string) => {
+  const isAmountValid = (cardId: string, cardBalance: number) => {
     const amount = amountInputs[cardId];
+    if (amount === undefined || amount === null) return true;
     
-    if (amount === undefined || amount === null) {
-      return "R 0.00";
+    if (clientSettings) {
+      const minAmount = clientSettings.clientMinCardLoad;
+      const maxAmount = clientSettings.clientMaxBalance - cardBalance;
+      return amount >= minAmount && amount <= maxAmount;
     }
-    
-    if (clientSettings && cards) {
-      const card = cards.find(c => c.id === cardId);
-      if (card) {
-        const minAmount = clientSettings.clientMinCardLoad;
-        const maxAmount = clientSettings.clientMaxBalance - card.balance;
-        
-        if (amount >= minAmount && amount <= maxAmount) {
-          return `R ${clientSettings.clientTransferFee.toFixed(2)}`;
-        }
-      }
-    }
-    
-    return "R 0.00";
+    return true;
   };
 
   return (
@@ -200,20 +188,15 @@ export default function CardLoads() {
                       <div className="flex items-center">
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className="relative w-32">
-                              <Input
-                                type="number"
-                                placeholder="0.00"
-                                className="w-full pr-6"
-                                value={amountInputs[card.id] || ""}
-                                onChange={(e) => handleAmountChange(card.id, e.target.value)}
-                                min={clientSettings?.clientMinCardLoad || 0}
-                                step="0.01"
-                              />
-                              <div className="absolute right-2 top-1/2 transform -translate-y-1/2">
-                                <InfoIcon className="h-4 w-4 text-gray-400" />
-                              </div>
-                            </div>
+                            <Input
+                              type="number"
+                              placeholder="0.00"
+                              className={`w-32 ${!isAmountValid(card.id, card.balance) ? 'border-paycard-red ring-1 ring-paycard-red' : ''}`}
+                              value={amountInputs[card.id] || ""}
+                              onChange={(e) => handleAmountChange(card.id, e.target.value)}
+                              min={clientSettings?.clientMinCardLoad || 0}
+                              step="0.01"
+                            />
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>{getTooltipMessage(card.balance)}</p>
@@ -234,4 +217,6 @@ export default function CardLoads() {
       </Card>
     </div>
   );
-}
+};
+
+export default CardLoads;

@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Removing the import for Gilroy font which is causing errors */
+@import url('https://fonts.googleapis.com/css2?family=Gilroy:wght@400;500;600;700&display=swap');
 
 @layer base {
   :root {
@@ -54,8 +54,7 @@
   }
 
   html, body {
-    @apply bg-background text-foreground antialiased;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    @apply font-gilroy bg-background text-foreground antialiased;
   }
   
   h1 {
