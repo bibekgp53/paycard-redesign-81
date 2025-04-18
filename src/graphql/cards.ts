@@ -1,5 +1,5 @@
+
 import { gql } from '@apollo/client';
-import { maskCardNumber } from './utils';
 
 export const GET_CARDS = gql`
   query GetCards {
@@ -27,9 +27,3 @@ export const LINK_CARDS = gql`
   }
 `;
 
-export const processCardResponse = (card: { card_number: string }) => {
-  return {
-    ...card,
-    card_number: maskCardNumber(card.card_number)
-  };
-};
