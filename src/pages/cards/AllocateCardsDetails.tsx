@@ -30,6 +30,18 @@ export default function AllocateCardsDetails() {
   const handleBack = () => {
     navigate(-1);
   };
+  
+  const handleNext = () => {
+    if (currentStep < totalSteps) {
+      setCurrentStep(prev => prev + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentStep > 1) {
+      setCurrentStep(prev => prev - 1);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto">
