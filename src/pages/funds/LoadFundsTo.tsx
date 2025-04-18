@@ -1,6 +1,6 @@
 
 import { Card } from "@/components/ui/card";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Users, Search } from "lucide-react";
 import { 
   Breadcrumb,
@@ -14,10 +14,15 @@ import {
 export default function LoadFundsTo() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const location = useLocation();
   const accountFrom = searchParams.get("accountFrom");
 
   const handleLoadFundsClick = () => {
     navigate(`/load-funds-from`);
+  };
+
+  const isActive = (path: string, accountFromValue: string) => {
+    return location.pathname.startsWith(path) && searchParams.get("accountFrom") === accountFromValue;
   };
 
   return (
@@ -41,12 +46,16 @@ export default function LoadFundsTo() {
         </p>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="flex flex-col gap-6">
         <button
           onClick={() => navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom}`)}
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
-          <Card className="p-6 h-full border-2 hover:border-paycard-salmon">
+          <Card className={`p-6 h-full border-2 ${
+            isActive("/load-funds-from/card-loads", accountFrom || "")
+              ? "border-paycard-salmon"
+              : "hover:border-paycard-salmon border-transparent"
+          }`}>
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-full bg-paycard-navy-100">
                 <Users className="h-6 w-6 text-paycard-navy" />
@@ -67,7 +76,11 @@ export default function LoadFundsTo() {
           onClick={() => navigate(`/load-funds-from/search?accountFrom=${accountFrom}`)}
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
-          <Card className="p-6 h-full border-2 hover:border-paycard-salmon">
+          <Card className={`p-6 h-full border-2 ${
+            isActive("/load-funds-from/search", accountFrom || "")
+              ? "border-paycard-salmon"
+              : "hover:border-paycard-salmon border-transparent"
+          }`}>
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-full bg-paycard-navy-100">
                 <Search className="h-6 w-6 text-paycard-navy" />
