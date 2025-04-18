@@ -1,8 +1,10 @@
+
 import { CreditCard, Users, FileText, Settings, Wallet, UserCircle, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { GET_USER_HEADER } from "@/graphql/user";
 import { UserHeader } from "@/graphql/types";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function Sidebar() {
   const location = useLocation();
@@ -35,20 +37,20 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="bg-paycard-navy text-white w-64 min-h-screen p-4 hidden md:block flex flex-col">
-      <div className="mb-8">
-        {/* Logo and Balance Section */}
-        <div className="mb-6 pl-3">
-          <Link to="/" className="mb-4 block">
-            <span className="text-xl font-bold">Standard Bank PayCard</span>
-          </Link>
-          <div className="text-sm text-gray-300 p-3">
-            Your Balance: <span className="font-bold">R {userHeader?.balanceAccount.toFixed(2) || '0.00'}</span>
-          </div>
+    <aside className="bg-paycard-navy text-white w-64 h-screen hidden md:flex md:flex-col">
+      {/* Logo and Balance Section */}
+      <div className="p-4">
+        <Link to="/" className="mb-4 block">
+          <span className="text-xl font-bold">Standard Bank PayCard</span>
+        </Link>
+        <div className="text-sm text-gray-300 p-3">
+          Your Balance: <span className="font-bold">R {userHeader?.balanceAccount.toFixed(2) || '0.00'}</span>
         </div>
+      </div>
 
-        {/* Navigation Menu */}
-        <ul className="space-y-2 flex-1">
+      {/* Scrollable Navigation Menu */}
+      <ScrollArea className="flex-1 px-4">
+        <ul className="space-y-2">
           {menuItems.map((item) => (
             <li key={item.path}>
               <Link
@@ -85,21 +87,21 @@ export function Sidebar() {
             </li>
           ))}
         </ul>
+      </ScrollArea>
 
-        {/* User Section at Bottom */}
-        <div className="mt-auto border-t border-paycard-navy-800 pt-4">
-          <div className="flex items-center justify-between mb-4">
-            <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
-              <Bell size={20} />
-            </button>
-            <div className="flex items-center">
-              <UserCircle size={24} className="mr-2" />
-              <span className="text-sm">{userHeader?.fullName || 'Admin User'}</span>
-            </div>
-            <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
-              <LogOut size={20} />
-            </button>
+      {/* User Section at Bottom */}
+      <div className="border-t border-paycard-navy-800 p-4">
+        <div className="flex items-center justify-between">
+          <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
+            <Bell size={20} />
+          </button>
+          <div className="flex items-center">
+            <UserCircle size={24} className="mr-2" />
+            <span className="text-sm">{userHeader?.fullName || 'Admin User'}</span>
           </div>
+          <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
+            <LogOut size={20} />
+          </button>
         </div>
       </div>
     </aside>
