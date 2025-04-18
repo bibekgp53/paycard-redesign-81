@@ -87,7 +87,7 @@ export default {
 				}
 			},
 			fontFamily: {
-				'gilroy': ['Gilroy', 'sans-serif'],
+				'sans': ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif', '"Apple Color Emoji"', '"Segoe UI Emoji"', '"Segoe UI Symbol"'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
