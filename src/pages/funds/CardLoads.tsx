@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -37,8 +38,8 @@ export function CardLoads() {
   const { data: cards, isLoading } = useLoadAllocatedCards();
   
   const clientSettings = useMemo(() => {
-    if (!clientSettingsData?.clientSettings?.[0]) return null;
-    const settings = clientSettingsData.clientSettings[0];
+    if (!clientSettingsData?.client_settings) return null;
+    const settings = clientSettingsData.client_settings;
     return {
       details: {
         clientMinCardLoad: settings.client_min_card_load,
