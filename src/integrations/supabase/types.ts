@@ -158,7 +158,9 @@ export type Database = {
     }
     Functions: {
       get_load_client: {
-        Args: Record<PropertyKey, never>
+        Args:
+          | Record<PropertyKey, never>
+          | { account_from?: boolean; transfer_from_account_id?: number }
         Returns: {
           id: string
           clientmincardload: number
@@ -169,7 +171,15 @@ export type Database = {
         }[]
       }
       search_load_allocated: {
-        Args: { search_term?: string }
+        Args:
+          | { search_term?: string }
+          | {
+              search_term?: string
+              account_from?: boolean
+              transfer_from_account_id?: number
+              limit?: number
+              offset?: number
+            }
         Returns: {
           id: string
           accountcardid: number
