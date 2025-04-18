@@ -1,8 +1,15 @@
 
+import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
-import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Button } from "@/components/ui/button";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
+import { CalendarIcon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { 
   Breadcrumb,
@@ -14,8 +21,16 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { useState, useMemo } from "react";
+import { 
+  Pagination, 
+  PaginationContent, 
+  PaginationItem, 
+  PaginationLink, 
+  PaginationNext, 
+  PaginationPrevious 
+} from "@/components/ui/pagination";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { format } from "date-fns";
 
 interface AccountCard {
   id: string;
@@ -44,6 +59,10 @@ const CardLoads = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const accountFrom = searchParams.get("accountFrom");
   const [amountInputs, setAmountInputs] = useState<AmountInputs>({});
+  const [page, setPage] = useState(1);
+  const [effectiveDate, setEffectiveDate] = useState<"immediate" | "delay">("immediate");
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const pageSize = 5; // Items per page
 
   const { data: cards, isLoading } = useQuery({
     queryKey: ["loadAllocatedCards", searchTerm],
@@ -89,10 +108,6 @@ const CardLoads = () => {
     navigate(`/load-funds-from`);
   };
 
-  const handleToClick = () => {
-    navigate(`/load-funds-from/to?accountFrom=${accountFrom}`);
-  };
-
   const handleAmountChange = (cardId: string, value: string) => {
     const numValue = value === "" ? null : parseFloat(value);
     setAmountInputs(prev => ({
@@ -122,7 +137,6 @@ const CardLoads = () => {
     return true;
   };
 
-  // This is the missing function that was causing the error
   const getFeeForCard = (cardId: string): string => {
     const amount = amountInputs[cardId];
     if (amount === undefined || amount === null || !clientSettings) {
@@ -138,16 +152,45 @@ const CardLoads = () => {
     return "R 0.00";
   };
 
+  // Calculate totals for amount and fee
+  const totals = useMemo(() => {
+    if (!cards || !clientSettings) return { amount: 0, fee: 0 };
+    
+    let totalAmount = 0;
+    let totalFee = 0;
+    
+    Object.entries(amountInputs).forEach(([cardId, amount]) => {
+      if (amount !== null && amount > 0) {
+        const card = cards.find(c => c.id === cardId);
+        if (card && isAmountValid(cardId, card.balance)) {
+          totalAmount += amount;
+          totalFee += clientSettings.clientTransferFee;
+        }
+      }
+    });
+    
+    return { amount: totalAmount, fee: totalFee };
+  }, [amountInputs, cards, clientSettings]);
+
+  // Paginate the cards data
+  const paginatedCards = useMemo(() => {
+    if (!cards) return [];
+    const startIndex = (page - 1) * pageSize;
+    return cards.slice(startIndex, startIndex + pageSize);
+  }, [cards, page, pageSize]);
+
+  // Calculate total pages
+  const totalPages = useMemo(() => {
+    if (!cards) return 1;
+    return Math.ceil(cards.length / pageSize);
+  }, [cards, pageSize]);
+
   return (
     <div className="space-y-6">
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>
             <BreadcrumbLink onClick={handleLoadFundsClick}>Load Funds From</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={handleToClick}>To</BreadcrumbLink>
           </BreadcrumbItem>
           <BreadcrumbSeparator />
           <BreadcrumbItem>
@@ -171,7 +214,7 @@ const CardLoads = () => {
       </Card>
 
       <Card className="bg-white p-6">
-        <div className="mb-4">
+        <div className="flex flex-col md:flex-row justify-between mb-6 gap-4">
           <Input
             type="text"
             placeholder="Search by cardholder name or card number"
@@ -179,7 +222,50 @@ const CardLoads = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-md"
           />
+          
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium">Load Effective Date</h3>
+            <RadioGroup 
+              value={effectiveDate} 
+              onValueChange={(value) => setEffectiveDate(value as "immediate" | "delay")}
+              className="flex space-x-4"
+            >
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="immediate" id="immediately" />
+                <Label htmlFor="immediately">Immediately</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="delay" id="delay" />
+                <Label htmlFor="delay">Delay until</Label>
+              </div>
+            </RadioGroup>
+            
+            {effectiveDate === "delay" && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className="w-[240px] justify-start text-left font-normal"
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {selectedDate ? format(selectedDate, "MMMM d, yyyy") : <span>Pick a date</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={selectedDate}
+                    onSelect={setSelectedDate}
+                    initialFocus
+                    className="p-3 pointer-events-auto"
+                    disabled={(date) => date < new Date()}
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+          </div>
         </div>
+        
         <div className="overflow-x-auto">
           <TooltipProvider>
             <Table>
@@ -197,7 +283,11 @@ const CardLoads = () => {
                   <TableRow>
                     <TableCell colSpan={5} className="text-center">Loading...</TableCell>
                   </TableRow>
-                ) : cards?.map((card) => (
+                ) : paginatedCards.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center">No cards found</TableCell>
+                  </TableRow>
+                ) : paginatedCards.map((card) => (
                   <TableRow key={card.id}>
                     <TableCell>{card.cardholder}</TableCell>
                     <TableCell>{card.cardNumber}</TableCell>
@@ -228,8 +318,55 @@ const CardLoads = () => {
                   </TableRow>
                 ))}
               </TableBody>
+              {cards && cards.length > 0 && (
+                <TableFooter>
+                  <TableRow className="bg-muted/50">
+                    <TableCell colSpan={2} className="text-right font-medium">Totals:</TableCell>
+                    <TableCell className="font-medium">R {totals.amount.toFixed(2)}</TableCell>
+                    <TableCell className="font-medium">R {totals.fee.toFixed(2)}</TableCell>
+                    <TableCell></TableCell>
+                  </TableRow>
+                </TableFooter>
+              )}
             </Table>
           </TooltipProvider>
+        </div>
+        
+        {cards && cards.length > pageSize && (
+          <Pagination className="mt-4">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious 
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  className={page <= 1 ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+              
+              {Array.from({ length: totalPages }, (_, i) => i + 1).map(pageNum => (
+                <PaginationItem key={pageNum}>
+                  <PaginationLink 
+                    isActive={page === pageNum}
+                    onClick={() => setPage(pageNum)}
+                  >
+                    {pageNum}
+                  </PaginationLink>
+                </PaginationItem>
+              ))}
+              
+              <PaginationItem>
+                <PaginationNext 
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                  className={page >= totalPages ? "pointer-events-none opacity-50" : ""}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
+        
+        <div className="mt-6 flex justify-end">
+          <Button className="bg-paycard-salmon hover:bg-paycard-salmon-600">
+            Process Load
+          </Button>
         </div>
       </Card>
     </div>

@@ -1,4 +1,3 @@
-
 import { CreditCard, Users, FileText, Settings, Wallet } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
@@ -13,9 +12,8 @@ export function Sidebar() {
       return location.pathname.startsWith("/cards");
     }
     if (path === "/load-funds-from") {
-      // Only consider it active for the exact path or when the accountFrom parameter is present
-      return location.pathname === "/load-funds-from" || 
-             (location.pathname === "/load-funds-from/to" && !location.pathname.includes("card-loads"));
+      // Consider it active for all load-funds-from routes
+      return location.pathname.startsWith("/load-funds-from");
     }
     return location.pathname === path;
   };
