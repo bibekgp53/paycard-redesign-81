@@ -13,8 +13,9 @@ export function Sidebar() {
       return location.pathname.startsWith("/cards");
     }
     if (path === "/load-funds-from") {
-      // Only consider it active for the exact path, not for sub-routes
-      return location.pathname === "/load-funds-from";
+      // Only consider it active for the exact path or when the accountFrom parameter is present
+      return location.pathname === "/load-funds-from" || 
+             (location.pathname === "/load-funds-from/to" && !location.pathname.includes("card-loads"));
     }
     return location.pathname === path;
   };
