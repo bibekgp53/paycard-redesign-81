@@ -23,7 +23,7 @@ export default function AllocateCards() {
         <h1 className="text-2xl font-bold text-paycard-navy mb-6 text-center">Allocate Card</h1>
         
         <div className="text-center mb-8 text-gray-600">
-          <p>You have 39 cards linked to your profile. 0 cards have not yet been allocated.</p>
+          <p>You have 1 cards linked to your profile. 2 cards have not yet been allocated.</p>
           <p>Cards must be allocated before they can be used</p>
         </div>
 

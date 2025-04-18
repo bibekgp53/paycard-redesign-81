@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/custom/Button";
 import { Input } from "@/components/ui/custom/Input";
+import { ArrowLeft } from "lucide-react";
 
 export default function AllocateCardsDetails() {
   const navigate = useNavigate();
@@ -26,27 +27,27 @@ export default function AllocateCardsDetails() {
     }));
   };
 
-  const handleNext = () => {
-    if (currentStep < totalSteps) {
-      setCurrentStep(prev => prev + 1);
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(prev => prev - 1);
-    }
+  const handleBack = () => {
+    navigate(-1);
   };
 
   return (
     <div className="max-w-3xl mx-auto">
+      <button 
+        onClick={handleBack}
+        className="mb-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+        aria-label="Go back"
+      >
+        <ArrowLeft size={24} className="text-paycard-navy" />
+      </button>
+
       <div className="bg-white shadow-md rounded-lg p-6">
         <h1 className="text-2xl font-bold text-paycard-navy mb-6 text-center">
           Card holder details
         </h1>
         
         <div className="text-center mb-8 text-gray-600">
-          <p>You have 17 cards linked to your profile. 9 cards have not yet been allocated.</p>
+          <p>You have 1 cards linked to your profile. 2 cards have not yet been allocated.</p>
           <p>Cards must be allocated before they can be used</p>
         </div>
 

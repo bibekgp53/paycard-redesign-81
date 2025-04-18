@@ -12,7 +12,6 @@ export function Sidebar() {
   const menuItems = [
     { icon: Home, label: "Dashboard", path: "/dashboard" },
     { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
-      { label: "Link Cards", path: "/cards/link" },
       { label: "Allocate Cards", path: "/cards/allocate" }
     ]},
     { icon: Users, label: "Profiles", path: "/profiles" },
