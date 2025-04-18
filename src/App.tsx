@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -13,6 +12,7 @@ import LinkCardsForm from "./pages/cards/LinkCardsForm";
 import LinkCardsConfirm from "./pages/cards/LinkCardsConfirm";
 import AllocateCards from "./pages/cards/AllocateCards";
 import AllocateCardsDetails from "./pages/cards/AllocateCardsDetails";
+import AllocateCardsConfirm from "./pages/cards/AllocateCardsConfirm";
 import { MainLayout } from "./components/layout/MainLayout";
 
 const queryClient = new QueryClient();
@@ -33,6 +33,7 @@ const App = () => (
             <Route path="/cards/link/confirm" element={<MainLayout><LinkCardsConfirm /></MainLayout>} />
             <Route path="/cards/allocate" element={<MainLayout><AllocateCards /></MainLayout>} />
             <Route path="/cards/allocate/details" element={<MainLayout><AllocateCardsDetails /></MainLayout>} />
+            <Route path="/cards/allocate/confirm" element={<MainLayout><AllocateCardsConfirm /></MainLayout>} />
             
             {/* Default page for unimplemented sections */}
             <Route path="/cards" element={<MainLayout><Dashboard /></MainLayout>} />

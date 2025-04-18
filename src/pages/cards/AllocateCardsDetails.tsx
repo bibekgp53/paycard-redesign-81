@@ -43,17 +43,21 @@ export default function AllocateCardsDetails() {
     }
   };
 
+  const handleContinue = () => {
+    navigate("/cards/allocate/confirm", { state: { formData } });
+  };
+
   return (
     <div className="max-w-3xl mx-auto">
-      <button 
-        onClick={handleBack}
-        className="mb-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
-        aria-label="Go back"
-      >
-        <ArrowLeft size={24} className="text-paycard-navy" />
-      </button>
-
       <div className="bg-white shadow-md rounded-lg p-6">
+        <button 
+          onClick={handleBack}
+          className="mb-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+          aria-label="Go back"
+        >
+          <ArrowLeft size={24} className="text-paycard-navy" />
+        </button>
+
         <h1 className="text-2xl font-bold text-paycard-navy mb-6 text-center">
           Card holder details
         </h1>
@@ -64,30 +68,34 @@ export default function AllocateCardsDetails() {
         </div>
 
         <form className="space-y-4 mb-8">
-          <Input
-            label="FIRST NAME"
-            value={formData.firstName}
-            onChange={handleChange("firstName")}
-            required
-          />
-          <Input
-            label="SURNAME"
-            value={formData.surname}
-            onChange={handleChange("surname")}
-            required
-          />
-          <Input
-            label="ID/PASSPORT NUMBER"
-            value={formData.idNumber}
-            onChange={handleChange("idNumber")}
-            required
-          />
-          <Input
-            label="CELLPHONE NUMBER"
-            value={formData.cellphone}
-            onChange={handleChange("cellphone")}
-            required
-          />
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="FIRST NAME"
+              value={formData.firstName}
+              onChange={handleChange("firstName")}
+              required
+            />
+            <Input
+              label="SURNAME"
+              value={formData.surname}
+              onChange={handleChange("surname")}
+              required
+            />
+          </div>
+          <div className="grid grid-cols-2 gap-4">
+            <Input
+              label="ID/PASSPORT NUMBER"
+              value={formData.idNumber}
+              onChange={handleChange("idNumber")}
+              required
+            />
+            <Input
+              label="CELLPHONE NUMBER"
+              value={formData.cellphone}
+              onChange={handleChange("cellphone")}
+              required
+            />
+          </div>
           <Input
             label="REFERENCE"
             value={formData.reference}
@@ -126,7 +134,7 @@ export default function AllocateCardsDetails() {
           <Button
             variant="primary"
             fullWidth
-            onClick={() => navigate("/cards")}
+            onClick={handleContinue}
           >
             CONTINUE
           </Button>
