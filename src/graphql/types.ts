@@ -58,8 +58,10 @@ export interface ClientSettings {
     clientMaxBalance: number;
     clientTransferFee: number;
   };
-  fromBalance: number;
-  fromAccount: number;
+  profile: {
+    fromBalance: number;
+    fromAccount: number;
+  };
 }
 
 export interface GetLoadClientData {

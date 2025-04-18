@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
@@ -92,8 +93,10 @@ export function CardLoads() {
             clientMaxBalance: data[0].clientmaxbalance,
             clientTransferFee: data[0].clienttransferfee
           },
-          fromBalance: data[0].frombalance || 0,
-          fromAccount: data[0].fromaccount || 0
+          profile: {
+            fromBalance: data[0].clientmincardload || 0, // Temporary fallback until DB is updated
+            fromAccount: Number(data[0].id.substring(0, 8)) || 0 // Temporary fallback using part of ID
+          }
         } as ClientSettings;
       }
       return null;
@@ -200,7 +203,7 @@ export function CardLoads() {
         <p className="text-gray-600">
           Load funds into cards from your profile or transfer funds from a stopped card.
           {clientSettings ? (
-            clientSettings.fromBalance > 0 ? (
+            clientSettings.profile.fromBalance > 0 ? (
               <span className="block mt-2 text-sm">
                 Minimum load amount: R{clientSettings.details.clientMinCardLoad.toFixed(2)} | 
                 Maximum balance: R{clientSettings.details.clientMaxBalance.toFixed(2)} | 
@@ -208,7 +211,7 @@ export function CardLoads() {
               </span>
             ) : (
               <span className="block mt-2 text-sm">
-                The balance available on your profile is R {clientSettings.fromBalance.toFixed(2)}
+                The balance available on your profile is R {clientSettings.profile.fromBalance.toFixed(2)}
               </span>
             )
           ) : null}
