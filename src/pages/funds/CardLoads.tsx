@@ -30,6 +30,7 @@ import {
 } from "@/components/ui/pagination";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { format } from "date-fns";
+import { ClientSettings } from "@/graphql/types";
 
 interface AccountCard {
   id: string;
@@ -39,15 +40,6 @@ interface AccountCard {
   cardholder: string;
   cardNumber: string;
   ficaValidation: string;
-}
-
-interface ClientSettings {
-  id: string;
-  clientMinCardLoad: number;
-  clientMaxBalance: number;
-  clientTransferFee: number;
-  fromBalance: number;
-  fromAccount: number;
 }
 
 interface AmountInputs {
@@ -92,13 +84,14 @@ export function CardLoads() {
       const { data, error } = await supabase.rpc('get_load_client');
       if (error) throw error;
       
-      // Map the snake_case database response to our camelCase interface
+      // Map the response to the ClientSettings interface with the new structure
       if (data && data.length > 0) {
         return {
-          id: data[0].id,
-          clientMinCardLoad: data[0].clientmincardload,
-          clientMaxBalance: data[0].clientmaxbalance,
-          clientTransferFee: data[0].clienttransferfee,
+          details: {
+            clientMinCardLoad: data[0].clientmincardload,
+            clientMaxBalance: data[0].clientmaxbalance,
+            clientTransferFee: data[0].clienttransferfee
+          },
           fromBalance: data[0].frombalance || 0,
           fromAccount: data[0].fromaccount || 0
         } as ClientSettings;
@@ -122,8 +115,8 @@ export function CardLoads() {
   const getTooltipMessage = (cardBalance: number) => {
     if (!clientSettings) return "";
     
-    const maxAllowedLoad = clientSettings.clientMaxBalance - cardBalance;
-    const minLoad = clientSettings.clientMinCardLoad;
+    const maxAllowedLoad = clientSettings.details.clientMaxBalance - cardBalance;
+    const minLoad = clientSettings.details.clientMinCardLoad;
     
     return `Load amount must be between R ${minLoad.toFixed(2)} - R ${maxAllowedLoad.toFixed(2)}`;
   };
@@ -133,8 +126,8 @@ export function CardLoads() {
     if (amount === undefined || amount === null) return true;
     
     if (clientSettings) {
-      const minAmount = clientSettings.clientMinCardLoad;
-      const maxAmount = clientSettings.clientMaxBalance - cardBalance;
+      const minAmount = clientSettings.details.clientMinCardLoad;
+      const maxAmount = clientSettings.details.clientMaxBalance - cardBalance;
       return amount >= minAmount && amount <= maxAmount;
     }
     return true;
@@ -149,7 +142,7 @@ export function CardLoads() {
     // Only calculate fee if amount is valid
     const card = cards?.find(c => c.id === cardId);
     if (card && isAmountValid(cardId, card.balance)) {
-      return `R ${clientSettings.clientTransferFee.toFixed(2)}`;
+      return `R ${clientSettings.details.clientTransferFee.toFixed(2)}`;
     }
     
     return "R 0.00";
@@ -167,7 +160,7 @@ export function CardLoads() {
         const card = cards.find(c => c.id === cardId);
         if (card && isAmountValid(cardId, card.balance)) {
           totalAmount += amount;
-          totalFee += clientSettings.clientTransferFee;
+          totalFee += clientSettings.details.clientTransferFee;
         }
       }
     });
@@ -209,9 +202,9 @@ export function CardLoads() {
           {clientSettings ? (
             clientSettings.fromBalance > 0 ? (
               <span className="block mt-2 text-sm">
-                Minimum load amount: R{clientSettings.clientMinCardLoad.toFixed(2)} | 
-                Maximum balance: R{clientSettings.clientMaxBalance.toFixed(2)} | 
-                Transfer fee: R{clientSettings.clientTransferFee.toFixed(2)}
+                Minimum load amount: R{clientSettings.details.clientMinCardLoad.toFixed(2)} | 
+                Maximum balance: R{clientSettings.details.clientMaxBalance.toFixed(2)} | 
+                Transfer fee: R{clientSettings.details.clientTransferFee.toFixed(2)}
               </span>
             ) : (
               <span className="block mt-2 text-sm">
@@ -310,7 +303,7 @@ export function CardLoads() {
                               className={`w-32 ${!isAmountValid(card.id, card.balance) ? 'border-paycard-red ring-1 ring-paycard-red' : ''}`}
                               value={amountInputs[card.id] || ""}
                               onChange={(e) => handleAmountChange(card.id, e.target.value)}
-                              min={clientSettings?.clientMinCardLoad || 0}
+                              min={clientSettings?.details.clientMinCardLoad || 0}
                               step="0.01"
                             />
                           </TooltipTrigger>
