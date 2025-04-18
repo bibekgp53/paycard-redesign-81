@@ -3,6 +3,18 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ClientSettings } from "@/graphql/types";
 
+interface LoadClientResponse {
+  details: {
+    clientMinCardLoad: number;
+    clientMaxBalance: number;
+    clientTransferFee: number;
+  };
+  profile: {
+    fromBalance: number;
+    fromAccount: number;
+  };
+}
+
 export const useLoadClient = () => {
   return useQuery({
     queryKey: ["loadClient"],
@@ -20,21 +32,8 @@ export const useLoadClient = () => {
       
       console.log("Received client settings:", data);
       
-      const clientData = Array.isArray(data) ? data[0] : data;
-      
-      return {
-        details: {
-          clientMinCardLoad: clientData.clientmincardload || clientData.details?.clientMinCardLoad,
-          clientMaxBalance: clientData.clientmaxbalance || clientData.details?.clientMaxBalance,
-          clientTransferFee: clientData.clienttransferfee || clientData.details?.clientTransferFee
-        },
-        profile: {
-          // Use the fromBalance from the response or fallback to 1000
-          fromBalance: clientData.profile?.fromBalance || 1000,
-          // Generate an account number from the ID or use the one from response
-          fromAccount: clientData.profile?.fromAccount || Number(clientData.id) || 0
-        }
-      } as ClientSettings;
+      // The data is already in the correct format from the database function
+      return data as LoadClientResponse;
     }
   });
 };
