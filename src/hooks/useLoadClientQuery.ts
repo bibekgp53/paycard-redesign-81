@@ -1,16 +1,15 @@
 
 import { useQuery } from '@apollo/client';
-import { GET_LOAD_CLIENT } from '@/graphql/client';
-import { ClientSettings } from '@/graphql/types';
+import { GET_CLIENT_SETTINGS } from '@/graphql/client';
 
-interface LoadClientQueryVariables {
-  account_from?: boolean;
-  transferFromAccountId?: number;
+interface ClientSettings {
+  clientSettings: {
+    client_min_card_load: number;
+    client_max_balance: number;
+    client_transfer_fee: number;
+  }[];
 }
 
-export const useLoadClientQuery = (variables?: LoadClientQueryVariables) => {
-  return useQuery<{ get_load_client: ClientSettings }, LoadClientQueryVariables>(
-    GET_LOAD_CLIENT,
-    { variables }
-  );
+export const useLoadClientQuery = () => {
+  return useQuery<ClientSettings>(GET_CLIENT_SETTINGS);
 };

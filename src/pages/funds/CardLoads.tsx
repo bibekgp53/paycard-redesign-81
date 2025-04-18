@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -34,12 +33,24 @@ export function CardLoads() {
   const pageSize = 10;
   
   const { data: userHeader } = useQuery<UserHeader>(GET_USER_HEADER);
-  const { data: loadClientData } = useLoadClientQuery({
-    account_from: false,
-    transferFromAccountId: 0
-  });
+  const { data: clientSettingsData } = useLoadClientQuery();
   const { data: cards, isLoading } = useLoadAllocatedCards();
-  const clientSettings = loadClientData?.get_load_client;
+  
+  const clientSettings = useMemo(() => {
+    if (!clientSettingsData?.clientSettings?.[0]) return null;
+    const settings = clientSettingsData.clientSettings[0];
+    return {
+      details: {
+        clientMinCardLoad: settings.client_min_card_load,
+        clientMaxBalance: settings.client_max_balance,
+        clientTransferFee: settings.client_transfer_fee
+      },
+      profile: {
+        fromBalance: 5000, // Fixed value as per requirement
+        fromAccount: 8784274989 // Fixed value as per requirement
+      }
+    };
+  }, [clientSettingsData]);
 
   const handleLoadFundsClick = () => {
     navigate(`/load-funds-from`);
