@@ -84,15 +84,18 @@ export function CardLoads() {
       const { data, error } = await supabase.rpc('get_load_client');
       if (error) throw error;
       
+      // The response is returning an array of objects, so we need to access the first item
+      const clientData = Array.isArray(data) ? data[0] : data;
+      
       return {
         details: {
-          clientMinCardLoad: data.clientmincardload,
-          clientMaxBalance: data.clientmaxbalance,
-          clientTransferFee: data.clienttransferfee
+          clientMinCardLoad: clientData.clientmincardload,
+          clientMaxBalance: clientData.clientmaxbalance,
+          clientTransferFee: clientData.clienttransferfee
         },
         profile: {
           fromBalance: 1000, // Setting a default balance of 1000
-          fromAccount: Number(data.id.substring(0, 8)) || 123456789
+          fromAccount: Number(clientData.id?.substring(0, 8)) || 123456789
         }
       } as ClientSettings;
     }
