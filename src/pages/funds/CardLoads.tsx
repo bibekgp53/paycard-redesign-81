@@ -1,3 +1,4 @@
+
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -34,7 +35,7 @@ export function CardLoads() {
   
   const { data: userHeader } = useQuery<UserHeader>(GET_USER_HEADER);
   const { data: loadClientData } = useLoadClientQuery({
-    accountFrom: false,
+    account_from: false,
     transferFromAccountId: 0
   });
   const { data: cards, isLoading } = useLoadAllocatedCards();

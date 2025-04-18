@@ -4,7 +4,7 @@ import { GET_LOAD_CLIENT } from '@/graphql/client';
 import { ClientSettings } from '@/graphql/types';
 
 interface LoadClientQueryVariables {
-  accountFrom?: boolean;
+  account_from?: boolean;
   transferFromAccountId?: number;
 }
 
