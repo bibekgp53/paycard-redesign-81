@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
@@ -85,21 +84,17 @@ export function CardLoads() {
       const { data, error } = await supabase.rpc('get_load_client');
       if (error) throw error;
       
-      // Map the response to the ClientSettings interface with the new structure
-      if (data && data.length > 0) {
-        return {
-          details: {
-            clientMinCardLoad: data[0].clientmincardload,
-            clientMaxBalance: data[0].clientmaxbalance,
-            clientTransferFee: data[0].clienttransferfee
-          },
-          profile: {
-            fromBalance: data[0].clientmincardload || 0, // Temporary fallback until DB is updated
-            fromAccount: Number(data[0].id.substring(0, 8)) || 0 // Temporary fallback using part of ID
-          }
-        } as ClientSettings;
-      }
-      return null;
+      return {
+        details: {
+          clientMinCardLoad: data.clientmincardload,
+          clientMaxBalance: data.clientmaxbalance,
+          clientTransferFee: data.clienttransferfee
+        },
+        profile: {
+          fromBalance: 1000, // Setting a default balance of 1000
+          fromAccount: Number(data.id.substring(0, 8)) || 123456789
+        }
+      } as ClientSettings;
     }
   });
 

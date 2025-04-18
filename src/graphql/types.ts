@@ -48,10 +48,6 @@ export interface UserHeader {
   fullName: string;
 }
 
-export interface GetUserHeaderData {
-  userHeader: UserHeader;
-}
-
 export interface ClientSettings {
   details: {
     clientMinCardLoad: number;
