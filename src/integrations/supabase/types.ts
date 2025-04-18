@@ -158,17 +158,12 @@ export type Database = {
     }
     Functions: {
       get_load_client: {
-        Args:
-          | Record<PropertyKey, never>
-          | { account_from?: boolean; transfer_from_account_id?: number }
-        Returns: {
-          id: string
-          clientmincardload: number
-          clientmaxbalance: number
-          clienttransferfee: number
-          createdat: string
-          updatedat: string
-        }[]
+        Args: { account_from?: boolean; transfer_from_account_id?: number }
+        Returns: Json
+      }
+      get_user_header: {
+        Args: Record<PropertyKey, never>
+        Returns: Json
       }
       mask_card_number: {
         Args: { card_number: string }

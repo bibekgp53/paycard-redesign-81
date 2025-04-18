@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -140,20 +139,9 @@ export function CardLoads() {
         <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
         <p className="text-gray-600">
           Load funds into cards from your profile or transfer funds from a stopped card.
-          {clientSettings ? (
-            clientSettings.profile.fromBalance > 0 ? (
-              <span className="block mt-2 text-sm">
-                The balance available on your profile is R {userHeader?.balanceAccount.toFixed(2) || '0.00'} | 
-                Minimum load amount: R{clientSettings.details.clientMinCardLoad.toFixed(2)} | 
-                Maximum balance: R{clientSettings.details.clientMaxBalance.toFixed(2)} | 
-                Transfer fee: R{clientSettings.details.clientTransferFee.toFixed(2)}
-              </span>
-            ) : (
-              <span className="block mt-2 text-sm">
-                The balance available on your profile is R {userHeader?.balanceAccount.toFixed(2) || '0.00'}
-              </span>
-            )
-          ) : null}
+          <span className="block mt-2 text-sm">
+            The balance available on your profile is R {userHeader?.balanceAccount.toFixed(2) || '0.00'}
+          </span>
         </p>
       </Card>
 
