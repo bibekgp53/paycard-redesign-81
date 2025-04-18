@@ -1,5 +1,5 @@
 
-import { CreditCard, Users, FileText, Settings, Home, Wallet } from "lucide-react";
+import { CreditCard, Users, FileText, Settings, Wallet } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 
 export function Sidebar() {
@@ -14,13 +14,7 @@ export function Sidebar() {
   };
   
   const menuItems = [
-    { icon: Home, label: "Dashboard", path: "/dashboard" },
-    { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
-      { label: "Allocate Cards", path: "/cards/allocate" }
-    ]},
-    { icon: Wallet, label: "Funds", path: "/load-funds-from", submenuItems: [
-      { label: "Load Funds to Cards", path: "/load-funds-from" }
-    ]},
+    { icon: Wallet, label: "PayCard", path: "/dashboard" },
     { icon: Users, label: "Profiles", path: "/profiles" },
     { icon: FileText, label: "Reports", path: "/reports" },
     { icon: Settings, label: "Settings", path: "/settings" },
@@ -44,46 +38,8 @@ export function Sidebar() {
                 <item.icon size={18} className="mr-3" />
                 {item.label}
               </Link>
-              {item.submenuItems && (
-                <ul className="ml-7 mt-2 space-y-2">
-                  {item.submenuItems.map((subItem) => (
-                    <li key={subItem.path}>
-                      <Link
-                        to={subItem.path}
-                        className={`flex items-center p-2 rounded-md transition-colors ${
-                          isActive(subItem.path)
-                            ? "bg-paycard-salmon text-white"
-                            : "hover:bg-paycard-navy-800"
-                        }`}
-                      >
-                        <CreditCard size={16} className="mr-3" />
-                        {subItem.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
             </li>
           ))}
-        </ul>
-      </div>
-      
-      <div>
-        <h2 className="text-xl font-bold mb-6">Card Management</h2>
-        <ul className="space-y-2">
-          <li>
-            <Link
-              to="/cards/link"
-              className={`flex items-center p-3 rounded-md transition-colors ${
-                isActive("/cards/link")
-                  ? "bg-paycard-salmon text-white"
-                  : "hover:bg-paycard-navy-800"
-              }`}
-            >
-              <CreditCard size={18} className="mr-3" />
-              Link Cards
-            </Link>
-          </li>
         </ul>
       </div>
     </aside>
