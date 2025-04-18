@@ -70,7 +70,6 @@ export interface AccountCard {
   accountCardMtd: number;
   balance: number;
   cardholder: string;
-  cardNumber: string;
-  maskedCardNumber: string;
+  cardNumber: string;  // This will now contain the masked number
   ficaValidation: string;
 }
