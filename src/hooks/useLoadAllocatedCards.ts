@@ -23,7 +23,7 @@ export const useLoadAllocatedCards = () => {
         accountCardMtd: item.accountcardmtd,
         balance: item.balance,
         cardholder: item.cardholder,
-        cardNumber: item.cardnumber,
+        cardNumber: item.cardnumber, // This now contains the already-masked number from the database
         ficaValidation: item.ficavalidation
       })) as AccountCard[];
     }
