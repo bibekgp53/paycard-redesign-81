@@ -31,7 +31,9 @@ export const useLoadClient = () => {
       
       console.log("Received client settings:", data);
       
-      return data as LoadClientResponse;
+      // The data from Supabase is already in the correct format,
+      // but we need to make TypeScript recognize it
+      return data as unknown as LoadClientResponse;
     }
   });
 };
