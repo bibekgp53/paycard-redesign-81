@@ -216,7 +216,6 @@ export function CardLoads() {
             </thead>
             <tbody>
               {paginatedCards.map((card) => {
-                // Add debug (outside JSX)
                 console.log("Render Checkbox for", card.id, "checked=", smsInputs[card.id] || false);
                 return (
                   <tr key={card.id ?? card.cardNumber}>
@@ -250,13 +249,15 @@ export function CardLoads() {
                     </td>
                     <td className="py-2 px-4 border-b">{getFeeForCard(card.id)}</td>
                     <td className="py-2 px-4 border-b">
-                      <Checkbox
-                        checked={smsInputs[card.id] || false}
-                        onCheckedChange={(checked: boolean) =>
-                          handleSMSChange(card.id, checked)
-                        }
-                        id={`sms-checkbox-${card.id}`}
-                      />
+                      <div className="flex items-center justify-center h-6">
+                        <Checkbox
+                          checked={smsInputs[card.id] || false}
+                          onCheckedChange={(checked: boolean) =>
+                            handleSMSChange(card.id, checked)
+                          }
+                          id={`sms-checkbox-${card.id}`}
+                        />
+                      </div>
                     </td>
                   </tr>
                 );
