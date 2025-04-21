@@ -1,4 +1,3 @@
-
 import { Card } from "@/components/ui/card";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Users, Search } from "lucide-react";
@@ -10,6 +9,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
+import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 
 export default function LoadFundsTo() {
   const navigate = useNavigate();
@@ -17,14 +17,25 @@ export default function LoadFundsTo() {
   const location = useLocation();
   const accountFrom = searchParams.get("accountFrom");
 
+  // Zustand store for global selected option state
+  const { selectedOption, setSelectedOption } = useLoadFundsToOptionStore();
+
+  // Whenever we navigate into this page, keep selectedOption in sync with current path
+  // We consider "card-loads" or "search" sub-paths to set active
+  // Set option based on current route on first load (optional, for refreshes)
+  React.useEffect(() => {
+    if (location.pathname.endsWith("/card-loads")) {
+      setSelectedOption("card-loads");
+    } else if (location.pathname.endsWith("/search")) {
+      setSelectedOption("search");
+    }
+  }, [location.pathname, setSelectedOption]);
+
   const handleLoadFundsClick = () => {
     navigate(`/load-funds-from`);
   };
 
-  const isActive = (path: string, accountFromValue: string) => {
-    return location.pathname.startsWith(path) && searchParams.get("accountFrom") === accountFromValue;
-  };
-
+  // Instead of matching with isActive, just use selectedOption for global highlight
   return (
     <div className="space-y-6">
       <Breadcrumb>
@@ -48,11 +59,14 @@ export default function LoadFundsTo() {
 
       <div className="flex flex-col gap-6">
         <button
-          onClick={() => navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom}`)}
+          onClick={() => {
+            setSelectedOption("card-loads");
+            navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom}`);
+          }}
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
           <Card className={`p-6 h-full border-2 ${
-            isActive("/load-funds-from/card-loads", accountFrom || "")
+            selectedOption === "card-loads"
               ? "border-paycard-salmon"
               : "hover:border-paycard-salmon border-transparent"
           }`}>
@@ -73,11 +87,14 @@ export default function LoadFundsTo() {
         </button>
 
         <button
-          onClick={() => navigate(`/load-funds-from/search?accountFrom=${accountFrom}`)}
+          onClick={() => {
+            setSelectedOption("search");
+            navigate(`/load-funds-from/search?accountFrom=${accountFrom}`);
+          }}
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
           <Card className={`p-6 h-full border-2 ${
-            isActive("/load-funds-from/search", accountFrom || "")
+            selectedOption === "search"
               ? "border-paycard-salmon"
               : "hover:border-paycard-salmon border-transparent"
           }`}>
