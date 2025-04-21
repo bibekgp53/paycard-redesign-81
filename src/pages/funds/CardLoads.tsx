@@ -65,11 +65,15 @@ export function CardLoads() {
     }));
   };
 
+  // Debug: log smsInputs on each render and when changed
+  console.log("smsInputs state:", smsInputs);
+
   const handleSMSChange = (cardId: string, checked: boolean) => {
-    setSmsInputs((prev) => ({
-      ...prev,
-      [cardId]: checked,
-    }));
+    setSmsInputs((prev) => {
+      const updated = { ...prev, [cardId]: checked };
+      console.log(`smsInputs updated for cardId ${cardId}:`, updated);
+      return updated;
+    });
   };
 
   const getTooltipMessage = (cardBalance: number) => {
@@ -211,48 +215,53 @@ export function CardLoads() {
               </tr>
             </thead>
             <tbody>
-              {paginatedCards.map((card) => (
-                <tr key={card.id}>
-                  <td className="py-2 px-4 border-b">{card.cardholder}</td>
-                  <td className="py-2 px-4 border-b">{card.cardNumber}</td>
-                  <td className="py-2 px-4 border-b">
-                    {/* Amount input with tooltip on hover */}
-                    <div className="flex items-center">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <input
-                              type="number"
-                              min="0"
-                              className={`border rounded px-2 py-1 w-24 ${!isAmountValid(card.id, card.balance) ? 'border-paycard-red ring-1 ring-paycard-red' : ''}`}
-                              value={amountInputs[card.id] ?? ""}
-                              onChange={(e) =>
-                                handleAmountChange(card.id, e.target.value)
-                              }
-                              placeholder="R 0.00"
-                            />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <span>
-                              {getTooltipMessage(card.balance)}
-                            </span>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                  </td>
-                  <td className="py-2 px-4 border-b">{getFeeForCard(card.id)}</td>
-                  <td className="py-2 px-4 border-b">
-                    <Checkbox
-                      checked={smsInputs[card.id] || false}
-                      onCheckedChange={(checked: boolean) =>
-                        handleSMSChange(card.id, checked)
-                      }
-                      id={`sms-checkbox-${card.id}`}
-                    />
-                  </td>
-                </tr>
-              ))}
+              {paginatedCards.map((card) => {
+                console.log("Render Checkbox for", card.id, "checked=", smsInputs[card.id] || false);
+                return (
+                  <tr key={card.id ?? card.cardNumber}>
+                    <td className="py-2 px-4 border-b">{card.cardholder}</td>
+                    <td className="py-2 px-4 border-b">{card.cardNumber}</td>
+                    <td className="py-2 px-4 border-b">
+                      {/* Amount input with tooltip on hover */}
+                      <div className="flex items-center">
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <input
+                                type="number"
+                                min="0"
+                                className={`border rounded px-2 py-1 w-24 ${!isAmountValid(card.id, card.balance) ? 'border-paycard-red ring-1 ring-paycard-red' : ''}`}
+                                value={amountInputs[card.id] ?? ""}
+                                onChange={(e) =>
+                                  handleAmountChange(card.id, e.target.value)
+                                }
+                                placeholder="R 0.00"
+                              />
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <span>
+                                {getTooltipMessage(card.balance)}
+                              </span>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      </div>
+                    </td>
+                    <td className="py-2 px-4 border-b">{getFeeForCard(card.id)}</td>
+                    <td className="py-2 px-4 border-b">
+                      <div className="flex items-center justify-center h-6">
+                        <Checkbox
+                          checked={smsInputs[card.id] || false}
+                          onCheckedChange={(checked: boolean) =>
+                            handleSMSChange(card.id, checked)
+                          }
+                          id={`sms-checkbox-${card.id}`}
+                        />
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
             {/* Table Footer for totals */}
             <tfoot>
