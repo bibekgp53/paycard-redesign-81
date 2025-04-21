@@ -10,5 +10,6 @@ interface LoadFundsToCardState {
 
 export const useLoadFundsToOptionStore = create<LoadFundsToCardState>((set) => ({
   selectedLoadFundsToCard: null,
-  setSelectedLoadFundsToCard: (option) => set({ selectedLoadFundsToCard: option }),
+  setSelectedLoadFundsToCard: (option) =>
+    set({ selectedLoadFundsToCard: option }),
 }));

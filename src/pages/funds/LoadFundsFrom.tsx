@@ -1,18 +1,15 @@
 
 import { Card } from "@/components/ui/card";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Wallet, CreditCard } from "lucide-react";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 
 export default function LoadFundsFrom() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { setSelectedLoadFundsToCard } = useLoadFundsToOptionStore();
-
-  // Function to check if the path starts with the given route
-  const isActive = (path: string) => {
-    return location.pathname.startsWith(path);
-  };
+  const {
+    selectedLoadFundsToCard,
+    setSelectedLoadFundsToCard,
+  } = useLoadFundsToOptionStore();
 
   return (
     <div className="space-y-6">
@@ -32,7 +29,7 @@ export default function LoadFundsFrom() {
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
           <Card className={`p-6 h-full border-2 ${
-            isActive("/load-funds-from/to") && !location.search.includes("accountFrom=true")
+            selectedLoadFundsToCard === "card-loads"
               ? "border-paycard-salmon"
               : "hover:border-paycard-salmon border-transparent"
           }`}>
@@ -60,7 +57,7 @@ export default function LoadFundsFrom() {
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
           <Card className={`p-6 h-full border-2 ${
-            isActive("/load-funds-from/to") && location.search.includes("accountFrom=true")
+            selectedLoadFundsToCard === "search"
               ? "border-paycard-salmon"
               : "hover:border-paycard-salmon border-transparent"
           }`}>
