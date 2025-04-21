@@ -98,51 +98,53 @@ export const LoadEffectiveDate = ({
         </div>
       </RadioGroup>
       {effectiveDate === "delay" && (
-        <div className="flex flex-col sm:flex-row sm:items-center gap-3 mt-2">
+        <div className="mt-2 w-[260px]">
           <Popover>
             <PopoverTrigger asChild>
-              <Button variant={"outline"} className="w-[240px] justify-start text-left font-normal">
+              <Button variant={"outline"} className="w-full justify-start text-left font-normal">
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {selectedDate ? format(selectedDate, "MMMM d, yyyy") : <span>Pick a date</span>}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleDateChange}
-                initialFocus
-                className="p-3 pointer-events-auto"
-                disabled={(date) => date < new Date()}
-              />
+              <div>
+                <Calendar
+                  mode="single"
+                  selected={selectedDate}
+                  onSelect={handleDateChange}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                  disabled={(date) => date < new Date()}
+                />
+                {/* Time Picker INSIDE calendar popover */}
+                <div className="flex items-center gap-2 mt-3 justify-center">
+                  <Label htmlFor="delay-hour" className="text-xs">Hour</Label>
+                  <select
+                    id="delay-hour"
+                    className="border rounded px-1 py-1 bg-white"
+                    value={localHour}
+                    onChange={(e) => handleTimeChange(e, "hour")}
+                  >
+                    {Array.from({ length: 24 }).map((_, h) => (
+                      <option key={h} value={h}>{h.toString().padStart(2, "0")}</option>
+                    ))}
+                  </select>
+                  <span>:</span>
+                  <Label htmlFor="delay-minute" className="text-xs">Minute</Label>
+                  <select
+                    id="delay-minute"
+                    className="border rounded px-1 py-1 bg-white"
+                    value={localMinute}
+                    onChange={(e) => handleTimeChange(e, "minute")}
+                  >
+                    {Array.from({ length: 60 }).map((_, m) => (
+                      <option key={m} value={m}>{m.toString().padStart(2, "0")}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </PopoverContent>
           </Popover>
-          {/* Time Picker */}
-          <div className="flex items-center gap-2">
-            <Label htmlFor="delay-hour" className="text-xs">Hour</Label>
-            <select
-              id="delay-hour"
-              className="border rounded px-1 py-1 bg-white"
-              value={localHour}
-              onChange={(e) => handleTimeChange(e, "hour")}
-            >
-              {Array.from({ length: 24 }).map((_, h) => (
-                <option key={h} value={h}>{h.toString().padStart(2, "0")}</option>
-              ))}
-            </select>
-            <span>:</span>
-            <Label htmlFor="delay-minute" className="text-xs">Minute</Label>
-            <select
-              id="delay-minute"
-              className="border rounded px-1 py-1 bg-white"
-              value={localMinute}
-              onChange={(e) => handleTimeChange(e, "minute")}
-            >
-              {Array.from({ length: 60 }).map((_, m) => (
-                <option key={m} value={m}>{m.toString().padStart(2, "0")}</option>
-              ))}
-            </select>
-          </div>
         </div>
       )}
     </div>

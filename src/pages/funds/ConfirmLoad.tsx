@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -67,6 +66,7 @@ export default function ConfirmLoad() {
                 <th className="py-2 px-4 border-b">CARD NUMBER</th>
                 <th className="py-2 px-4 border-b">AMOUNT</th>
                 <th className="py-2 px-4 border-b">FEE</th>
+                <th className="py-2 px-4 border-b">SMS NOTIFICATION FEE</th>
               </tr>
             </thead>
             <tbody>
@@ -76,6 +76,11 @@ export default function ConfirmLoad() {
                   <td className="py-2 px-4 border-b">{item.cardNumber}</td>
                   <td className="py-2 px-4 border-b">R {item.transferAmount.toFixed(2)}</td>
                   <td className="py-2 px-4 border-b">R {item.transferFeeAmount.toFixed(2)}</td>
+                  <td className="py-2 px-4 border-b">
+                    {item.notifyViaSMS
+                      ? `R ${item.transferSMSNotificationFee ? item.transferSMSNotificationFee.toFixed(2) : "0.00"}`
+                      : "R 0.00"}
+                  </td>
                 </tr>
               ))}
             </tbody>
