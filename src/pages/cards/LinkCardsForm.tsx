@@ -176,7 +176,7 @@ const LinkCardsForm = () => {
         
         <form onSubmit={handleSubmit}>
           <Select
-            label="profile"
+            label="Profile"
             options={profileOptions}
             value={formData.profileNumber}
             onChange={handleProfileChange}
