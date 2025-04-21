@@ -16,6 +16,7 @@ export default function ConfirmLoad() {
       transferSMSNotificationFee: number;
       cardholder: string;
       cardNumber: string;
+      notifyViaSMS?: boolean;
     }>;
     effectiveDate?: "immediate" | "delay";
     selectedDate?: Date;
@@ -53,11 +54,12 @@ export default function ConfirmLoad() {
           <table className="w-full text-left border mt-2 mb-4">
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b">Cardholder</th>
-                <th className="py-2 px-4 border-b">Card Number</th>
-                <th className="py-2 px-4 border-b">Amount</th>
-                <th className="py-2 px-4 border-b">Fee</th>
-                <th className="py-2 px-4 border-b">SMS Notification Fee</th>
+                <th className="py-2 px-4 border-b uppercase">Cardholder</th>
+                <th className="py-2 px-4 border-b uppercase">Card Number</th>
+                <th className="py-2 px-4 border-b uppercase">Amount</th>
+                <th className="py-2 px-4 border-b uppercase">Fee</th>
+                <th className="py-2 px-4 border-b uppercase">Notify Via SMS</th>
+                <th className="py-2 px-4 border-b uppercase">SMS Notification Fee</th>
               </tr>
             </thead>
             <tbody>
@@ -67,7 +69,8 @@ export default function ConfirmLoad() {
                   <td className="py-2 px-4 border-b">{item.cardNumber}</td>
                   <td className="py-2 px-4 border-b">R {item.transferAmount.toFixed(2)}</td>
                   <td className="py-2 px-4 border-b">R {item.transferFeeAmount.toFixed(2)}</td>
-                  <td className="py-2 px-4 border-b">R {item.transferSMSNotificationFee.toFixed(2)}</td>
+                  <td className="py-2 px-4 border-b">{item.notifyViaSMS ? "Yes" : "No"}</td>
+                  <td className="py-2 px-4 border-b">R {item.transferSMSNotificationFee ? item.transferSMSNotificationFee.toFixed(2) : "0.00"}</td>
                 </tr>
               ))}
             </tbody>
@@ -84,3 +87,4 @@ export default function ConfirmLoad() {
     </div>
   );
 }
+
