@@ -21,14 +21,15 @@ export default function ConfirmLoad() {
     effectiveDate?: "immediate" | "delay";
     selectedDate?: Date;
   };
+
   const cards = state.cards ?? [];
   const effectiveDate = state.effectiveDate ?? "immediate";
   const selectedDate = state.selectedDate;
 
-  // Format date+time if delay mode
+  // Format date+time for display
   const renderEffectiveDate = () => {
     if (effectiveDate === "delay" && selectedDate) {
-      return `Delay until ${format(new Date(selectedDate), "MMMM d, yyyy HH:mm")}`;
+      return `Delay until ${format(new Date(selectedDate), "MMMM d, yyyy HH:mm:ss")}`;
     }
     return "Immediate";
   };
