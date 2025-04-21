@@ -2,11 +2,13 @@
 import { Card } from "@/components/ui/card";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Wallet, CreditCard } from "lucide-react";
+import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 
 export default function LoadFundsFrom() {
   const navigate = useNavigate();
   const location = useLocation();
-  
+  const { setSelectedLoadFundsToCard } = useLoadFundsToOptionStore();
+
   // Function to check if the path starts with the given route
   const isActive = (path: string) => {
     return location.pathname.startsWith(path);
@@ -23,7 +25,10 @@ export default function LoadFundsFrom() {
 
       <div className="flex flex-col gap-6">
         <button
-          onClick={() => navigate("/load-funds-from/to?accountFrom=false")}
+          onClick={() => {
+            setSelectedLoadFundsToCard("card-loads");
+            navigate("/load-funds-from/to?accountFrom=false");
+          }}
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
           <Card className={`p-6 h-full border-2 ${
@@ -48,7 +53,10 @@ export default function LoadFundsFrom() {
         </button>
 
         <button
-          onClick={() => navigate("/load-funds-from/to?accountFrom=true")}
+          onClick={() => {
+            setSelectedLoadFundsToCard("search");
+            navigate("/load-funds-from/to?accountFrom=true");
+          }}
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
           <Card className={`p-6 h-full border-2 ${
@@ -75,4 +83,3 @@ export default function LoadFundsFrom() {
     </div>
   );
 }
-

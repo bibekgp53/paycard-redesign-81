@@ -1,14 +1,14 @@
 
 import { create } from "zustand";
 
-type Option = "card-loads" | "search";
+type LoadFundsToCardOption = "card-loads" | "search";
 
-interface LoadFundsToOptionState {
-  selectedOption: Option | null;
-  setSelectedOption: (option: Option) => void;
+interface LoadFundsToCardState {
+  selectedLoadFundsToCard: LoadFundsToCardOption | null;
+  setSelectedLoadFundsToCard: (option: LoadFundsToCardOption) => void;
 }
 
-export const useLoadFundsToOptionStore = create<LoadFundsToOptionState>((set) => ({
-  selectedOption: null,
-  setSelectedOption: (option) => set({ selectedOption: option }),
+export const useLoadFundsToOptionStore = create<LoadFundsToCardState>((set) => ({
+  selectedLoadFundsToCard: null,
+  setSelectedLoadFundsToCard: (option) => set({ selectedLoadFundsToCard: option }),
 }));
