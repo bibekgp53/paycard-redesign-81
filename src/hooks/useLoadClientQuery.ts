@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import type { ClientSettings } from "@/graphql/types"; // We assume the output matches ClientSettings shape
+import type { ClientSettings } from "@/graphql/types";
 
 // This hook will call the Supabase RPC get_load_client
 export const useLoadClientQuery = () => {
@@ -22,7 +22,8 @@ export const useLoadClientQuery = () => {
           setError(rpcError);
           setData(null);
         } else {
-          setData(rpcData as ClientSettings); // trusted, as the function returns jsonb in correct shape
+          // Safely assert the unknown value.
+          setData(rpcData as unknown as ClientSettings);
         }
         setIsLoading(false);
       });

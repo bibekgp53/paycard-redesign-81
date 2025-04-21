@@ -37,20 +37,10 @@ export function CardLoads() {
   const { data: clientSettingsData } = useLoadClientQuery();
   const { data: cards, isLoading } = useLoadAllocatedCards();
   
+  // Supabase RPC returns direct ClientSettings, not nested, so NO ".client_settings"
   const clientSettings = useMemo(() => {
-    if (!clientSettingsData?.client_settings) return null;
-    const settings = clientSettingsData.client_settings;
-    return {
-      details: {
-        clientMinCardLoad: settings.client_min_card_load,
-        clientMaxBalance: settings.client_max_balance,
-        clientTransferFee: settings.client_transfer_fee
-      },
-      profile: {
-        fromBalance: 5000, // Fixed value as per requirement
-        fromAccount: 8784274989 // Fixed value as per requirement
-      }
-    };
+    if (!clientSettingsData) return null;
+    return clientSettingsData;
   }, [clientSettingsData]);
 
   const handleLoadFundsClick = () => {
