@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -21,62 +21,47 @@ export const LoadEffectiveDate = ({
   onEffectiveDateChange,
   onSelectedDateChange,
 }: LoadEffectiveDateProps) => {
-  // Local states for time selection (used only for the delay mode)
-  const [localHour, setLocalHour] = useState(
-    selectedDate ? selectedDate.getHours() : 0
-  );
-  const [localMinute, setLocalMinute] = useState(
-    selectedDate ? selectedDate.getMinutes() : 0
-  );
+  // Utility to get time value as "HH:mm:ss" string from a Date, or fallback to default.
+  const getTimeString = (date?: Date) => {
+    if (!date) return "00:00:00";
+    return [
+      date.getHours().toString().padStart(2, "0"),
+      date.getMinutes().toString().padStart(2, "0"),
+      date.getSeconds().toString().padStart(2, "0"),
+    ].join(":");
+  };
 
-  // Updates selected date+time together
+  // Date change handler
   const handleDateChange = (date: Date | undefined) => {
     if (!date) {
       onSelectedDateChange(undefined);
       return;
     }
+    // Preserve previous time if selecting with time input; default to 00:00:00
+    let [h, m, s] = selectedDate
+      ? [selectedDate.getHours(), selectedDate.getMinutes(), selectedDate.getSeconds()]
+      : [0, 0, 0];
     const updated = new Date(date);
-    updated.setHours(localHour);
-    updated.setMinutes(localMinute);
-    updated.setSeconds(0);
-    updated.setMilliseconds(0);
+    updated.setHours(h, m, s, 0);
     onSelectedDateChange(updated);
   };
 
-  const handleTimeChange = (e: React.ChangeEvent<HTMLSelectElement>, which: "hour" | "minute") => {
-    const value = parseInt(e.target.value, 10);
-    const hour = which === "hour" ? value : localHour;
-    const minute = which === "minute" ? value : localMinute;
-    setLocalHour(hour);
-    setLocalMinute(minute);
-
-    // Update selectedDate if date is already selected
+  // Time input change handler (value: "HH:mm:ss")
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value || "00:00:00";
+    const [h, m, s] = value.split(":").map((v) => parseInt(v, 10) || 0);
     if (selectedDate) {
       const updated = new Date(selectedDate);
-      updated.setHours(hour);
-      updated.setMinutes(minute);
-      updated.setSeconds(0);
-      updated.setMilliseconds(0);
+      updated.setHours(h, m, s, 0);
       onSelectedDateChange(updated);
     }
   };
 
-  // If mode switches to immediate: reset time selection
+  // Effective date mode change (immediate/delay)
   const handleRadioChange = (value: "immediate" | "delay") => {
     onEffectiveDateChange(value);
-    if (value === "immediate") {
-      // Optionally reset local time, or leave as is for future
-    }
+    // Optionally reset time? For now, leaving previous as is.
   };
-
-  // Sync local time with selectedDate when changed externally
-  // This ensures UX stability on edit
-  React.useEffect(() => {
-    if (selectedDate) {
-      setLocalHour(selectedDate.getHours());
-      setLocalMinute(selectedDate.getMinutes());
-    }
-  }, [selectedDate]);
 
   return (
     <div className="space-y-2">
@@ -116,31 +101,17 @@ export const LoadEffectiveDate = ({
                   className="p-3 pointer-events-auto"
                   disabled={(date) => date < new Date()}
                 />
-                {/* Time Picker INSIDE calendar popover */}
+                {/* Time input (HH:mm:ss format) */}
                 <div className="flex items-center gap-2 mt-3 justify-center">
-                  <Label htmlFor="delay-hour" className="text-xs">Hour</Label>
-                  <select
-                    id="delay-hour"
-                    className="border rounded px-1 py-1 bg-white"
-                    value={localHour}
-                    onChange={(e) => handleTimeChange(e, "hour")}
-                  >
-                    {Array.from({ length: 24 }).map((_, h) => (
-                      <option key={h} value={h}>{h.toString().padStart(2, "0")}</option>
-                    ))}
-                  </select>
-                  <span>:</span>
-                  <Label htmlFor="delay-minute" className="text-xs">Minute</Label>
-                  <select
-                    id="delay-minute"
-                    className="border rounded px-1 py-1 bg-white"
-                    value={localMinute}
-                    onChange={(e) => handleTimeChange(e, "minute")}
-                  >
-                    {Array.from({ length: 60 }).map((_, m) => (
-                      <option key={m} value={m}>{m.toString().padStart(2, "0")}</option>
-                    ))}
-                  </select>
+                  <Label htmlFor="delay-time" className="text-xs">Time</Label>
+                  <input
+                    id="delay-time"
+                    type="time"
+                    step="1"
+                    className="border rounded px-2 py-1 bg-white"
+                    value={getTimeString(selectedDate)}
+                    onChange={handleTimeChange}
+                  />
                 </div>
               </div>
             </PopoverContent>
