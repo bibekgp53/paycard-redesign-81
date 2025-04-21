@@ -18,6 +18,7 @@ import AllocateCardsComplete from "./pages/cards/AllocateCardsComplete";
 import LoadFundsFrom from "./pages/funds/LoadFundsFrom";
 import LoadFundsTo from "./pages/funds/LoadFundsTo";
 import CardLoads from "./pages/funds/CardLoads";
+import ConfirmLoad from "./pages/funds/ConfirmLoad";
 
 const queryClient = new QueryClient();
 
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/load-funds-from" element={<MainLayout><LoadFundsFrom /></MainLayout>} />
             <Route path="/load-funds-from/to" element={<MainLayout><LoadFundsTo /></MainLayout>} />
             <Route path="/load-funds-from/card-loads" element={<MainLayout><CardLoads /></MainLayout>} />
+            <Route path="/load-funds-from/card-loads/confirm-load" element={<MainLayout><ConfirmLoad /></MainLayout>} />
             
             {/* Default page for unimplemented sections */}
             <Route path="/cards" element={<MainLayout><Dashboard /></MainLayout>} />

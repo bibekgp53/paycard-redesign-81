@@ -1,0 +1,86 @@
+
+import { useLocation, useNavigate } from "react-router-dom";
+import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+
+export default function ConfirmLoad() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  // Read passed state (cards to load, etc)
+  const state = (location.state ?? {}) as {
+    cards?: Array<{
+      accountCardId: number;
+      transferAmount: number;
+      transferFeeAmount: number;
+      transferSMSNotificationFee: number;
+      cardholder: string;
+      cardNumber: string;
+    }>;
+    effectiveDate?: "immediate" | "delay";
+    selectedDate?: Date;
+  };
+  const cards = state.cards ?? [];
+  const effectiveDate = state.effectiveDate ?? "immediate";
+  const selectedDate = state.selectedDate;
+
+  return (
+    <div className="space-y-6">
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink onClick={() => navigate("/load-funds-from")}>Load Funds From</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink onClick={() => navigate("/load-funds-from/card-loads")}>Card Loads</BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Confirm Load</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
+      <Card className="bg-white p-6">
+        <h1 className="text-2xl font-bold text-paycard-navy mb-2">Confirm Card Load</h1>
+        <p className="text-gray-600 mb-4">
+          Please confirm the details before loading funds to these cards:
+        </p>
+        {cards.length === 0 ? (
+          <div className="text-sm text-paycard-red">No cards selected for load.</div>
+        ) : (
+          <table className="w-full text-left border mt-2 mb-4">
+            <thead>
+              <tr>
+                <th className="py-2 px-4 border-b">Cardholder</th>
+                <th className="py-2 px-4 border-b">Card Number</th>
+                <th className="py-2 px-4 border-b">Amount</th>
+                <th className="py-2 px-4 border-b">Fee</th>
+                <th className="py-2 px-4 border-b">SMS Notification Fee</th>
+              </tr>
+            </thead>
+            <tbody>
+              {cards.map((item, idx) => (
+                <tr key={idx}>
+                  <td className="py-2 px-4 border-b">{item.cardholder}</td>
+                  <td className="py-2 px-4 border-b">{item.cardNumber}</td>
+                  <td className="py-2 px-4 border-b">R {item.transferAmount.toFixed(2)}</td>
+                  <td className="py-2 px-4 border-b">R {item.transferFeeAmount.toFixed(2)}</td>
+                  <td className="py-2 px-4 border-b">R {item.transferSMSNotificationFee.toFixed(2)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
+        <div className="flex justify-between mt-6">
+          <Button variant="outline" onClick={() => navigate(-1)}>Back</Button>
+          <Button className="bg-paycard-salmon hover:bg-paycard-salmon-600">Confirm & Load</Button>
+        </div>
+      </Card>
+      <Card className="bg-white p-4">
+        <div>Effective Date: <strong>{effectiveDate === "delay" && selectedDate ? selectedDate.toLocaleDateString() : "Immediate"}</strong></div>
+      </Card>
+    </div>
+  );
+}

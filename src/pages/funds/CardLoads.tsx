@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -35,10 +34,16 @@ export function CardLoads() {
   const { data: clientSettingsData } = useLoadClientQuery();
   const { data: cards, isLoading } = useLoadAllocatedCards();
 
-  // Supabase RPC returns direct ClientSettings, not nested, so NO ".client_settings"
+  // Safely mirror transferSMSNotificationFee to clientSMSCost in details
   const clientSettings = useMemo(() => {
     if (!clientSettingsData) return null;
-    return clientSettingsData;
+    return {
+      ...clientSettingsData,
+      details: {
+        ...clientSettingsData.details,
+        transferSMSNotificationFee: clientSettingsData.details.clientSMSCost,
+      },
+    };
   }, [clientSettingsData]);
 
   const handleLoadFundsClick = () => {
@@ -55,17 +60,14 @@ export function CardLoads() {
 
   const getTooltipMessage = (cardBalance: number) => {
     if (!clientSettings) return "";
-    
     const maxAllowedLoad = clientSettings.details.clientMaxBalance - cardBalance;
     const minLoad = clientSettings.details.clientMinCardLoad;
-    
     return `Load amount must be between R ${minLoad.toFixed(2)} - R ${maxAllowedLoad.toFixed(2)}`;
   };
 
   const isAmountValid = (cardId: string, cardBalance: number) => {
     const amount = amountInputs[cardId];
     if (amount === undefined || amount === null) return true;
-    
     if (clientSettings) {
       const minAmount = clientSettings.details.clientMinCardLoad;
       const maxAmount = clientSettings.details.clientMaxBalance - cardBalance;
@@ -79,22 +81,17 @@ export function CardLoads() {
     if (amount === undefined || amount === null || !clientSettings) {
       return "R 0.00";
     }
-    
-    // Only calculate fee if amount is valid
     const card = cards?.find(c => c.id === cardId);
     if (card && isAmountValid(cardId, card.balance)) {
       return `R ${clientSettings.details.clientTransferFee.toFixed(2)}`;
     }
-    
     return "R 0.00";
   };
 
   const totals = useMemo(() => {
     if (!cards || !clientSettings) return { amount: 0, fee: 0 };
-    
     let totalAmount = 0;
     let totalFee = 0;
-    
     Object.entries(amountInputs).forEach(([cardId, amount]) => {
       if (amount !== null && amount > 0) {
         const card = cards.find(c => c.id === cardId);
@@ -104,7 +101,6 @@ export function CardLoads() {
         }
       }
     });
-    
     return { amount: totalAmount, fee: totalFee };
   }, [amountInputs, cards, clientSettings]);
 
@@ -120,10 +116,43 @@ export function CardLoads() {
     return Math.ceil(cards.length / pageSize);
   }, [cards, pageSize]);
 
+  // --- New/Updated: Handle continue, gather all the info and redirect to a confirm page ---
   const handleContinue = () => {
-    // Implement the continue functionality
-    // This will be implemented based on the next steps in the flow
-    console.log('Continue clicked', { effectiveDate, selectedDate, amountInputs });
+    // Filter to only selected/valid cards
+    if (!clientSettings) return;
+    const selected = Object.entries(amountInputs)
+      .map(([cardId, amount]) => {
+        const card = cards?.find(c => c.id === cardId);
+        if (
+          !card ||
+          amount === undefined ||
+          amount === null ||
+          !isAmountValid(cardId, card.balance) ||
+          amount <= 0
+        )
+          return null;
+        return {
+          accountCardId: card.accountCardId,
+          transferAmount: amount,
+          transferFeeAmount: clientSettings.details.clientTransferFee,
+          transferSMSNotificationFee: clientSettings.details.transferSMSNotificationFee,
+          cardholder: card.cardholder,
+          cardNumber: card.cardNumber,
+        };
+      })
+      .filter(Boolean);
+    if (selected.length === 0) {
+      // Optionally display a toast error here.
+      return;
+    }
+    // Navigate to confirm page, pass state
+    navigate("/load-funds-from/card-loads/confirm-load", {
+      state: {
+        cards: selected,
+        effectiveDate,
+        selectedDate,
+      },
+    });
   };
 
   return (
@@ -162,7 +191,6 @@ export function CardLoads() {
           getTooltipMessage={getTooltipMessage}
           totals={totals}
         />
-        
         {cards && cards.length > pageSize && (
           <CardsPagination
             currentPage={page}
@@ -170,7 +198,6 @@ export function CardLoads() {
             onPageChange={setPage}
           />
         )}
-        
         <div className="mt-6 space-y-6">
           <LoadEffectiveDate
             effectiveDate={effectiveDate}
@@ -178,7 +205,6 @@ export function CardLoads() {
             onEffectiveDateChange={setEffectiveDate}
             onSelectedDateChange={setSelectedDate}
           />
-          
           <div className="flex justify-end">
             <Button 
               onClick={handleContinue}

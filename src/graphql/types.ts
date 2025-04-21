@@ -1,3 +1,4 @@
+
 export interface Card {
   id: string;
   card_number: string;
@@ -70,6 +71,9 @@ export interface ClientSettings {
     clientMinCardLoad: number;
     clientMaxBalance: number;
     clientTransferFee: number;
+    clientSMSCost: number; // Added
+    // Add other values as they are added in get_load_client
+    transferSMSNotificationFee?: number; // Will mirror clientSMSCost for the UI
   };
   profile: {
     fromBalance: number;
@@ -91,3 +95,4 @@ export interface AccountCard {
   cardNumber: string;  // This will now contain the masked number
   ficaValidation: string;
 }
+

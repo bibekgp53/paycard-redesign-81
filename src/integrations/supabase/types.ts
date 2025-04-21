@@ -120,6 +120,7 @@ export type Database = {
         Row: {
           client_max_balance: number
           client_min_card_load: number
+          client_sms_cost: number
           client_transfer_fee: number
           created_at: string
           id: string
@@ -128,6 +129,7 @@ export type Database = {
         Insert: {
           client_max_balance: number
           client_min_card_load: number
+          client_sms_cost?: number
           client_transfer_fee: number
           created_at?: string
           id?: string
@@ -136,6 +138,7 @@ export type Database = {
         Update: {
           client_max_balance?: number
           client_min_card_load?: number
+          client_sms_cost?: number
           client_transfer_fee?: number
           created_at?: string
           id?: string
