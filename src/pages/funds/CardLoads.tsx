@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -19,6 +18,7 @@ import { CardsPagination } from "./components/CardsPagination";
 import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
 import { AccountCard, ClientSettings } from "@/graphql/types";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 interface AmountInputs {
   [key: string]: number | null;
@@ -216,16 +216,30 @@ export function CardLoads() {
                   <td className="py-2 px-4 border-b">{card.cardholder}</td>
                   <td className="py-2 px-4 border-b">{card.cardNumber}</td>
                   <td className="py-2 px-4 border-b">
-                    <input
-                      type="number"
-                      min="0"
-                      className="border rounded px-2 py-1 w-24"
-                      value={amountInputs[card.id] ?? ""}
-                      onChange={(e) =>
-                        handleAmountChange(card.id, e.target.value)
-                      }
-                      placeholder="R 0.00"
-                    />
+                    {/* Amount input with tooltip on hover */}
+                    <div className="flex items-center">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <input
+                              type="number"
+                              min="0"
+                              className={`border rounded px-2 py-1 w-24 ${!isAmountValid(card.id, card.balance) ? 'border-paycard-red ring-1 ring-paycard-red' : ''}`}
+                              value={amountInputs[card.id] ?? ""}
+                              onChange={(e) =>
+                                handleAmountChange(card.id, e.target.value)
+                              }
+                              placeholder="R 0.00"
+                            />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <span>
+                              {getTooltipMessage(card.balance)}
+                            </span>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </td>
                   <td className="py-2 px-4 border-b">{getFeeForCard(card.id)}</td>
                   <td className="py-2 px-4 border-b">
