@@ -102,14 +102,6 @@ export function CardLoads() {
     return "R 0.00";
   };
 
-  const getSMSFeeForCard = (cardId: string): string => {
-    if (!clientSettings) return "R 0.00";
-    if (smsInputs[cardId]) {
-      return `R ${clientSettings.details.transferSMSNotificationFee.toFixed(2)}`;
-    }
-    return "R 0.00";
-  };
-
   const totals = useMemo(() => {
     if (!cards || !clientSettings) return { amount: 0, fee: 0, smsFee: 0 };
     let totalAmount = 0;
@@ -216,7 +208,6 @@ export function CardLoads() {
                 <th className="py-2 px-4 border-b uppercase">Amount</th>
                 <th className="py-2 px-4 border-b uppercase">Fee</th>
                 <th className="py-2 px-4 border-b uppercase">Notify via SMS</th>
-                <th className="py-2 px-4 border-b uppercase">SMS Notification Fee</th>
               </tr>
             </thead>
             <tbody>
@@ -246,7 +237,6 @@ export function CardLoads() {
                       id={`sms-checkbox-${card.id}`}
                     />
                   </td>
-                  <td className="py-2 px-4 border-b">{getSMSFeeForCard(card.id)}</td>
                 </tr>
               ))}
             </tbody>
@@ -261,9 +251,6 @@ export function CardLoads() {
                   R {totals.fee.toFixed(2)}
                 </td>
                 <td className="py-2 px-4 border-b"></td>
-                <td className="py-2 px-4 border-b font-semibold">
-                  R {totals.smsFee.toFixed(2)}
-                </td>
               </tr>
             </tfoot>
           </table>
@@ -297,4 +284,3 @@ export function CardLoads() {
 }
 
 export default CardLoads;
-
