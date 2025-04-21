@@ -1,3 +1,5 @@
+
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { Users, Search } from "lucide-react";
@@ -53,7 +55,7 @@ export default function LoadFundsTo() {
       <Card className="bg-white p-6">
         <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
         <p className="text-gray-600">
-          Load funds into cards from your profile or transfer funds from a stopped card.
+          Load funds into cards from your Profile or transfer funds from a stopped card.
         </p>
       </Card>
 
