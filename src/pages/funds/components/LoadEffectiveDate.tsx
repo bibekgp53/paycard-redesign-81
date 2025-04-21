@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -80,7 +80,9 @@ export const LoadEffectiveDate = ({
 
   return (
     <div className="space-y-2">
-      <h3 className="text-sm font-medium">Load Effective Date</h3>
+      <h3 className="text-sm font-medium">
+        {effectiveDate === "delay" ? "Delay until" : "Load Effective Date"}
+      </h3>
       <RadioGroup 
         value={effectiveDate} 
         onValueChange={(value) => handleRadioChange(value as "immediate" | "delay")}
@@ -146,4 +148,3 @@ export const LoadEffectiveDate = ({
     </div>
   );
 };
-
