@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
@@ -21,6 +21,8 @@ export const LoadEffectiveDate = ({
   onEffectiveDateChange,
   onSelectedDateChange,
 }: LoadEffectiveDateProps) => {
+  const popoverRef = useRef<{close: () => void} | null>(null);
+
   // Utility to get time value as "HH:mm:ss" string from a Date, or fallback to default.
   const getTimeString = (date?: Date) => {
     if (!date) return "00:00:00";
@@ -44,6 +46,10 @@ export const LoadEffectiveDate = ({
     const updated = new Date(date);
     updated.setHours(h, m, s, 0);
     onSelectedDateChange(updated);
+    // Close popover after date is picked
+    if (popoverRef.current) {
+      popoverRef.current.close();
+    }
   };
 
   // Time input change handler (value: "HH:mm:ss")
@@ -62,6 +68,20 @@ export const LoadEffectiveDate = ({
     onEffectiveDateChange(value);
     // Optionally reset time? For now, leaving previous as is.
   };
+
+  // Custom popover with ref to allow closing programmatically
+  const PopoverWithRef = React.forwardRef<any, React.ComponentProps<typeof Popover>>(({children, ...props}, ref) => {
+    // Expose close method
+    const popoverContentRef = React.useRef<any>(null);
+    React.useImperativeHandle(ref, () => ({
+      close: () => {
+        if (popoverContentRef.current) popoverContentRef.current.setOpen(false);
+      },
+    }));
+    return (
+      <Popover {...props} ref={popoverContentRef}>{children}</Popover>
+    );
+  });
 
   return (
     <div className="space-y-2">
@@ -84,7 +104,7 @@ export const LoadEffectiveDate = ({
       </RadioGroup>
       {effectiveDate === "delay" && (
         <div className="mt-2 w-[260px]">
-          <Popover>
+          <PopoverWithRef ref={popoverRef}>
             <PopoverTrigger asChild>
               <Button variant={"outline"} className="w-full justify-start text-left font-normal">
                 <CalendarIcon className="mr-2 h-4 w-4" />
@@ -102,22 +122,24 @@ export const LoadEffectiveDate = ({
                   disabled={(date) => date < new Date()}
                 />
                 {/* Time input (HH:mm:ss format) */}
-                <div className="flex items-center gap-2 mt-3 justify-center">
+                <div className="flex items-center gap-2 mt-3 justify-center mb-2">
                   <Label htmlFor="delay-time" className="text-xs">Time</Label>
                   <input
                     id="delay-time"
                     type="time"
                     step="1"
                     className="border rounded px-2 py-1 bg-white"
+                    style={{marginBottom: 8}}
                     value={getTimeString(selectedDate)}
                     onChange={handleTimeChange}
                   />
                 </div>
               </div>
             </PopoverContent>
-          </Popover>
+          </PopoverWithRef>
         </div>
       )}
     </div>
   );
 };
+

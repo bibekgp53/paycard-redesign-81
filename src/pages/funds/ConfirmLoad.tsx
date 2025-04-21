@@ -28,7 +28,7 @@ export default function ConfirmLoad() {
   // Format date+time if delay mode
   const renderEffectiveDate = () => {
     if (effectiveDate === "delay" && selectedDate) {
-      return format(new Date(selectedDate), "MMMM d, yyyy HH:mm");
+      return `Delay until ${format(new Date(selectedDate), "MMMM d, yyyy HH:mm")}`;
     }
     return "Immediate";
   };
@@ -93,11 +93,7 @@ export default function ConfirmLoad() {
       </Card>
       <Card className="bg-white p-4">
         <div>
-          {effectiveDate === "delay" ? (
-            <>Delay until: <strong>{renderEffectiveDate()}</strong></>
-          ) : (
-            <>Effective Date: <strong>{renderEffectiveDate()}</strong></>
-          )}
+          Effective Date: <strong>{renderEffectiveDate()}</strong>
         </div>
       </Card>
     </div>
