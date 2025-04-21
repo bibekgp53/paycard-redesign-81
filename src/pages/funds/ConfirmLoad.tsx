@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { format } from "date-fns";
 
 export default function ConfirmLoad() {
   const location = useLocation();
@@ -24,6 +25,14 @@ export default function ConfirmLoad() {
   const cards = state.cards ?? [];
   const effectiveDate = state.effectiveDate ?? "immediate";
   const selectedDate = state.selectedDate;
+
+  // Format date+time if delay mode
+  const renderEffectiveDate = () => {
+    if (effectiveDate === "delay" && selectedDate) {
+      return format(new Date(selectedDate), "MMMM d, yyyy HH:mm");
+    }
+    return "Immediate";
+  };
 
   return (
     <div className="space-y-6">
@@ -84,7 +93,7 @@ export default function ConfirmLoad() {
         </div>
       </Card>
       <Card className="bg-white p-4">
-        <div>Effective Date: <strong>{effectiveDate === "delay" && selectedDate ? selectedDate.toLocaleDateString() : "Immediate"}</strong></div>
+        <div>Effective Date: <strong>{renderEffectiveDate()}</strong></div>
       </Card>
     </div>
   );
