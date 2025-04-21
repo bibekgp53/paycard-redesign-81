@@ -8,15 +8,27 @@ export function Sidebar() {
   const location = useLocation();
   const { data: userHeader } = useUserHeaderQuery();
 
-  const isActive = (path: string) => {
+  // Check if a given submenu path is active
+  const isSubmenuActive = (submenuItems = []) => {
+    return submenuItems.some((subItem) =>
+      location.pathname === subItem.path ||
+      (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"))
+    );
+  };
+
+  const isActive = (path: string, submenuItems?: { path: string }[]) => {
+    // If there are submenus, parent is only active if *not* on submenu
+    if (submenuItems && submenuItems.length > 0 && isSubmenuActive(submenuItems)) {
+      return false;
+    }
     if (path === "/") {
       return location.pathname === "/";
     }
     if (path === "/cards") {
-      return location.pathname.startsWith("/cards");
+      return location.pathname === "/cards";
     }
     if (path === "/load-funds-from") {
-      return location.pathname.startsWith("/load-funds-from");
+      return location.pathname === "/load-funds-from";
     }
     return location.pathname === path;
   };
@@ -54,7 +66,7 @@ export function Sidebar() {
               <Link
                 to={item.path}
                 className={`flex items-center p-3 rounded-md transition-colors ${
-                  isActive(item.path)
+                  isActive(item.path, item.submenuItems)
                     ? "bg-paycard-salmon text-white"
                     : "hover:bg-paycard-navy-800"
                 }`}
@@ -69,8 +81,9 @@ export function Sidebar() {
                       <Link
                         to={subItem.path}
                         className={`flex items-center p-2 rounded-md transition-colors ${
-                          location.pathname === subItem.path || 
-                          (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"))
+                          (location.pathname === subItem.path ||
+                            (subItem.path === "/load-funds-from" &&
+                              location.pathname.startsWith("/load-funds-from")))
                             ? "bg-paycard-salmon text-white"
                             : "hover:bg-paycard-navy-800"
                         }`}
@@ -105,3 +118,4 @@ export function Sidebar() {
     </aside>
   );
 }
+
