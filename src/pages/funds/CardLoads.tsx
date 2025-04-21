@@ -3,9 +3,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useQuery } from "@apollo/client";
-import { GET_USER_HEADER } from "@/graphql/user";
-import { UserHeader } from "@/graphql/types";
+import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { 
   Breadcrumb,
@@ -33,10 +31,10 @@ export function CardLoads() {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const pageSize = 10;
   
-  const { data: userHeader } = useQuery<UserHeader>(GET_USER_HEADER);
+  const { data: userHeader } = useUserHeaderQuery();
   const { data: clientSettingsData } = useLoadClientQuery();
   const { data: cards, isLoading } = useLoadAllocatedCards();
-  
+
   // Supabase RPC returns direct ClientSettings, not nested, so NO ".client_settings"
   const clientSettings = useMemo(() => {
     if (!clientSettingsData) return null;
@@ -147,7 +145,7 @@ export function CardLoads() {
         <p className="text-gray-600">
           Load funds into cards from your profile or transfer funds from a stopped card.
           <span className="block mt-2 text-sm">
-            The balance available on your profile is R {userHeader?.balanceAccount.toFixed(2) || '0.00'}
+            The balance available on your profile is R {userHeader?.balanceAccount?.toFixed(2) || '0.00'}
           </span>
         </p>
       </Card>

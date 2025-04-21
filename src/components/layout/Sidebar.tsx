@@ -1,15 +1,13 @@
 
 import { CreditCard, Users, FileText, Settings, Wallet, UserCircle, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { GET_USER_HEADER } from "@/graphql/user";
-import { UserHeader } from "@/graphql/types";
+import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 export function Sidebar() {
   const location = useLocation();
-  const { data: userHeader } = useQuery<UserHeader>(GET_USER_HEADER);
-  
+  const { data: userHeader } = useUserHeaderQuery();
+
   const isActive = (path: string) => {
     if (path === "/") {
       return location.pathname === "/";
@@ -22,7 +20,7 @@ export function Sidebar() {
     }
     return location.pathname === path;
   };
-  
+
   const menuItems = [
     { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
       { label: "Link Cards", path: "/cards/link" },
@@ -44,7 +42,7 @@ export function Sidebar() {
           <span className="text-xl font-bold">Standard Bank PayCard</span>
         </Link>
         <div className="text-sm text-gray-300 p-3">
-          Your Balance: <span className="font-bold">R {userHeader?.balanceAccount.toFixed(2) || '0.00'}</span>
+          Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
         </div>
       </div>
 
