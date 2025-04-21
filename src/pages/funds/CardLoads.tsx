@@ -65,11 +65,15 @@ export function CardLoads() {
     }));
   };
 
+  // Debug: log smsInputs on each render and when changed
+  console.log("smsInputs state:", smsInputs);
+
   const handleSMSChange = (cardId: string, checked: boolean) => {
-    setSmsInputs((prev) => ({
-      ...prev,
-      [cardId]: checked,
-    }));
+    setSmsInputs((prev) => {
+      const updated = { ...prev, [cardId]: checked };
+      console.log(`smsInputs updated for cardId ${cardId}:`, updated);
+      return updated;
+    });
   };
 
   const getTooltipMessage = (cardBalance: number) => {
@@ -212,7 +216,8 @@ export function CardLoads() {
             </thead>
             <tbody>
               {paginatedCards.map((card) => (
-                <tr key={card.id}>
+                // Confirm key is unique & stable
+                <tr key={card.id ?? card.cardNumber}>
                   <td className="py-2 px-4 border-b">{card.cardholder}</td>
                   <td className="py-2 px-4 border-b">{card.cardNumber}</td>
                   <td className="py-2 px-4 border-b">
@@ -243,6 +248,8 @@ export function CardLoads() {
                   </td>
                   <td className="py-2 px-4 border-b">{getFeeForCard(card.id)}</td>
                   <td className="py-2 px-4 border-b">
+                    {/* Add console log on render for debug */}
+                    {console.log("Render Checkbox for", card.id, "checked=", smsInputs[card.id] || false)}
                     <Checkbox
                       checked={smsInputs[card.id] || false}
                       onCheckedChange={(checked: boolean) =>
