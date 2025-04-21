@@ -2,16 +2,32 @@ export interface Card {
   id: string;
   card_number: string;
   status: 'inactive' | 'active' | 'suspended' | 'linked';
-  profile_number?: string;
   processed_by?: string;
+  tracking_number?: string | null;
+  // removed profile_number and invoice_number as per db change
+}
+
+export interface CardLink {
+  id: string;
+  card_id: string;
+  profile_number: string;
   invoice_number?: string;
+  processed_by?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface CardInput {
   card_number: string;
-  profile_number: string;
   processed_by: string;
-  invoice_number: string;
+  status: string;
+}
+
+export interface CardLinkInput {
+  card_id: string;
+  profile_number: string;
+  invoice_number?: string;
+  processed_by?: string;
 }
 
 export interface GetCardsData {
@@ -34,11 +50,13 @@ export interface GetProfilesData {
 }
 
 export interface LinkCardsData {
-  linkCards: Card[];
+  insert_card_links: {
+    returning: CardLink[];
+  };
 }
 
 export interface LinkCardsVariables {
-  cards: CardInput[];
+  objects: CardLinkInput[];
 }
 
 export interface UserHeader {

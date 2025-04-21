@@ -45,14 +45,50 @@ export type Database = {
         }
         Relationships: []
       }
+      card_links: {
+        Row: {
+          card_id: string
+          created_at: string
+          id: string
+          invoice_number: string | null
+          processed_by: string | null
+          profile_number: string
+          updated_at: string
+        }
+        Insert: {
+          card_id: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          processed_by?: string | null
+          profile_number: string
+          updated_at?: string
+        }
+        Update: {
+          card_id?: string
+          created_at?: string
+          id?: string
+          invoice_number?: string | null
+          processed_by?: string | null
+          profile_number?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_links_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       cards: {
         Row: {
           card_number: string
           created_at: string
           id: string
-          invoice_number: string | null
           processed_by: string | null
-          profile_number: string | null
           sequence_number: string | null
           status: Database["public"]["Enums"]["card_status"]
           tracking_number: string | null
@@ -62,9 +98,7 @@ export type Database = {
           card_number: string
           created_at?: string
           id?: string
-          invoice_number?: string | null
           processed_by?: string | null
-          profile_number?: string | null
           sequence_number?: string | null
           status?: Database["public"]["Enums"]["card_status"]
           tracking_number?: string | null
@@ -74,23 +108,13 @@ export type Database = {
           card_number?: string
           created_at?: string
           id?: string
-          invoice_number?: string | null
           processed_by?: string | null
-          profile_number?: string | null
           sequence_number?: string | null
           status?: Database["public"]["Enums"]["card_status"]
           tracking_number?: string | null
           updated_at?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "cards_profile_number_fkey"
-            columns: ["profile_number"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["profile_number"]
-          },
-        ]
+        Relationships: []
       }
       client_settings: {
         Row: {

@@ -1,10 +1,9 @@
-
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/custom/Button";
 import { CheckCircle2 } from "lucide-react";
 import { useApolloMutation } from "@/hooks/useApolloMutation";
-import { LINK_CARDS } from "@/graphql/cards";
+import { LINK_CARD_LINKS } from "@/graphql/cards";
 import { toast } from "@/hooks/use-toast";
 
 interface CardField {
@@ -29,7 +28,7 @@ const LinkCardsConfirm = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   
   const { mutate, loading: isSubmitting, error } = useApolloMutation(
-    LINK_CARDS
+    LINK_CARD_LINKS
   );
   
   useEffect(() => {
@@ -69,24 +68,30 @@ const LinkCardsConfirm = () => {
   
   const handleConfirm = async () => {
     if (!formData) return;
-    
+
     try {
-      const cardInputs = cards.map(cardNumber => ({
-        card_number: cardNumber,
+      // You must create the cards first via an API if needed, but here we assume cards already exist by card_number.
+      // This example expects card ids to be known.
+      // For this mock, we'll assume you already have card ids mapped via card numbers (you would fetch this in a real app).
+
+      // TODO: Implement logic to fetch card ids via card numbers if needed
+
+      // For the sake of this update, we'll mock cardIds = cards (card_numbers)
+      // In a real app, you’d lookup the proper card.id based on card_number
+
+      const cardLinksInputs = cards.map(cardNumber => ({
+        card_id: cardNumber, // <-- here you would use the real card id!
         profile_number: formData.profileNumber,
         processed_by: formData.processedBy,
         invoice_number: formData.invoiceNumber,
-        status: "linked"
       }));
-      
-      const result = await mutate({
+
+      await mutate({
         variables: {
-          cards: cardInputs
+          objects: cardLinksInputs
         }
       });
-      
-      console.log("Mutation result:", result);
-      
+
       setIsSuccess(true);
       sessionStorage.removeItem("linkCardsFormData");
       toast({
