@@ -1,8 +1,8 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CustomButton as Button } from "@/components/ui/custom-button";
-import { CustomInput as Input } from "@/components/ui/custom-input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { ArrowLeft } from "lucide-react";
 
 export default function AllocateCardsDetails() {
@@ -69,38 +69,58 @@ export default function AllocateCardsDetails() {
 
         <form className="space-y-4 mb-8">
           <div className="grid grid-cols-2 gap-4">
-            <Input
-              label="FIRST NAME"
-              value={formData.firstName}
-              onChange={handleChange("firstName")}
-              required
-            />
-            <Input
-              label="SURNAME"
-              value={formData.surname}
-              onChange={handleChange("surname")}
-              required
-            />
+            <div>
+              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+                FIRST NAME
+              </label>
+              <Input
+                value={formData.firstName}
+                onChange={handleChange("firstName")}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+                SURNAME
+              </label>
+              <Input
+                value={formData.surname}
+                onChange={handleChange("surname")}
+                required
+              />
+            </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+                ID/PASSPORT NUMBER
+              </label>
+              <Input
+                value={formData.idNumber}
+                onChange={handleChange("idNumber")}
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+                CELLPHONE NUMBER
+              </label>
+              <Input
+                value={formData.cellphone}
+                onChange={handleChange("cellphone")}
+                required
+              />
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+              REFERENCE
+            </label>
             <Input
-              label="ID/PASSPORT NUMBER"
-              value={formData.idNumber}
-              onChange={handleChange("idNumber")}
-              required
-            />
-            <Input
-              label="CELLPHONE NUMBER"
-              value={formData.cellphone}
-              onChange={handleChange("cellphone")}
-              required
+              value={formData.reference}
+              onChange={handleChange("reference")}
             />
           </div>
-          <Input
-            label="REFERENCE"
-            value={formData.reference}
-            onChange={handleChange("reference")}
-          />
 
           <div className="mt-6 text-sm text-gray-600">
             <p>Card Number: 53*****5311</p>
