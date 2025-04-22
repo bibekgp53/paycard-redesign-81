@@ -1,4 +1,3 @@
-
 import { CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -44,9 +43,7 @@ export function Sidebar() {
       { label: "Link Cards", path: "/cards/link" },
       { label: "Allocate Cards", path: "/cards/allocate" }
     ]},
-    { icon: Wallet, label: "Funds", path: "/load-funds-from", submenuItems: [
-      { label: "Load Funds to Cards", path: "/load-funds-from" }
-    ]},
+    { icon: Wallet, label: "Funds", path: "/load-funds-from" },
     { icon: Users, label: "Profiles", path: "/profiles" },
     { icon: FileText, label: "Reports", path: "/reports" },
     { icon: Settings, label: "Settings", path: "/settings" },
@@ -80,6 +77,7 @@ export function Sidebar() {
               />
             </Link>
             
+            {/* Only render submenus if they exist and NOT for Funds */}
             {item.submenuItems && (
               <SidebarGroup title="" className="ml-7 mt-2 space-y-1">
                 {item.submenuItems.map((subItem) => (
