@@ -58,7 +58,11 @@ export function SidebarExample() {
               label="Dashboard" 
               icon={<Home className="h-5 w-5" />} 
             />
-            <SidebarGroup title="Menu" collapsible defaultCollapsed={false}>
+            <SidebarGroup 
+              title="Menu" 
+              collapsible 
+              defaultCollapsed={false}
+            >
               <SidebarItem label="Item 01" />
               <SidebarItem label="Item 02" />
               <SidebarItem label="Item 03" active />

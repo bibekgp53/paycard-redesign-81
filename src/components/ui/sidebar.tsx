@@ -276,8 +276,7 @@ const Sidebar = React.forwardRef<
             "group-data-[collapsible=offcanvas]:w-0",
             "group-data-[side=right]:rotate-180",
             variant === "floating" || variant === "inset"
-              ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-              : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
+              ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]": "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
           )}
         />
         <div
@@ -461,18 +460,65 @@ const SidebarContent = React.forwardRef<
 })
 SidebarContent.displayName = "SidebarContent"
 
+// Unified SidebarGroup component that supports both standard and custom functionality
 const SidebarGroup = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div">
->(({ className, ...props }, ref) => {
+  React.ComponentProps<"div"> & {
+    title?: string;
+    children?: ReactNode;
+    collapsible?: boolean;
+    defaultCollapsed?: boolean;
+  }
+>(({ className, title, children, collapsible = false, defaultCollapsed = false, ...props }, ref) => {
+  const [collapsed, setCollapsed] = React.useState(defaultCollapsed);
+
+  const toggleCollapsed = () => {
+    if (collapsible) {
+      setCollapsed(!collapsed);
+    }
+  };
+
+  // If title exists, render as a custom collapsible group
+  if (title !== undefined) {
+    return (
+      <div ref={ref} className={cn("mb-4", className)} {...props}>
+        {title && (
+          <div 
+            className={cn(
+              "flex items-center px-4 py-2 text-xs font-semibold uppercase text-sidebar-foreground/70",
+              collapsible && "cursor-pointer hover:text-sidebar-foreground"
+            )}
+            onClick={toggleCollapsed}
+          >
+            {title}
+            {collapsible && (
+              <ChevronRight 
+                className={cn(
+                  "ml-auto h-4 w-4 transition-transform",
+                  !collapsed && "transform rotate-90"
+                )} 
+              />
+            )}
+          </div>
+        )}
+        <div className={cn(collapsed ? "hidden" : "block")}>
+          {children}
+        </div>
+      </div>
+    );
+  }
+
+  // Standard group for shadcn/ui sidebar
   return (
     <div
       ref={ref}
       data-sidebar="group"
       className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
       {...props}
-    />
-  )
+    >
+      {children}
+    </div>
+  );
 })
 SidebarGroup.displayName = "SidebarGroup"
 
@@ -783,7 +829,7 @@ const SidebarMenuSubButton = React.forwardRef<
 })
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton"
 
-// SidebarItem component for the custom sidebar style
+// SidebarItem component that can be used in the custom sidebar
 const SidebarItem = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
@@ -813,55 +859,6 @@ const SidebarItem = React.forwardRef<
 );
 SidebarItem.displayName = "SidebarItem";
 
-// SidebarGroup component for the custom sidebar style
-const SidebarGroup = React.forwardRef<
-  HTMLDivElement,
-  React.ComponentProps<"div"> & {
-    title?: string;
-    children: ReactNode;
-    collapsible?: boolean;
-    defaultCollapsed?: boolean;
-  }
->(
-  ({ title, children, collapsible = false, defaultCollapsed = false, className, ...props }, ref) => {
-    const [collapsed, setCollapsed] = React.useState(defaultCollapsed);
-
-    const toggleCollapsed = () => {
-      if (collapsible) {
-        setCollapsed(!collapsed);
-      }
-    };
-
-    return (
-      <div ref={ref} className={cn("mb-4", className)} {...props}>
-        {title && (
-          <div 
-            className={cn(
-              "flex items-center px-4 py-2 text-xs font-semibold uppercase text-sidebar-foreground/70",
-              collapsible && "cursor-pointer hover:text-sidebar-foreground"
-            )}
-            onClick={toggleCollapsed}
-          >
-            {title}
-            {collapsible && (
-              <ChevronRight 
-                className={cn(
-                  "ml-auto h-4 w-4 transition-transform",
-                  !collapsed && "transform rotate-90"
-                )} 
-              />
-            )}
-          </div>
-        )}
-        <div className={cn(collapsed ? "hidden" : "block")}>
-          {children}
-        </div>
-      </div>
-    );
-  }
-);
-SidebarGroup.displayName = "SidebarGroup";
-
 // Export all sidebar components from one file
 export { 
   Sidebar,
@@ -888,7 +885,5 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
-  // Export custom-style sidebar components with better names
-  SidebarItem,
-  SidebarGroup
+  SidebarItem
 }

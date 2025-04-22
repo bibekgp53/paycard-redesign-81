@@ -5,7 +5,7 @@ import { Card } from '@/components/ui/card';
 
 export function SliderExample() {
   const [singleValue, setSingleValue] = useState<number[]>([40]);
-  const [rangeValues, setRangeValues] = useState<[number, number]>([20, 80]);
+  const [rangeValues, setRangeValues] = useState<number[]>([20, 80]);
   
   return (
     <Card className="p-8 mb-12">
@@ -40,13 +40,11 @@ export function SliderExample() {
           <div className="space-y-4">
             <h3 className="text-xl font-semibold">Range Slider</h3>
             <Slider 
-              range={true}
-              rangeValues={rangeValues}
-              onRangeChange={setRangeValues}
-              value={[rangeValues[0]]} // This is just for compatibility
-              onValueChange={() => {}} // This is just for compatibility
+              value={rangeValues}
+              onValueChange={(values) => setRangeValues(values)}
               label="Range Slider"
               showValue
+              showLabels
             />
             <p className="text-sm text-gray-500">Current range: {rangeValues[0]} - {rangeValues[1]}</p>
           </div>
