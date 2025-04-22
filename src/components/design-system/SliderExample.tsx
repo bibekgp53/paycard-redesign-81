@@ -4,7 +4,7 @@ import { Slider } from '@/components/ui/slider';
 import { Card } from '@/components/ui/card';
 
 export function SliderExample() {
-  const [singleValue, setSingleValue] = useState(40);
+  const [singleValue, setSingleValue] = useState<number[]>([40]);
   const [rangeValues, setRangeValues] = useState<[number, number]>([20, 80]);
   
   return (
@@ -16,20 +16,21 @@ export function SliderExample() {
           <div className="space-y-4">
             <h3 className="text-xl font-semibold">Basic Slider</h3>
             <Slider 
-              value={singleValue} 
-              onChange={setSingleValue} 
-              showLabels 
+              value={[singleValue[0]]} 
+              onValueChange={(values) => setSingleValue([values[0]])} 
+              label="Basic Slider"
+              showValue
             />
-            <p className="text-sm text-gray-500">Current value: {singleValue}</p>
+            <p className="text-sm text-gray-500">Current value: {singleValue[0]}</p>
           </div>
           
           <div className="space-y-4">
             <h3 className="text-xl font-semibold">Slider with Tooltip</h3>
             <Slider 
-              value={singleValue} 
-              onChange={setSingleValue} 
-              showTooltip
-              showLabels
+              value={[singleValue[0]]} 
+              onValueChange={(values) => setSingleValue([values[0]])}
+              label="Slider with Tooltip"
+              showValue
             />
           </div>
         </div>
@@ -38,10 +39,14 @@ export function SliderExample() {
           <div className="space-y-4">
             <h3 className="text-xl font-semibold">Range Slider</h3>
             <Slider 
-              range 
-              rangeValues={rangeValues} 
-              onRangeChange={setRangeValues} 
-              showLabels
+              value={[rangeValues[0], rangeValues[1]]}
+              onValueChange={(values) => {
+                if (values.length >= 2) {
+                  setRangeValues([values[0], values[1]]);
+                }
+              }}
+              label="Range Slider"
+              showValue
             />
             <p className="text-sm text-gray-500">Current range: {rangeValues[0]} - {rangeValues[1]}</p>
           </div>
@@ -52,9 +57,10 @@ export function SliderExample() {
               min={50} 
               max={250} 
               step={10}
-              value={120} 
-              showTooltip
-              showLabels
+              value={[120]} 
+              onValueChange={(values) => console.log(values)}
+              label="Custom Range"
+              showValue
             />
           </div>
         </div>

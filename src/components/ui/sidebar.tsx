@@ -1,7 +1,8 @@
 import * as React from "react"
+import { ReactNode } from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeft } from "lucide-react"
+import { PanelLeft, ChevronRight } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -734,7 +735,6 @@ const SidebarMenuSubButton = React.forwardRef<
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton"
 
 // Adding the custom Sidebar implementation
-import { ChevronRight } from 'lucide-react';
 
 interface CustomSidebarProps {
   className?: string;
@@ -759,7 +759,7 @@ interface CustomSidebarGroupProps {
   defaultCollapsed?: boolean;
 }
 
-export const CustomSidebarItem: React.FC<CustomSidebarItemProps> = ({
+const CustomSidebarItem: React.FC<CustomSidebarItemProps> = ({
   label,
   active = false,
   icon,
@@ -779,7 +779,7 @@ export const CustomSidebarItem: React.FC<CustomSidebarItemProps> = ({
   );
 };
 
-export const CustomSidebarGroup: React.FC<CustomSidebarGroupProps> = ({
+const CustomSidebarGroup: React.FC<CustomSidebarGroupProps> = ({
   title,
   children,
   collapsible = false,
@@ -821,7 +821,7 @@ export const CustomSidebarGroup: React.FC<CustomSidebarGroupProps> = ({
   );
 };
 
-export const CustomSidebar: React.FC<CustomSidebarProps> = ({
+const CustomSidebar: React.FC<CustomSidebarProps> = ({
   className,
   children,
   variant = 'full',
@@ -890,6 +890,7 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
+  // Export custom sidebar components
   CustomSidebar,
   CustomSidebarItem,
   CustomSidebarGroup

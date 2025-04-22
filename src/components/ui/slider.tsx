@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Slider as ShadcnSlider } from '@/components/ui/slider';
+import { Slider as ShadcnSlider } from '@radix-ui/react-slider';
 import { cn } from '@/lib/utils';
 
 interface SliderProps {
@@ -40,7 +40,7 @@ export function Slider({
       </div>
       
       <ShadcnSlider
-        defaultValue={value}
+        value={value}
         max={max}
         min={min}
         step={step}
