@@ -1,3 +1,4 @@
+
 import { CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -43,7 +44,9 @@ export function Sidebar() {
       { label: "Link Cards", path: "/cards/link" },
       { label: "Allocate Cards", path: "/cards/allocate" }
     ]},
-    { icon: Wallet, label: "Funds", path: "/load-funds-from" },
+    { icon: Wallet, label: "Funds", path: "/load-funds-from", submenuItems: [
+      { label: "Load Funds to Cards", path: "/load-funds-from" }
+    ]},
     { icon: Users, label: "Profiles", path: "/profiles" },
     { icon: FileText, label: "Reports", path: "/reports" },
     { icon: Settings, label: "Settings", path: "/settings" },
@@ -77,7 +80,7 @@ export function Sidebar() {
               />
             </Link>
             
-            {/* Only render submenus if they exist and NOT for Funds */}
+            {/* Only render submenus if they exist */}
             {item.submenuItems && (
               <SidebarGroup title="" className="ml-7 mt-2 space-y-1">
                 {item.submenuItems.map((subItem) => (
@@ -103,20 +106,10 @@ export function Sidebar() {
         ))}
       </SidebarContent>
       
-      {/* User footer with Test User text and icons */}
+      {/* Sidebar footer: only show "Test User" as plain text. */}
       <div className="border-t border-paycard-navy-800 mt-auto">
         <div className="p-4">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-gray-300 text-sm">Test User</span>
-            <div className="flex items-center gap-3">
-              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
-                <Bell size={18} />
-              </button>
-              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
-                <LogOut size={18} />
-              </button>
-            </div>
-          </div>
+          <span className="text-gray-300 text-sm">Test User</span>
         </div>
       </div>
     </UISidebar>
