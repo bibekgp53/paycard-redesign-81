@@ -7,25 +7,14 @@ import { Label } from "@/components/ui/label";
 import { CalendarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
 
-function formatTime12(date?: Date) {
+// Format function: date only = dd-MMM-yyyy; datetime = dd-MMM-yyyy HH:mm:ss
+function formatDateCustom(date?: Date) {
   if (!date) return "";
-  let hours = date.getHours();
-  const minutes = date.getMinutes();
-  const seconds = date.getSeconds();
-  const period = hours >= 12 ? "PM" : "AM";
-  let adjHours = hours % 12;
-  if (adjHours === 0) adjHours = 12;
-  return `${adjHours.toString().padStart(2, "0")}:${minutes
-    .toString()
-    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")} ${period}`;
+  return format(date, "dd-MMM-yyyy");
 }
-
-// NEW: 24-hour format for button & below display
-function formatDateTime24(date?: Date) {
+function formatDateTimeCustom(date?: Date) {
   if (!date) return "";
-  // Pad for 2-digits
-  const pad = (v: number) => v.toString().padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+  return format(date, "dd-MMM-yyyy HH:mm:ss");
 }
 
 interface LoadEffectiveDateProps {
@@ -94,8 +83,7 @@ export const LoadEffectiveDate = ({
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {selectedDate ? (
                   <>
-                    {/* Display date and time in the requested format */}
-                    {formatDateTime24(selectedDate)}
+                    {formatDateTimeCustom(selectedDate)}
                   </>
                 ) : (
                   <span>Pick a date and time</span>
@@ -119,12 +107,11 @@ export const LoadEffectiveDate = ({
                 disabled={(date) => date < new Date()}
               />
             </PopoverContent>
-            {/* Display selected value in yyyy-MM-dd HH:mm:ss under the button */}
           </Popover>
           {selectedDate && (
             <div className="mt-2 text-paycard-navy-700 border border-red-300 bg-red-50 rounded px-2 py-1 w-full flex items-center gap-2">
               <CalendarIcon className="w-4 h-4" />
-              <span>{formatDateTime24(selectedDate)}</span>
+              <span>{formatDateTimeCustom(selectedDate)}</span>
             </div>
           )}
         </div>

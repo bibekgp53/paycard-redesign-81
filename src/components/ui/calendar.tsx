@@ -1,6 +1,6 @@
 
 import * as React from "react";
-import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
@@ -17,7 +17,6 @@ export type CalendarProps = Omit<
 };
 
 function getTimeString12(date?: Date) {
-  // Returns { time: "HH:MM:SS", period: "AM" | "PM" }
   if (!date) return { time: "", period: "AM" as "AM" | "PM" };
   let hours = date.getHours();
   const minutes = date.getMinutes();
@@ -65,7 +64,7 @@ function Calendar({
     if (!selected) return;
     const val = e.target.value;
     // Always pass explicit period of type "AM" | "PM"
-    const next = parseTimeFromString(val, period);
+    const next = parseTimeFromString(val, period as "AM" | "PM");
     const updated = new Date(selected.getTime());
     updated.setHours(next.hours, next.minutes, next.seconds, 0);
     onSelect(updated, { fromTimeInput: true });
@@ -95,6 +94,11 @@ function Calendar({
       date.setHours(selected.getHours(), selected.getMinutes(), selected.getSeconds(), 0);
     }
     onSelect(date, { fromTimeInput: false });
+  };
+
+  // Select all text when input is focused (simplifies hour/minute edits)
+  const handleTimeInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
+    e.target.select();
   };
 
   return (
@@ -143,6 +147,7 @@ function Calendar({
         onSelect={handleDaySelect}
         {...props}
       />
+      {/* Only show below if time input is enabled and selected date exists */}
       {showTimeInput && selected && (
         <div
           className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-full mx-auto"
@@ -155,9 +160,10 @@ function Calendar({
             id="delay-time"
             type="text"
             pattern="^(0?[1-9]|1[0-2]):[0-5][0-9](:[0-5][0-9])?$"
-            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white w-[80px] text-left font-mono"
+            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white w-[111px] text-left font-mono"
             value={inputTime}
             onChange={handleTimeInputChange}
+            onFocus={handleTimeInputFocus}
             autoComplete="off"
           />
           <span
@@ -176,6 +182,4 @@ function Calendar({
   );
 }
 Calendar.displayName = "Calendar";
-
 export { Calendar };
-
