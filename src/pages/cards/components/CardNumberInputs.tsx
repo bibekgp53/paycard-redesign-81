@@ -1,6 +1,7 @@
+
 import { Plus, Trash2 } from "lucide-react";
-import { CustomInput as Input } from "@/components/ui/custom-input";
-import { CustomButton as Button } from "@/components/ui/custom-button";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 
 interface CardField {
   id: string;
@@ -25,17 +26,27 @@ export const CardNumberInputs = ({
   return (
     <div className="space-y-4 mb-6">
       <h2 className="text-lg font-semibold text-paycard-navy">Card Numbers</h2>
-      
       {cardNumbers.map((card) => (
         <div key={card.id} className="flex items-start space-x-2">
           <div className="flex-1">
+            <label
+              className={
+                card.id === "1"
+                  ? "block text-sm font-medium font-gilroy text-paycard-navy mb-1"
+                  : "sr-only"
+              }
+            >
+              {card.id === "1" ? "Card Number/Tracking Number" : ""}
+            </label>
             <Input
-              label={card.id === "1" ? "Card Number/Tracking Number" : ""}
               placeholder="Enter card number"
               value={card.value}
               onChange={(e) => onCardNumberChange(card.id, e.target.value)}
-              error={errors[`cardNumber-${card.id}`]}
+              className={errors[`cardNumber-${card.id}`] ? "border-paycard-red ring-1 ring-paycard-red" : ""}
             />
+            {errors[`cardNumber-${card.id}`] && (
+              <p className="mt-1 text-sm font-poppins text-paycard-red body-small">{errors[`cardNumber-${card.id}`]}</p>
+            )}
           </div>
           {cardNumbers.length > 1 && (
             <button
@@ -48,13 +59,14 @@ export const CardNumberInputs = ({
           )}
         </div>
       ))}
-      
+
       <Button
         type="button"
         variant="outline"
-        iconLeft={<Plus size={16} />}
         onClick={onAddCard}
+        className="flex items-center gap-2"
       >
+        <Plus size={16} />
         Add Another Card
       </Button>
     </div>
