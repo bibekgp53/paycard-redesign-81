@@ -1,3 +1,4 @@
+
 import { CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -97,12 +98,19 @@ export function Sidebar() {
                           label={subItem.label}
                           active={isActiveSub}
                           className={cn(
-                            "text-sm py-0.5 transition-colors hover:bg-paycard-salmon/40 hover:text-white",
+                            // Remove text-sm/py-0.5; use same sizing and highlight logic as menu
+                            "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
                             isActiveSub
                               ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
                               : "text-gray-300"
                           )}
-                          style={{ minHeight: 24, paddingTop: 2, paddingBottom: 2 }}
+                          style={{
+                            minHeight: 32,
+                            paddingTop: 4,
+                            paddingBottom: 4,
+                            // Indent the submenu label even further to show hierarchy
+                            paddingLeft: 32 // This matches pl-4 and moves the highlight/label to line up visually
+                          }}
                         />
                       </Link>
                     );
