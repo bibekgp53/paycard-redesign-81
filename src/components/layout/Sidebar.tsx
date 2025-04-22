@@ -106,10 +106,20 @@ export function Sidebar() {
         ))}
       </SidebarContent>
       
-      {/* Sidebar footer: only show "Test User" as plain text. */}
+      {/* Sidebar footer: show "Test User" and icon buttons only, nothing extra below */}
       <div className="border-t border-paycard-navy-800 mt-auto">
         <div className="p-4">
-          <span className="text-gray-300 text-sm">Test User</span>
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-gray-300 text-sm">Test User</span>
+            <div className="flex items-center gap-3">
+              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
+                <Bell size={18} />
+              </button>
+              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
+                <LogOut size={18} />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </UISidebar>
