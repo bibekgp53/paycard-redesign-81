@@ -36,38 +36,40 @@ export const CardNumberInputs = ({
                 Card Number/Tracking Number
               </label>
             )}
-            {/* Input + Trash in error border flex row */}
-            <div
-              className={`
-                flex items-center gap-2 
-                rounded-md bg-white 
-                border
-                ${hasError ? "border-paycard-red ring-1 ring-paycard-red" : "border-paycard-navy-200"} 
-                px-3 py-2
-                transition
-                focus-within:ring-2 focus-within:ring-paycard-navy-500
-              `}
-            >
-              <Input
-                placeholder="Enter card number"
-                value={card.value}
-                onChange={(e) => onCardNumberChange(card.id, e.target.value)}
-                className="flex-1 shadow-none border-none focus:ring-0 focus-visible:ring-0 px-0 bg-transparent"
-                // Remove all input borders since outer flex has border
-              />
+            {/* Input + Trash in flex row, but trash outside border */}
+            <div className="flex items-center gap-2">
+              <div
+                className={`
+                  flex-1 rounded-md bg-white
+                  border
+                  ${hasError ? "border-paycard-red ring-1 ring-paycard-red" : "border-paycard-navy-200"}
+                  px-3 py-2
+                  transition
+                  focus-within:ring-2 focus-within:ring-paycard-navy-500
+                  flex
+                `}
+              >
+                <Input
+                  placeholder="Enter card number"
+                  value={card.value}
+                  onChange={(e) => onCardNumberChange(card.id, e.target.value)}
+                  className="flex-1 shadow-none border-none focus:ring-0 focus-visible:ring-0 px-0 bg-transparent"
+                />
+              </div>
               {cardNumbers.length > 1 && (
                 <button
                   type="button"
-                  className="flex items-center justify-center h-8 w-8 rounded hover:bg-paycard-red/10 transition-colors"
+                  className="flex items-center justify-center h-10 w-10 rounded hover:bg-paycard-red/10 transition-colors"
                   onClick={() => onRemoveCard(card.id)}
                   aria-label="Remove card"
                   tabIndex={0}
+                  style={{ marginLeft: 0 }} // ensures flush with border
                 >
                   <Trash2 className="text-paycard-red" size={20} strokeWidth={2} />
                 </button>
               )}
             </div>
-            {/* Error message under input+icon */}
+            {/* Error message under input */}
             {hasError && (
               <p className="mt-1 text-sm font-poppins text-paycard-red body-small">
                 {errors[`cardNumber-${card.id}`]}
@@ -90,3 +92,4 @@ export const CardNumberInputs = ({
     </div>
   );
 };
+
