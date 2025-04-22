@@ -2,7 +2,13 @@
 import { CreditCard, Users, FileText, Settings, Wallet, UserCircle, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { 
+  Sidebar as UISidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarItem
+} from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
 
 export function Sidebar() {
   const location = useLocation();
@@ -47,74 +53,65 @@ export function Sidebar() {
   ];
 
   return (
-    <aside className="bg-paycard-navy text-white w-64 h-screen hidden md:flex md:flex-col">
-      {/* Logo and Balance Section */}
-      <div className="p-4">
-        <Link to="/" className="mb-4 block">
-          <span className="text-xl font-bold">Standard Bank PayCard</span>
-        </Link>
-        <div className="text-sm text-gray-300 p-3">
-          Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
-        </div>
-      </div>
-
-      {/* Scrollable Navigation Menu */}
-      <ScrollArea className="flex-1 px-4">
-        <ul className="space-y-2">
-          {menuItems.map((item) => (
-            <li key={item.path}>
-              <Link
-                to={item.path}
-                className={`flex items-center p-3 rounded-md transition-colors ${
-                  isActive(item.path, item.submenuItems)
-                    ? "bg-paycard-salmon text-white"
-                    : "hover:bg-paycard-navy-800"
-                }`}
-              >
-                <item.icon size={18} className="mr-3" />
-                {item.label}
-              </Link>
-              {item.submenuItems && (
-                <ul className="ml-7 mt-2 space-y-2">
-                  {item.submenuItems.map((subItem) => (
-                    <li key={subItem.path}>
-                      <Link
-                        to={subItem.path}
-                        className={`flex items-center p-2 rounded-md transition-colors ${
-                          (location.pathname === subItem.path ||
-                            (subItem.path === "/load-funds-from" &&
-                              location.pathname.startsWith("/load-funds-from")))
-                            ? "bg-paycard-salmon text-white"
-                            : "hover:bg-paycard-navy-800"
-                        }`}
-                      >
-                        <item.icon size={16} className="mr-3" />
-                        {subItem.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </ScrollArea>
-
-      {/* User Section at Bottom */}
-      <div className="border-t border-paycard-navy-800 p-4">
-        <div className="flex items-center justify-between">
-          <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
-            <Bell size={20} />
-          </button>
-          <div className="flex items-center">
-            <UserCircle size={24} className="mr-2" />
-            <span className="text-sm">{userHeader?.fullName || 'Admin User'}</span>
+    <SidebarProvider>
+      <UISidebar 
+        variant="full" 
+        collapsible="none"
+        username={userHeader?.fullName || 'Admin User'}
+        logoText="Standard Bank PayCard"
+        logoTagline=""
+      >
+        <SidebarContent>
+          <div className="p-4">
+            <div className="text-sm text-gray-300 p-3">
+              Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
+            </div>
           </div>
-          <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
-            <LogOut size={20} />
-          </button>
+          
+          {menuItems.map((item) => (
+            <div key={item.path}>
+              <Link to={item.path}>
+                <SidebarItem
+                  label={item.label}
+                  icon={<item.icon size={18} />}
+                  active={isActive(item.path, item.submenuItems)}
+                />
+              </Link>
+              
+              {item.submenuItems && (
+                <SidebarGroup title="" className="ml-7 mt-2 space-y-2">
+                  {item.submenuItems.map((subItem) => (
+                    <Link key={subItem.path} to={subItem.path}>
+                      <SidebarItem
+                        label={subItem.label}
+                        icon={<item.icon size={16} />}
+                        active={location.pathname === subItem.path || 
+                              (subItem.path === "/load-funds-from" && 
+                              location.pathname.startsWith("/load-funds-from"))}
+                      />
+                    </Link>
+                  ))}
+                </SidebarGroup>
+              )}
+            </div>
+          ))}
+        </SidebarContent>
+        
+        <div className="border-t border-paycard-navy-800 p-4">
+          <div className="flex items-center justify-between">
+            <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
+              <Bell size={20} />
+            </button>
+            <div className="flex items-center">
+              <UserCircle size={24} className="mr-2" />
+              <span className="text-sm">{userHeader?.fullName || 'Admin User'}</span>
+            </div>
+            <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
+              <LogOut size={20} />
+            </button>
+          </div>
         </div>
-      </div>
-    </aside>
+      </UISidebar>
+    </SidebarProvider>
   );
 }
