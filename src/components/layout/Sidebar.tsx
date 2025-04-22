@@ -1,4 +1,3 @@
-
 import { CreditCard, Link, Wallet, Users, FileText, Settings, LogOut, Bell } from "lucide-react";
 import { Link as RouterLink, useLocation } from "react-router-dom";
 import { 
@@ -131,13 +130,12 @@ export function Sidebar() {
               icon={
                 <Wallet size={20} className={cn(isActive("/load-funds-to-cards") ? "text-white" : "text-white/80")} />
               }
-              label={
-                <span className="ml-5">Load Funds to Cards</span>
-              }
+              label="Load Funds to Cards"
               active={isActive("/load-funds-to-cards")}
               className={cn(
                 "flex items-center gap-4 rounded-md px-7 py-2 text-base font-medium cursor-pointer transition",
                 "hover:bg-paycard-salmon/80 hover:text-white",
+                "ml-8", // Add this for visual indent of a submenu
                 isActive("/load-funds-to-cards")
                   ? "bg-paycard-salmon text-white"
                   : "bg-transparent text-white/90"
