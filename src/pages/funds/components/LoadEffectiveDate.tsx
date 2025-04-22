@@ -4,15 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Label } from "@/components/ui/label";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
-
-interface LoadEffectiveDateProps {
-  effectiveDate: "immediate" | "delay";
-  selectedDate: Date | undefined;
-  onEffectiveDateChange: (value: "immediate" | "delay") => void;
-  onSelectedDateChange: (date: Date | undefined) => void;
-}
 
 // Utility to format time in 12-hour with AM/PM
 function formatTime12(date?: Date) {
@@ -26,6 +19,13 @@ function formatTime12(date?: Date) {
   return `${adjHours.toString().padStart(2, "0")}:${minutes
     .toString()
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")} ${period}`;
+}
+
+interface LoadEffectiveDateProps {
+  effectiveDate: "immediate" | "delay";
+  selectedDate: Date | undefined;
+  onEffectiveDateChange: (value: "immediate" | "delay") => void;
+  onSelectedDateChange: (date: Date | undefined) => void;
 }
 
 export const LoadEffectiveDate = ({
@@ -89,11 +89,13 @@ export const LoadEffectiveDate = ({
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {selectedDate ? (
                   <>
-                    {format(selectedDate, "MMMM d, yyyy")},{" "}
-                    <span className="ml-1">{formatTime12(selectedDate)}</span>
+                    {format(selectedDate, "MMMM d, yyyy")},
+                    <span className="ml-1">
+                      {formatTime12(selectedDate)}
+                    </span>
                   </>
                 ) : (
-                  <span>Pick a date</span>
+                  <span>Pick a date and time</span>
                 )}
               </Button>
             </PopoverTrigger>
@@ -106,7 +108,11 @@ export const LoadEffectiveDate = ({
                 initialFocus
                 className="p-3 pointer-events-auto"
                 showTimeInput={true}
-                timeLabel="Time"
+                timeLabel={
+                  <div className="flex items-center">
+                    <Clock className="h-4 w-4 mr-1" /> Time
+                  </div>
+                }
                 disabled={(date) => date < new Date()}
               />
             </PopoverContent>

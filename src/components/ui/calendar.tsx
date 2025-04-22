@@ -1,5 +1,6 @@
+
 import * as React from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
@@ -17,12 +18,11 @@ export type CalendarProps = Omit<
 };
 
 function getTimeString12(date?: Date) {
-  // Returns HH:MM (12-hour), and AM/PM
+  // Returns { time: "HH:MM:SS", period: "AM" | "PM" }
   if (!date) return { time: "", period: "AM" };
   let hours = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
-
   const period = hours >= 12 ? "PM" : "AM";
   let adjHours = hours % 12;
   if (adjHours === 0) adjHours = 12;
@@ -32,6 +32,20 @@ function getTimeString12(date?: Date) {
     seconds.toString().padStart(2, "0"),
   ].join(":");
   return { time, period };
+}
+
+function parseTimeFromString(value: string, current: { period: "AM" | "PM" }) {
+  // value format: "HH:MM:SS" or "HH:MM"
+  const [rawHours, rawMinutes, rawSeconds] = value.split(":");
+  let h = parseInt(rawHours, 10) || 12;
+  let m = parseInt(rawMinutes, 10) || 0;
+  let s = typeof rawSeconds !== "undefined" ? parseInt(rawSeconds, 10) || 0 : 0;
+
+  // Convert to 24-hour based on period
+  let hours24 = h;
+  if (current.period === "PM" && h !== 12) hours24 += 12;
+  if (current.period === "AM" && h === 12) hours24 = 0;
+  return { hours: hours24, minutes: m, seconds: s };
 }
 
 function Calendar({
@@ -44,15 +58,10 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  // Select date from calendar grid
-  const handleDaySelect: SelectSingleEventHandler = (date) => {
-    onSelect(date, { fromTimeInput: false }); // Close popover on calendar pick
-  };
-
-  // Local state for AM/PM (update when date/time changes)
+  // Local AM/PM state driven by selected date
   const { time: inputTime, period } = getTimeString12(selected);
 
-  // Handle time input as HH:MM:SS string and AM/PM
+  // Handle time/ampm input -- fix union event typing
   const handleTimeChange = (
     e: React.ChangeEvent<HTMLInputElement> | "period",
     value?: string
@@ -61,31 +70,38 @@ function Calendar({
     let h = selected.getHours();
     let m = selected.getMinutes();
     let s = selected.getSeconds();
-    let ampm = period;
+    let ampm: "AM" | "PM" = period;
 
-    if (typeof e === "string" && value) {
-      // AM/PM select changed
-      ampm = value;
-    } else {
-      // HH:MM:SS input changed
-      const parts = (e.target.value || "12:00:00").split(":").map((v) => parseInt(v, 10) || 0);
-      h = parts[0];
-      m = parts[1];
-      s = parts[2];
+    if (typeof e === "string" && e === "period" && value) {
+      // Period dropdown changed
+      ampm = value as "AM" | "PM";
+      // Re-parse hours adjusting for period
+      let currentHour12 = h % 12;
+      if (currentHour12 === 0) currentHour12 = 12;
+      h = ampm === "PM" ? (currentHour12 === 12 ? 12 : currentHour12 + 12) : (currentHour12 === 12 ? 0 : currentHour12);
+    } else if ("target" in e) {
+      // Text input edited
+      const next = parseTimeFromString(e.target.value, { period });
+      h = next.hours;
+      m = next.minutes;
+      s = next.seconds;
     }
 
-    // Convert to 24-hour format
-    let hours24 = h;
-    if (ampm === "PM" && h !== 12) hours24 += 12;
-    if (ampm === "AM" && h === 12) hours24 = 0;
-
     const updated = new Date(selected.getTime());
-    updated.setHours(hours24, m, s, 0);
-    // Don't close popover on time input
+    updated.setHours(h, m, s, 0);
+    // Don't close popover on time input/period change
     onSelect(updated, { fromTimeInput: true });
   };
 
-  // Ensure if calendar is used, popover closes; if time input/AMPM, popover stays.
+  // Only close popover when selecting from calendar grid
+  const handleDaySelect: SelectSingleEventHandler = (date) => {
+    if (!date) return;
+    // Use time from currently selected date if available
+    if (selected) {
+      date.setHours(selected.getHours(), selected.getMinutes(), selected.getSeconds(), 0);
+    }
+    onSelect(date, { fromTimeInput: false });
+  };
 
   return (
     <div>
@@ -150,9 +166,10 @@ function Calendar({
             onChange={handleTimeChange}
             autoComplete="off"
           />
+          <span className="text-xs font-semibold ml-1">{period}</span>
           <select
             aria-label="AM/PM"
-            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white"
+            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white ml-1"
             value={period}
             onChange={(e) => handleTimeChange("period", e.target.value)}
           >
@@ -167,3 +184,4 @@ function Calendar({
 Calendar.displayName = "Calendar";
 
 export { Calendar };
+
