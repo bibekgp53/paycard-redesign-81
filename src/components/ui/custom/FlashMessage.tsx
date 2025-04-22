@@ -66,7 +66,7 @@ export const FlashMessage: React.FC<FlashMessageProps> = ({
       </div>
       <div className="flex-1">
         <h4 className={cn('text-sm font-medium font-gilroy', config.textColor)}>{title}</h4>
-        <p className="text-sm font-poppins text-pcard-dark-blue">{message}</p>
+        <p className="text-sm font-poppins body-text text-pcard-dark-blue">{message}</p>
       </div>
       {onClose && (
         <button 

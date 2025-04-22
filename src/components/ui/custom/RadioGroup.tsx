@@ -45,7 +45,7 @@ export function RadioGroup({
         {options.map((option) => (
           <label
             key={option.value}
-            className="flex items-center cursor-pointer font-poppins"
+            className="flex items-center cursor-pointer font-poppins body-text"
           >
             <input
               type="radio"
@@ -59,8 +59,8 @@ export function RadioGroup({
           </label>
         ))}
       </div>
-      {error && <p className="mt-1 text-sm font-poppins text-paycard-red">{error}</p>}
-      {helpText && !error && <p className="mt-1 text-sm font-poppins text-gray-500">{helpText}</p>}
+      {error && <p className="mt-1 text-sm font-poppins text-paycard-red body-small">{error}</p>}
+      {helpText && !error && <p className="mt-1 text-sm font-poppins text-gray-500 body-small">{helpText}</p>}
     </div>
   );
 }
