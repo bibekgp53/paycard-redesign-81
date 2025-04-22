@@ -14,6 +14,20 @@ interface LoadEffectiveDateProps {
   onSelectedDateChange: (date: Date | undefined) => void;
 }
 
+// Utility to format time in 12-hour with AM/PM
+function formatTime12(date?: Date) {
+  if (!date) return "";
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+  const period = hours >= 12 ? "PM" : "AM";
+  let adjHours = hours % 12;
+  if (adjHours === 0) adjHours = 12;
+  return `${adjHours.toString().padStart(2, "0")}:${minutes
+    .toString()
+    .padStart(2, "0")}:${seconds.toString().padStart(2, "0")} ${period}`;
+}
+
 export const LoadEffectiveDate = ({
   effectiveDate,
   selectedDate,
@@ -73,7 +87,14 @@ export const LoadEffectiveDate = ({
             <PopoverTrigger asChild>
               <Button variant={"outline"} className="w-full justify-start text-left font-normal">
                 <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedDate ? format(selectedDate, "MMMM d, yyyy") : <span>Pick a date</span>}
+                {selectedDate ? (
+                  <>
+                    {format(selectedDate, "MMMM d, yyyy")},{" "}
+                    <span className="ml-1">{formatTime12(selectedDate)}</span>
+                  </>
+                ) : (
+                  <span>Pick a date</span>
+                )}
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">

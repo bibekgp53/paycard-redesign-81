@@ -16,13 +16,22 @@ export type CalendarProps = Omit<
   onSelect: (date: Date | undefined, opts?: { fromTimeInput?: boolean }) => void;
 };
 
-function getTimeString(date?: Date) {
-  if (!date) return "00:00:00";
-  return [
-    date.getHours().toString().padStart(2, "0"),
-    date.getMinutes().toString().padStart(2, "0"),
-    date.getSeconds().toString().padStart(2, "0"),
+function getTimeString12(date?: Date) {
+  // Returns HH:MM (12-hour), and AM/PM
+  if (!date) return { time: "", period: "AM" };
+  let hours = date.getHours();
+  const minutes = date.getMinutes();
+  const seconds = date.getSeconds();
+
+  const period = hours >= 12 ? "PM" : "AM";
+  let adjHours = hours % 12;
+  if (adjHours === 0) adjHours = 12;
+  const time = [
+    adjHours.toString().padStart(2, "0"),
+    minutes.toString().padStart(2, "0"),
+    seconds.toString().padStart(2, "0"),
   ].join(":");
+  return { time, period };
 }
 
 function Calendar({
@@ -40,16 +49,43 @@ function Calendar({
     onSelect(date, { fromTimeInput: false }); // Close popover on calendar pick
   };
 
-  // Time input change
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Local state for AM/PM (update when date/time changes)
+  const { time: inputTime, period } = getTimeString12(selected);
+
+  // Handle time input as HH:MM:SS string and AM/PM
+  const handleTimeChange = (
+    e: React.ChangeEvent<HTMLInputElement> | "period",
+    value?: string
+  ) => {
     if (!selected) return;
-    const value = e.target.value || "00:00:00";
-    const [h, m, s] = value.split(":").map((v) => parseInt(v, 10) || 0);
+    let h = selected.getHours();
+    let m = selected.getMinutes();
+    let s = selected.getSeconds();
+    let ampm = period;
+
+    if (typeof e === "string" && value) {
+      // AM/PM select changed
+      ampm = value;
+    } else {
+      // HH:MM:SS input changed
+      const parts = (e.target.value || "12:00:00").split(":").map((v) => parseInt(v, 10) || 0);
+      h = parts[0];
+      m = parts[1];
+      s = parts[2];
+    }
+
+    // Convert to 24-hour format
+    let hours24 = h;
+    if (ampm === "PM" && h !== 12) hours24 += 12;
+    if (ampm === "AM" && h === 12) hours24 = 0;
+
     const updated = new Date(selected.getTime());
-    updated.setHours(h, m, s, 0);
+    updated.setHours(hours24, m, s, 0);
     // Don't close popover on time input
     onSelect(updated, { fromTimeInput: true });
   };
+
+  // Ensure if calendar is used, popover closes; if time input/AMPM, popover stays.
 
   return (
     <div>
@@ -71,8 +107,7 @@ function Calendar({
           nav_button_next: "absolute right-1",
           table: "w-full border-collapse space-y-1",
           head_row: "flex",
-          head_cell:
-            "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+          head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
           row: "flex w-full mt-2",
           cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
           day: cn(
@@ -86,8 +121,7 @@ function Calendar({
           day_outside:
             "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
           day_disabled: "text-muted-foreground opacity-50",
-          day_range_middle:
-            "aria-selected:bg-accent aria-selected:text-accent-foreground",
+          day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
           day_hidden: "invisible",
           ...classNames,
         }}
@@ -104,17 +138,27 @@ function Calendar({
           className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-[95%] mx-auto"
           style={{ minWidth: 180, maxWidth: 250 }}
         >
-          <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[48px]">
+          <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[48px] text-left">
             {timeLabel}
           </label>
           <input
             id="delay-time"
-            type="time"
-            step="1"
-            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white w-[110px] text-right font-mono"
-            value={getTimeString(selected)}
+            type="text"
+            pattern="^(0?[1-9]|1[0-2]):[0-5][0-9](:[0-5][0-9])?$"
+            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white w-[80px] text-left font-mono"
+            value={inputTime}
             onChange={handleTimeChange}
+            autoComplete="off"
           />
+          <select
+            aria-label="AM/PM"
+            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white"
+            value={period}
+            onChange={(e) => handleTimeChange("period", e.target.value)}
+          >
+            <option>AM</option>
+            <option>PM</option>
+          </select>
         </div>
       )}
     </div>
