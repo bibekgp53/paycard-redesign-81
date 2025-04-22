@@ -17,8 +17,8 @@ const SelectTrigger = React.forwardRef<
   <SelectPrimitive.Trigger
     ref={ref}
     className={cn(
-      // style to match paycard input and rounded
-      "flex h-10 w-full items-center justify-between rounded-md border border-paycard-navy-200 bg-white px-3 py-2 text-base input-1 font-poppins placeholder:text-paycard-navy-400 focus:outline-none focus:ring-2 focus:ring-paycard-navy-500 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-shadow",
+      "flex h-10 w-full items-center justify-between rounded-md border border-paycard-navy-200 bg-white px-3 py-2 text-base input-1 font-poppins placeholder:text-paycard-navy-400 disabled:cursor-not-allowed disabled:opacity-50 transition-shadow",
+      // focus:outline-none, focus:ring-* are removed
       className
     )}
     {...props}
@@ -156,3 +156,4 @@ export {
   SelectScrollUpButton,
   SelectScrollDownButton,
 }
+
