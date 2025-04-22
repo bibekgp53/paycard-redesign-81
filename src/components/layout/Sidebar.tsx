@@ -60,59 +60,64 @@ export function Sidebar() {
       logoTagline="sandbox"
     >
       <SidebarContent>
-        <div className="p-4">
-          <div className="text-sm text-gray-300 p-3">
+        {/* Logo area and balance block with compact padding */}
+        <div className="p-3">
+          <div className="text-sm text-gray-300 px-2 pb-1">
             Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
           </div>
         </div>
         
-        {menuItems.map((item) => (
-          <div key={item.path}>
-            <Link to={item.path}>
-              <SidebarItem
-                label={item.label}
-                icon={<item.icon size={18} />}
-                active={isActive(item.path, item.submenuItems)}
-                className={cn(
-                  "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
-                  isActive(item.path, item.submenuItems) 
-                    ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
-                    : "text-gray-300"
-                )}
-              />
-            </Link>
-            
-            {/* Only render submenus if they exist */}
-            {item.submenuItems && (
-              <SidebarGroup title="" className="ml-7 mt-2 space-y-1">
-                {item.submenuItems.map((subItem) => {
-                  const isActiveSub = location.pathname === subItem.path || 
-                    (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"));
-                  return (
-                    <Link key={subItem.path} to={subItem.path}>
-                      <SidebarItem
-                        label={subItem.label}
-                        active={isActiveSub}
-                        className={cn(
-                          "text-sm py-1.5 transition-colors hover:bg-paycard-salmon/40 hover:text-white",
-                          isActiveSub
-                            ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
-                            : "text-gray-300"
-                        )}
-                      />
-                    </Link>
-                  );
-                })}
-              </SidebarGroup>
-            )}
-          </div>
-        ))}
+        <div className="flex flex-col gap-1">
+          {menuItems.map((item) => (
+            <div key={item.path} className="mb-0">
+              <Link to={item.path}>
+                <SidebarItem
+                  label={item.label}
+                  icon={<item.icon size={18} />}
+                  active={isActive(item.path, item.submenuItems)}
+                  className={cn(
+                    "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
+                    isActive(item.path, item.submenuItems) 
+                      ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
+                      : "text-gray-300"
+                  )}
+                  style={{ minHeight: 36, paddingTop: 6, paddingBottom: 6 }} // More compact menu items (smaller height)
+                />
+              </Link>
+              
+              {/* Only render submenus if they exist */}
+              {item.submenuItems && (
+                <SidebarGroup title="" className="ml-6 mt-1 space-y-0.5">
+                  {item.submenuItems.map((subItem) => {
+                    const isActiveSub = location.pathname === subItem.path || 
+                      (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"));
+                    return (
+                      <Link key={subItem.path} to={subItem.path}>
+                        <SidebarItem
+                          label={subItem.label}
+                          active={isActiveSub}
+                          className={cn(
+                            "text-sm py-1 transition-colors hover:bg-paycard-salmon/40 hover:text-white",
+                            isActiveSub
+                              ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
+                              : "text-gray-300"
+                          )}
+                          style={{ minHeight: 28 }}
+                        />
+                      </Link>
+                    );
+                  })}
+                </SidebarGroup>
+              )}
+            </div>
+          ))}
+        </div>
       </SidebarContent>
       
-      {/* Sidebar footer: Reduced padding and more compact height */}
+      {/* Sidebar footer: Reduced padding and most compact height possible */}
       <div className="border-t border-paycard-navy-800 mt-auto">
-        <div className="p-2">
-          <div className="flex items-center justify-between gap-2 min-h-8">
+        <div className="p-1">
+          <div className="flex items-center justify-between gap-2 min-h-7">
             <span className="text-gray-300 text-sm leading-none">Test User</span>
             <div className="flex items-center gap-2">
               <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
@@ -129,4 +134,3 @@ export function Sidebar() {
     </UISidebar>
   );
 }
-
