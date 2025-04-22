@@ -13,6 +13,12 @@ interface SliderProps {
   showValue?: boolean;
   className?: string;
   disabled?: boolean;
+  showTooltip?: boolean;
+  showLabels?: boolean;
+  // For range slider functionality
+  range?: boolean;
+  rangeValues?: [number, number];
+  onRangeChange?: (values: [number, number]) => void;
 }
 
 export function Slider({
@@ -25,7 +31,20 @@ export function Slider({
   showValue = false,
   className,
   disabled = false,
+  showTooltip = false,
+  showLabels = false,
+  range = false,
+  rangeValues,
+  onRangeChange,
 }: SliderProps) {
+  // Handle rendering value display
+  const displayValue = React.useMemo(() => {
+    if (range && rangeValues) {
+      return `${rangeValues[0]} - ${rangeValues[1]}`;
+    }
+    return Array.isArray(value) ? value[0] : value;
+  }, [value, range, rangeValues]);
+
   return (
     <div className={cn("space-y-2", className)}>
       <div className="flex justify-between items-center">
@@ -34,26 +53,67 @@ export function Slider({
         )}
         {showValue && (
           <span className="text-sm font-poppins text-paycard-navy">
-            {Array.isArray(value) ? value[0] : value}
+            {displayValue}
           </span>
         )}
       </div>
       
-      <ShadcnSlider
-        value={value}
-        max={max}
-        min={min}
-        step={step}
-        onValueChange={onValueChange}
-        disabled={disabled}
-        className="w-full"
-      />
-      
-      {min !== undefined && max !== undefined && (
-        <div className="flex justify-between">
-          <span className="text-xs text-paycard-navy-400">{min}</span>
-          <span className="text-xs text-paycard-navy-400">{max}</span>
+      {/* If using range slider functionality */}
+      {range && rangeValues && onRangeChange ? (
+        <div className="relative w-full py-4">
+          {showLabels && (
+            <div className="flex justify-between text-xs text-pcard-blue-700 mb-2">
+              <span>{min}</span>
+              <span>{max}</span>
+            </div>
+          )}
+          
+          <ShadcnSlider
+            value={rangeValues}
+            max={max}
+            min={min}
+            step={step}
+            onValueChange={(values) => {
+              if (values.length >= 2) {
+                onRangeChange([values[0], values[1]]);
+              }
+            }}
+            disabled={disabled}
+            className="w-full"
+          />
+          
+          {showTooltip && (
+            <div className="flex justify-between mt-2 text-xs text-pcard-blue-700">
+              <span>{rangeValues[0]}</span>
+              <span>{rangeValues[1]}</span>
+            </div>
+          )}
         </div>
+      ) : (
+        <>
+          <ShadcnSlider
+            value={value}
+            max={max}
+            min={min}
+            step={step}
+            onValueChange={onValueChange}
+            disabled={disabled}
+            className="w-full"
+          />
+          
+          {showTooltip && (
+            <div className="absolute mt-1 left-1/2 -translate-x-1/2 px-2 py-1 bg-pcard-blue-600 text-white rounded text-xs whitespace-nowrap">
+              {Array.isArray(value) ? value[0] : value}
+            </div>
+          )}
+          
+          {min !== undefined && max !== undefined && showLabels && (
+            <div className="flex justify-between">
+              <span className="text-xs text-paycard-navy-400">{min}</span>
+              <span className="text-xs text-paycard-navy-400">{max}</span>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

@@ -16,8 +16,8 @@ export function SliderExample() {
           <div className="space-y-4">
             <h3 className="text-xl font-semibold">Basic Slider</h3>
             <Slider 
-              value={[singleValue[0]]} 
-              onValueChange={(values) => setSingleValue([values[0]])} 
+              value={singleValue} 
+              onValueChange={(values) => setSingleValue(values)} 
               label="Basic Slider"
               showValue
             />
@@ -27,10 +27,11 @@ export function SliderExample() {
           <div className="space-y-4">
             <h3 className="text-xl font-semibold">Slider with Tooltip</h3>
             <Slider 
-              value={[singleValue[0]]} 
-              onValueChange={(values) => setSingleValue([values[0]])}
+              value={singleValue} 
+              onValueChange={(values) => setSingleValue(values)}
               label="Slider with Tooltip"
               showValue
+              showTooltip
             />
           </div>
         </div>
@@ -39,12 +40,11 @@ export function SliderExample() {
           <div className="space-y-4">
             <h3 className="text-xl font-semibold">Range Slider</h3>
             <Slider 
-              value={[rangeValues[0], rangeValues[1]]}
-              onValueChange={(values) => {
-                if (values.length >= 2) {
-                  setRangeValues([values[0], values[1]]);
-                }
-              }}
+              range={true}
+              rangeValues={rangeValues}
+              onRangeChange={setRangeValues}
+              value={[rangeValues[0]]} // This is just for compatibility
+              onValueChange={() => {}} // This is just for compatibility
               label="Range Slider"
               showValue
             />
@@ -61,6 +61,7 @@ export function SliderExample() {
               onValueChange={(values) => console.log(values)}
               label="Custom Range"
               showValue
+              showLabels
             />
           </div>
         </div>

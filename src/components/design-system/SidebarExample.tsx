@@ -1,7 +1,11 @@
 
 import React from 'react';
 import { Home, User, Settings, FileText, BarChart } from 'lucide-react';
-import { CustomSidebar, CustomSidebarItem, CustomSidebarGroup } from '@/components/ui/sidebar';
+import { 
+  Sidebar, 
+  SidebarItem, 
+  SidebarGroup 
+} from '@/components/ui/sidebar';
 
 export function SidebarExample() {
   return (
@@ -9,83 +13,89 @@ export function SidebarExample() {
       <div className="h-[500px] bg-white rounded-lg shadow p-4">
         <h3 className="text-xl font-semibold mb-4">Full Sidebar</h3>
         <div className="h-[440px] overflow-hidden rounded-lg">
-          <CustomSidebar username="Antonin Pospisil">
-            <CustomSidebarItem 
+          <Sidebar 
+            variant="full" 
+            username="Antonin Pospisil"
+          >
+            <SidebarItem 
               label="Dashboard" 
               icon={<Home className="h-5 w-5" />} 
               active 
             />
-            <CustomSidebarItem 
+            <SidebarItem 
               label="Users" 
               icon={<User className="h-5 w-5" />} 
             />
-            <CustomSidebarGroup title="Reports" collapsible>
-              <CustomSidebarItem label="Daily" />
-              <CustomSidebarItem label="Weekly" />
-              <CustomSidebarItem label="Monthly" />
-            </CustomSidebarGroup>
-            <CustomSidebarItem 
+            <SidebarGroup title="Reports" collapsible>
+              <SidebarItem label="Daily" />
+              <SidebarItem label="Weekly" />
+              <SidebarItem label="Monthly" />
+            </SidebarGroup>
+            <SidebarItem 
               label="Analytics" 
               icon={<BarChart className="h-5 w-5" />} 
             />
-            <CustomSidebarItem 
+            <SidebarItem 
               label="Documents" 
               icon={<FileText className="h-5 w-5" />} 
             />
-            <CustomSidebarItem 
+            <SidebarItem 
               label="Settings" 
               icon={<Settings className="h-5 w-5" />} 
             />
-          </CustomSidebar>
+          </Sidebar>
         </div>
       </div>
 
       <div className="h-[500px] bg-white rounded-lg shadow p-4">
         <h3 className="text-xl font-semibold mb-4">Sidebar with Group</h3>
         <div className="h-[440px] overflow-hidden rounded-lg">
-          <CustomSidebar username="Antonin Pospisil">
-            <CustomSidebarItem 
+          <Sidebar 
+            variant="full"
+            username="Antonin Pospisil"
+          >
+            <SidebarItem 
               label="Dashboard" 
               icon={<Home className="h-5 w-5" />} 
             />
-            <CustomSidebarGroup title="Menu" collapsible defaultCollapsed={false}>
-              <CustomSidebarItem label="Item 01" />
-              <CustomSidebarItem label="Item 02" />
-              <CustomSidebarItem label="Item 03" active />
-            </CustomSidebarGroup>
-            <CustomSidebarItem 
+            <SidebarGroup title="Menu" collapsible defaultCollapsed={false}>
+              <SidebarItem label="Item 01" />
+              <SidebarItem label="Item 02" />
+              <SidebarItem label="Item 03" active />
+            </SidebarGroup>
+            <SidebarItem 
               label="Settings" 
               icon={<Settings className="h-5 w-5" />} 
             />
-          </CustomSidebar>
+          </Sidebar>
         </div>
       </div>
 
       <div className="h-[500px] bg-white rounded-lg shadow p-4">
         <h3 className="text-xl font-semibold mb-4">Collapsed Sidebar</h3>
         <div className="h-[440px] overflow-hidden rounded-lg flex justify-center">
-          <CustomSidebar 
+          <Sidebar 
             variant="collapsed" 
             username="Antonin Pospisil"
           >
-            <CustomSidebarItem 
+            <SidebarItem 
               icon={<Home className="h-5 w-5" />} 
               label=""
             />
-            <CustomSidebarItem 
+            <SidebarItem 
               icon={<User className="h-5 w-5" />} 
               label=""
             />
-            <CustomSidebarItem 
+            <SidebarItem 
               icon={<BarChart className="h-5 w-5" />} 
               label=""
               active
             />
-            <CustomSidebarItem 
+            <SidebarItem 
               icon={<Settings className="h-5 w-5" />} 
               label=""
             />
-          </CustomSidebar>
+          </Sidebar>
         </div>
       </div>
     </div>
