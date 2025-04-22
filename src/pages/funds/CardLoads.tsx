@@ -207,11 +207,11 @@ export function CardLoads() {
           <table className="w-full table-auto border mt-2 mb-4">
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b uppercase">Cardholder</th>
-                <th className="py-2 px-4 border-b uppercase">Card Number</th>
-                <th className="py-2 px-4 border-b uppercase">Amount</th>
-                <th className="py-2 px-4 border-b uppercase">Fee</th>
-                <th className="py-2 px-4 border-b uppercase">Notify via SMS</th>
+                <th className="py-2 px-4 border-b uppercase text-left">Cardholder</th>
+                <th className="py-2 px-4 border-b uppercase text-left">Card Number</th>
+                <th className="py-2 px-4 border-b uppercase text-left">Amount</th>
+                <th className="py-2 px-4 border-b uppercase text-left">Fee</th>
+                <th className="py-2 px-4 border-b uppercase text-left">Notify via SMS</th>
               </tr>
             </thead>
             <tbody>
@@ -295,7 +295,8 @@ export function CardLoads() {
           <div className="flex justify-end">
             <Button 
               onClick={handleContinue}
-              className="btn-primary"
+              variant="default"
+              size="default"
             >
               Continue
             </Button>
