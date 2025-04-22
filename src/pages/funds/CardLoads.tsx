@@ -295,7 +295,7 @@ export function CardLoads() {
           <div className="flex justify-end">
             <Button 
               onClick={handleContinue}
-              className="bg-paycard-salmon hover:bg-paycard-salmon-600"
+              className="btn-primary"
             >
               Continue
             </Button>

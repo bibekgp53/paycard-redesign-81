@@ -1,95 +1,72 @@
 
-import { Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-
-interface CardField {
-  id: string;
-  value: string;
-}
+import { Trash2 } from "lucide-react";
+import React from "react";
 
 interface CardNumberInputsProps {
-  cardNumbers: CardField[];
+  cardNumbers: { id: string; value: string }[];
   errors: Record<string, string>;
   onCardNumberChange: (id: string, value: string) => void;
   onAddCard: () => void;
   onRemoveCard: (id: string) => void;
 }
 
-export const CardNumberInputs = ({
+export const CardNumberInputs: React.FC<CardNumberInputsProps> = ({
   cardNumbers,
   errors,
   onCardNumberChange,
   onAddCard,
   onRemoveCard,
-}: CardNumberInputsProps) => {
+}) => {
   return (
-    <div className="space-y-4 mb-6">
-      <h2 className="text-lg font-semibold text-paycard-navy">Card Numbers</h2>
-      {cardNumbers.map((card, idx) => {
-        const hasError = !!errors[`cardNumber-${card.id}`];
-        return (
-          <div key={card.id} className="flex flex-col">
-            {/* Label (show only for first) */}
-            {card.id === "1" && (
-              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
-                Card Number/Tracking Number
-              </label>
-            )}
-            {/* Input + Trash in flex row, but trash outside border */}
-            <div className="flex items-center gap-2">
-              <div
-                className={`
-                  flex-1 rounded-md bg-white
-                  border
-                  ${hasError ? "border-paycard-red ring-1 ring-paycard-red" : "border-paycard-navy-200"}
-                  px-2 py-1
-                  transition
-                  focus-within:ring-2 focus-within:ring-paycard-navy-500
-                  flex
-                  h-8
-                `}
-              >
-                <Input
-                  placeholder="Enter card number"
-                  value={card.value}
-                  onChange={(e) => onCardNumberChange(card.id, e.target.value)}
-                  className="flex-1 shadow-none border-none focus:ring-0 focus-visible:ring-0 px-0 bg-transparent h-6 text-sm leading-none"
-                  style={{ minHeight: "1.5rem" }} // force height for tiny input
-                />
-              </div>
-              {cardNumbers.length > 1 && (
-                <button
-                  type="button"
-                  className="flex items-center justify-center h-8 w-8 rounded hover:bg-paycard-red/10 transition-colors"
-                  onClick={() => onRemoveCard(card.id)}
-                  aria-label="Remove card"
-                  tabIndex={0}
-                  style={{ marginLeft: 0 }}
-                >
-                  <Trash2 className="text-paycard-red" size={16} strokeWidth={2} />
-                </button>
-              )}
-            </div>
-            {/* Error message under input */}
-            {hasError && (
-              <p className="mt-1 text-sm font-poppins text-paycard-red body-small">
-                {errors[`cardNumber-${card.id}`]}
-              </p>
-            )}
-          </div>
-        );
-      })}
-      <Button
+    <div className="mb-6">
+      <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+        Card Numbers
+      </label>
+      {cardNumbers.map((card, idx) => (
+        <div key={card.id} className="flex items-center gap-2 mb-2">
+          <Input
+            placeholder={`Enter card number ${idx + 1}`}
+            value={card.value}
+            onChange={(e) => onCardNumberChange(card.id, e.target.value)}
+            className={`h-10 py-2 text-sm ${errors[`cardNumber-${card.id}`] ? "border-paycard-red ring-1 ring-paycard-red" : ""}`}
+            style={{ minWidth: 0, flex: 1 }}
+          />
+          {cardNumbers.length > 1 && (
+            <button
+              type="button"
+              onClick={() => onRemoveCard(card.id)}
+              className="ml-1 p-1 rounded hover:bg-paycard-navy-100 transition-colors"
+              aria-label="Remove card number"
+              tabIndex={0}
+            >
+              <Trash2 className="text-paycard-red w-5 h-5" />
+            </button>
+          )}
+        </div>
+      ))}
+      <button
         type="button"
-        variant="outline"
         onClick={onAddCard}
-        className="flex items-center gap-2"
+        className="mt-2 btn-secondary text-sm"
       >
-        <span>
-          Add Another Card
-        </span>
-      </Button>
+        + Add Card
+      </button>
+      {cardNumbers.some((card) => errors[`cardNumber-${card.id}`]) && (
+        <div className="mt-1">
+          {cardNumbers.map(
+            (card) =>
+              errors[`cardNumber-${card.id}`] && (
+                <p
+                  key={card.id}
+                  className="text-sm font-poppins text-paycard-red body-small"
+                >
+                  {errors[`cardNumber-${card.id}`]}
+                </p>
+              )
+          )}
+        </div>
+      )}
     </div>
   );
 };

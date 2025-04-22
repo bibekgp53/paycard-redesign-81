@@ -89,7 +89,7 @@ export default function ConfirmLoad() {
         )}
         <div className="flex justify-between mt-6">
           <Button variant="outline" onClick={() => navigate(-1)}>Back</Button>
-          <Button className="bg-paycard-salmon hover:bg-paycard-salmon-600">Confirm & Load</Button>
+          <Button className="btn-primary">Confirm & Load</Button>
         </div>
       </Card>
       <Card className="bg-white p-4">
