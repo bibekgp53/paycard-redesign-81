@@ -27,7 +27,7 @@ export const CardNumberInputs = ({
     <div className="space-y-4 mb-6">
       <h2 className="text-lg font-semibold text-paycard-navy">Card Numbers</h2>
       {cardNumbers.map((card) => (
-        <div key={card.id} className="flex items-start space-x-2">
+        <div key={card.id} className="flex items-center space-x-2">
           <div className="flex-1">
             <label
               className={
@@ -51,8 +51,9 @@ export const CardNumberInputs = ({
           {cardNumbers.length > 1 && (
             <button
               type="button"
-              className="mt-8 p-2 text-gray-500 hover:text-paycard-red"
+              className="p-2 flex items-center justify-center text-gray-500 hover:text-paycard-red"
               onClick={() => onRemoveCard(card.id)}
+              aria-label="Remove card"
             >
               <Trash2 size={20} />
             </button>
