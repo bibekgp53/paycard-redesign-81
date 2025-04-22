@@ -74,7 +74,6 @@ export function Sidebar() {
                 icon={<item.icon size={18} />}
                 active={isActive(item.path, item.submenuItems)}
                 className={cn(
-                  // Active and hover states now both have the same color as Figma
                   "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
                   isActive(item.path, item.submenuItems) 
                     ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
@@ -95,7 +94,6 @@ export function Sidebar() {
                         label={subItem.label}
                         active={isActiveSub}
                         className={cn(
-                          // Active and hover states both get salmon highlight and white text, all non-active are gray
                           "text-sm py-1.5 transition-colors hover:bg-paycard-salmon/40 hover:text-white",
                           isActiveSub
                             ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
@@ -111,23 +109,24 @@ export function Sidebar() {
         ))}
       </SidebarContent>
       
-      {/* Sidebar footer: show "Test User" and icon buttons only, nothing extra below */}
+      {/* Sidebar footer: Reduced padding and more compact height */}
       <div className="border-t border-paycard-navy-800 mt-auto">
-        <div className="p-4">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-gray-300 text-sm">Test User</span>
-            <div className="flex items-center gap-3">
-              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
+        <div className="p-2">
+          <div className="flex items-center justify-between gap-2 min-h-8">
+            <span className="text-gray-300 text-sm leading-none">Test User</span>
+            <div className="flex items-center gap-2">
+              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
                 <Bell size={18} />
               </button>
-              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
+              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
                 <LogOut size={18} />
               </button>
             </div>
           </div>
         </div>
       </div>
-      {/* Removed the extra div/section below the footer */}
+      {/* No extra spacing or content below footer */}
     </UISidebar>
   );
 }
+
