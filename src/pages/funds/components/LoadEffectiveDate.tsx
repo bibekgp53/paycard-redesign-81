@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -108,15 +107,8 @@ export const LoadEffectiveDate = ({
               />
             </PopoverContent>
           </Popover>
-          {selectedDate && (
-            <div className="mt-2 text-paycard-navy-700 border border-red-300 bg-red-50 rounded px-2 py-1 w-full flex items-center gap-2">
-              <CalendarIcon className="w-4 h-4" />
-              <span>{formatDateTimeCustom(selectedDate)}</span>
-            </div>
-          )}
         </div>
       )}
     </div>
   );
 };
-

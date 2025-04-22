@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
@@ -96,11 +95,6 @@ function Calendar({
     onSelect(date, { fromTimeInput: false });
   };
 
-  // Select all text when input is focused (simplifies hour/minute edits)
-  const handleTimeInputFocus = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.select();
-  };
-
   return (
     <div>
       <DayPicker
@@ -151,7 +145,7 @@ function Calendar({
       {showTimeInput && selected && (
         <div
           className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-full mx-auto"
-          style={{ minWidth: 180, maxWidth: 300 }}
+          style={{ minWidth: 180, maxWidth: 320 }}
         >
           <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left">
             {timeLabel}
@@ -160,10 +154,9 @@ function Calendar({
             id="delay-time"
             type="text"
             pattern="^(0?[1-9]|1[0-2]):[0-5][0-9](:[0-5][0-9])?$"
-            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white w-[111px] text-left font-mono"
+            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white w-[135px] text-left font-mono"
             value={inputTime}
             onChange={handleTimeInputChange}
-            onFocus={handleTimeInputFocus}
             autoComplete="off"
           />
           <span
