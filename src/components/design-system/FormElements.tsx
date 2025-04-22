@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { RadioGroup as RadioGroupBase, RadioGroupItem } from '@/components/ui/radio-group';
+import { RadioGroupBase, RadioGroupItem } from '@/components/ui/radio-group';
 
 export function FormElements() {
   return (
@@ -104,20 +104,22 @@ export function FormElements() {
         
         <div className="space-y-4">
           <h4 className="font-bold">Radio Buttons</h4>
-          <RadioGroupBase defaultValue="option-one">
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="option-one" id="option-one" />
-              <Label htmlFor="option-one">Option One</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="option-two" id="option-two" />
-              <Label htmlFor="option-two">Option Two</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="option-three" id="option-three" disabled />
-              <Label htmlFor="option-three" className="opacity-50">Disabled Option</Label>
-            </div>
-          </RadioGroupBase>
+          <div className="space-y-2">
+            <RadioGroupBase defaultValue="option-one">
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="option-one" id="option-one" />
+                <Label htmlFor="option-one">Option One</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="option-two" id="option-two" />
+                <Label htmlFor="option-two">Option Two</Label>
+              </div>
+              <div className="flex items-center space-x-2">
+                <RadioGroupItem value="option-three" id="option-three" disabled />
+                <Label htmlFor="option-three" className="opacity-50">Disabled Option</Label>
+              </div>
+            </RadioGroupBase>
+          </div>
         </div>
       </div>
       
