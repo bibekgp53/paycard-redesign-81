@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -49,19 +48,15 @@ const LinkCardsForm = () => {
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [profileOptions, setProfileOptions] = useState<{ value: string; label: string }[]>([
-    { value: "", label: "Select a profile" },
-  ]);
+  const [profileOptions, setProfileOptions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
     if (profilesData) {
-      const options = [
-        { value: "", label: "Select a profile" },
-        ...(profilesData.profilesCollection.edges.map(({ node: profile }) => ({
+      const options =
+        profilesData.profilesCollection.edges.map(({ node: profile }) => ({
           value: profile.profile_number,
           label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}`
-        })) || [])
-      ];
+        })) || [];
       setProfileOptions(options);
     }
 
@@ -186,7 +181,10 @@ const LinkCardsForm = () => {
             <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
               Profile
             </label>
-            <Select value={formData.profileNumber} onValueChange={handleProfileChange}>
+            <Select
+              value={formData.profileNumber}
+              onValueChange={handleProfileChange}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Select a profile" />
               </SelectTrigger>
