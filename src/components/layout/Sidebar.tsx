@@ -60,9 +60,9 @@ export function Sidebar() {
     >
       <SidebarContent>
         {/* Logo area - keep as is */}
-        {/* Remove extra margin above "Your Balance", reduce px/pb below */}
+        {/* Remove extra margin above "Your Balance", reduce px/pb below, align with menu */}
         <div className="pt-0 p-0">
-          <div className="text-sm text-gray-300 px-2 pb-0">
+          <div className="text-sm text-gray-300 pb-0 pl-4">
             Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
           </div>
         </div>
@@ -114,10 +114,10 @@ export function Sidebar() {
         </div>
       </SidebarContent>
       
-      {/* Sidebar footer */}
+      {/* Sidebar footer; align with menu items by adding pl-4 */}
       <div className="border-t border-paycard-navy-800 mt-auto">
         <div className="p-0">
-          <div className="flex items-center justify-between gap-2 min-h-[32px] h-8">
+          <div className="flex items-center justify-between gap-2 min-h-[32px] h-8 pl-4 pr-2">
             <span className="text-gray-300 text-sm leading-none">Test User</span>
             <div className="flex items-center gap-1">
               <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
