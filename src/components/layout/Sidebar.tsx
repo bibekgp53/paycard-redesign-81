@@ -107,6 +107,7 @@ export function Sidebar() {
           ))}
         </SidebarContent>
         
+        {/* User footer with Test User text and icons */}
         <div className="border-t border-paycard-navy-800 mt-auto">
           <div className="p-4">
             <div className="flex items-center justify-between gap-3">
