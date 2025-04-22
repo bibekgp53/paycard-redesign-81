@@ -58,7 +58,6 @@ export function Sidebar() {
       <UISidebar 
         variant="full" 
         collapsible="none"
-        username={userHeader?.fullName || 'Admin User'}
         logoText="Standard Bank PayCard"
         logoTagline="sandbox"
       >
@@ -107,24 +106,6 @@ export function Sidebar() {
             </div>
           ))}
         </SidebarContent>
-        
-        <div className="border-t border-paycard-navy-800 mt-auto">
-          <div className="p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-300">{userHeader?.fullName || 'Admin User'}</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
-                  <Bell size={18} />
-                </button>
-                <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
-                  <LogOut size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </UISidebar>
     </SidebarProvider>
   );
