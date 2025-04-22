@@ -1,3 +1,4 @@
+
 import type { Config } from "tailwindcss";
 
 export default {
@@ -84,15 +85,54 @@ export default {
 					'navy-200': '#C8DBF0',
 					'navy-150': '#EDF2FA',
 					'navy-100': '#F6F9FD',
+				},
+				// New colors from the provided design system
+				pcard: {
+					// Blues
+					'dark-blue': '#0F1F38',     // Darkest navy blue
+					'blue-900': '#183358',      // Very dark blue
+					'blue-800': '#224780',      // Dark blue
+					'blue-700': '#2C58A5',      // Medium-dark blue
+					'blue-600': '#366FC9',      // Medium blue
+					'blue-500': '#5A88D3',      // Medium blue
+					'blue-400': '#7FA4DD',      // Light-medium blue
+					'blue-300': '#A4A8E7',      // Light blue
+					'blue-200': '#C8DBF0',      // Very light blue
+					'blue-100': '#EDF2FA',      // Extremely light blue
+					'blue-50': '#F6F9FD',       // Almost white blue
+					// Status Colors
+					'status-blue': '#6C87BC',    // Status blue
+					'status-blue-dark': '#3C5382', // Darker status blue
+					'status-blue-light': '#E7ECF4', // Light status blue
+					
+					'status-green': '#6CBC85',   // Status green
+					'status-green-dark': '#357449', // Darker status green
+					'status-green-light': '#E7F4EB', // Light status green
+					
+					'status-orange': '#FBE053', // Status orange (amber)
+					'status-orange-dark': '#B97705', // Darker status orange
+					'status-orange-light': '#FEF5E3', // Light status orange
+					
+					'status-red': '#F17173',     // Status red
+					'status-red-dark': '#B71215', // Darker status red
+					'status-red-light': '#FDE8E9', // Light status red
+					
+					// Brand Salmon
+					'salmon': '#F47A71',        // Primary salmon color
+					'salmon-dark': '#923E38',    // Darker salmon
+					'salmon-medium': '#EE6D64',  // Medium salmon
+					'salmon-light': '#FDE2E1',   // Light salmon
 				}
 			},
 			fontFamily: {
 				'gilroy': ['Gilroy', 'sans-serif'],
+				'poppins': ['Poppins', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
 				md: 'calc(var(--radius) - 2px)',
-				sm: 'calc(var(--radius) - 4px)'
+				sm: 'calc(var(--radius) - 4px)',
+				'card': '14px', // Custom card radius from the design
 			},
 			keyframes: {
 				'accordion-down': {

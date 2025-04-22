@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +20,7 @@ import LoadFundsFrom from "./pages/funds/LoadFundsFrom";
 import LoadFundsTo from "./pages/funds/LoadFundsTo";
 import CardLoads from "./pages/funds/CardLoads";
 import ConfirmLoad from "./pages/funds/ConfirmLoad";
+import DesignSystem from "./pages/DesignSystem";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +48,9 @@ const App = () => (
             <Route path="/load-funds-from/to" element={<MainLayout><LoadFundsTo /></MainLayout>} />
             <Route path="/load-funds-from/card-loads" element={<MainLayout><CardLoads /></MainLayout>} />
             <Route path="/load-funds-from/card-loads/confirm-load" element={<MainLayout><ConfirmLoad /></MainLayout>} />
+            
+            {/* Design System */}
+            <Route path="/design-system" element={<DesignSystem />} />
             
             {/* Default page for unimplemented sections */}
             <Route path="/cards" element={<MainLayout><Dashboard /></MainLayout>} />
