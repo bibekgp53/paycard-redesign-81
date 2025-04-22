@@ -22,13 +22,15 @@ export const LoadEffectiveDate = ({
 }: LoadEffectiveDateProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  // Only pick date, calendar will handle time input as needed
-  const handleDateChange = (date: Date | undefined) => {
+  // Accept an optional flag to decide if selection came from time input
+  const handleDateChange = (date: Date | undefined, fromTimeInput?: boolean) => {
     onSelectedDateChange(date);
-    setIsPopoverOpen(false); // Close the popover after selecting a date
+    // Only close popover if triggered from DayPicker, not time input
+    if (!fromTimeInput) {
+      setIsPopoverOpen(false);
+    }
   };
 
-  // Effective date mode change (immediate/delay)
   const handleRadioChange = (value: "immediate" | "delay") => {
     onEffectiveDateChange(value);
   };
@@ -77,7 +79,9 @@ export const LoadEffectiveDate = ({
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
                 selected={selectedDate}
-                onSelect={handleDateChange}
+                onSelect={(date: Date | undefined, opts?: { fromTimeInput?: boolean }) =>
+                  handleDateChange(date, opts?.fromTimeInput)
+                }
                 initialFocus
                 className="p-3 pointer-events-auto"
                 showTimeInput={true}

@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
@@ -7,11 +6,14 @@ import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
 // Only support single mode for Calendar!
-export type CalendarProps = Omit<React.ComponentProps<typeof DayPicker>, "mode" | "selected" | "onSelect"> & {
+export type CalendarProps = Omit<
+  React.ComponentProps<typeof DayPicker>,
+  "mode" | "selected" | "onSelect"
+> & {
   showTimeInput?: boolean;
   timeLabel?: React.ReactNode;
   selected: Date | undefined;
-  onSelect: (date: Date | undefined) => void;
+  onSelect: (date: Date | undefined, opts?: { fromTimeInput?: boolean }) => void;
 };
 
 function getTimeString(date?: Date) {
@@ -33,19 +35,20 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  // Only for mode="single"
+  // Select date from calendar grid
   const handleDaySelect: SelectSingleEventHandler = (date) => {
-    onSelect(date);
+    onSelect(date, { fromTimeInput: false }); // Close popover on calendar pick
   };
 
-  // Move time input logic here!
+  // Time input change
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selected) return;
     const value = e.target.value || "00:00:00";
     const [h, m, s] = value.split(":").map((v) => parseInt(v, 10) || 0);
-    const updated = new Date(selected);
+    const updated = new Date(selected.getTime());
     updated.setHours(h, m, s, 0);
-    onSelect(updated);
+    // Don't close popover on time input
+    onSelect(updated, { fromTimeInput: true });
   };
 
   return (
@@ -98,10 +101,10 @@ function Calendar({
       />
       {showTimeInput && selected && (
         <div
-          className="flex items-center justify-end gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-[95%] mx-auto"
+          className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-[95%] mx-auto"
           style={{ minWidth: 180, maxWidth: 250 }}
         >
-          <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2">
+          <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[48px]">
             {timeLabel}
           </label>
           <input
@@ -120,4 +123,3 @@ function Calendar({
 Calendar.displayName = "Calendar";
 
 export { Calendar };
-
