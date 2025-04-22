@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
@@ -55,25 +56,55 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  // Local state for input value and period
-  const { time: inputTime, period } = getTimeString12(selected);
+  // Local state for controlled time string so caret stores correctly
+  const [localTime, setLocalTime] = React.useState(() => getTimeString12(selected).time);
+  const [localPeriod, setLocalPeriod] = React.useState<"AM" | "PM">(getTimeString12(selected).period);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+
+  // Sync display with selected (except when editing input)
+  React.useEffect(() => {
+    if (!selected) {
+      setLocalTime("");
+      setLocalPeriod("AM");
+    } else {
+      const { time, period } = getTimeString12(selected);
+      setLocalTime(time);
+      setLocalPeriod(period);
+    }
+  }, [selected]);
 
   // Handles changing the time (text input)
   const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!selected) return;
     const val = e.target.value;
+    setLocalTime(val);
+
+    if (!selected) return;
+
+    // Save caret position
+    const caret = e.target.selectionStart ?? val.length;
+
     // Always pass explicit period of type "AM" | "PM"
-    const next = parseTimeFromString(val, period as "AM" | "PM");
+    const next = parseTimeFromString(val, localPeriod);
     const updated = new Date(selected.getTime());
     updated.setHours(next.hours, next.minutes, next.seconds, 0);
     onSelect(updated, { fromTimeInput: true });
+
+    // Restore caret position in next tick
+    setTimeout(() => {
+      if (inputRef.current) {
+        inputRef.current.setSelectionRange(caret, caret);
+      }
+    }, 0);
   };
 
   // Handles toggling AM/PM (by clicking on span)
   const handleTogglePeriod = () => {
     if (!selected) return;
+
     let hours = selected.getHours();
-    let newPeriod: "AM" | "PM" = period === "AM" ? "PM" : "AM";
+    let newPeriod: "AM" | "PM" = localPeriod === "AM" ? "PM" : "AM";
+    setLocalPeriod(newPeriod);
+
     // Toggle hours for new period
     if (newPeriod === "PM" && hours < 12) {
       hours += 12;
@@ -96,56 +127,55 @@ function Calendar({
   };
 
   return (
-    <div>
-      <DayPicker
-        mode="single"
-        showOutsideDays={showOutsideDays}
-        className={cn("p-3 pointer-events-auto", className)}
-        classNames={{
-          months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
-          month: "space-y-4",
-          caption: "flex justify-center pt-1 relative items-center",
-          caption_label: "text-sm font-medium",
-          nav: "space-x-1 flex items-center",
-          nav_button: cn(
-            buttonVariants({ variant: "outline" }),
-            "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
-          ),
-          nav_button_previous: "absolute left-1",
-          nav_button_next: "absolute right-1",
-          table: "w-full border-collapse space-y-1",
-          head_row: "flex",
-          head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
-          row: "flex w-full mt-2",
-          cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
-          day: cn(
-            buttonVariants({ variant: "ghost" }),
-            "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
-          ),
-          day_range_end: "day-range-end",
-          day_selected:
-            "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
-          day_today: "bg-accent text-accent-foreground",
-          day_outside:
-            "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
-          day_disabled: "text-muted-foreground opacity-50",
-          day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
-          day_hidden: "invisible",
-          ...classNames,
-        }}
-        components={{
-          IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
-          IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
-        }}
-        selected={selected}
-        onSelect={handleDaySelect}
-        {...props}
-      />
+    <DayPicker
+      mode="single"
+      showOutsideDays={showOutsideDays}
+      className={cn("p-3 pointer-events-auto", className)}
+      classNames={{
+        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0",
+        month: "space-y-4",
+        caption: "flex justify-center pt-1 relative items-center",
+        caption_label: "text-sm font-medium",
+        nav: "space-x-1 flex items-center",
+        nav_button: cn(
+          buttonVariants({ variant: "outline" }),
+          "h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100"
+        ),
+        nav_button_previous: "absolute left-1",
+        nav_button_next: "absolute right-1",
+        table: "w-full border-collapse space-y-1",
+        head_row: "flex",
+        head_cell: "text-muted-foreground rounded-md w-9 font-normal text-[0.8rem]",
+        row: "flex w-full mt-2",
+        cell: "h-9 w-9 text-center text-sm p-0 relative [&:has([aria-selected].day-range-end)]:rounded-r-md [&:has([aria-selected].day-outside)]:bg-accent/50 [&:has([aria-selected])]:bg-accent first:[&:has([aria-selected])]:rounded-l-md last:[&:has([aria-selected])]:rounded-r-md focus-within:relative focus-within:z-20",
+        day: cn(
+          buttonVariants({ variant: "ghost" }),
+          "h-9 w-9 p-0 font-normal aria-selected:opacity-100"
+        ),
+        day_range_end: "day-range-end",
+        day_selected:
+          "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground focus:bg-primary focus:text-primary-foreground",
+        day_today: "bg-accent text-accent-foreground",
+        day_outside:
+          "day-outside text-muted-foreground opacity-50 aria-selected:bg-accent/50 aria-selected:text-muted-foreground aria-selected:opacity-30",
+        day_disabled: "text-muted-foreground opacity-50",
+        day_range_middle: "aria-selected:bg-accent aria-selected:text-accent-foreground",
+        day_hidden: "invisible",
+        ...classNames,
+      }}
+      components={{
+        IconLeft: ({ ..._props }) => <ChevronLeft className="h-4 w-4" />,
+        IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
+      }}
+      selected={selected}
+      onSelect={handleDaySelect}
+      {...props}
+    >
       {/* Only show below if time input is enabled and selected date exists */}
       {showTimeInput && selected && (
         <div
           className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-full mx-auto"
-          style={{ minWidth: 180, maxWidth: 320 }}
+          style={{ minWidth: 180, maxWidth: 340 }}
         >
           <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left">
             {timeLabel}
@@ -154,8 +184,9 @@ function Calendar({
             id="delay-time"
             type="text"
             pattern="^(0?[1-9]|1[0-2]):[0-5][0-9](:[0-5][0-9])?$"
-            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white w-[135px] text-left font-mono"
-            value={inputTime}
+            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white w-[150px] text-left font-mono"
+            value={localTime}
+            ref={inputRef}
             onChange={handleTimeInputChange}
             autoComplete="off"
           />
@@ -167,12 +198,13 @@ function Calendar({
             title="Toggle AM/PM"
             aria-label="Toggle AM/PM"
           >
-            {period}
+            {localPeriod}
           </span>
         </div>
       )}
-    </div>
+    </DayPicker>
   );
 }
 Calendar.displayName = "Calendar";
 export { Calendar };
+
