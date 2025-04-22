@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { CalendarIcon, Clock } from "lucide-react";
 import { format } from "date-fns";
 
-// Utility to format time in 12-hour with AM/PM
 function formatTime12(date?: Date) {
   if (!date) return "";
   let hours = date.getHours();
@@ -19,6 +18,14 @@ function formatTime12(date?: Date) {
   return `${adjHours.toString().padStart(2, "0")}:${minutes
     .toString()
     .padStart(2, "0")}:${seconds.toString().padStart(2, "0")} ${period}`;
+}
+
+// NEW: 24-hour format for button & below display
+function formatDateTime24(date?: Date) {
+  if (!date) return "";
+  // Pad for 2-digits
+  const pad = (v: number) => v.toString().padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())} ${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 interface LoadEffectiveDateProps {
@@ -36,10 +43,8 @@ export const LoadEffectiveDate = ({
 }: LoadEffectiveDateProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  // Accept an optional flag to decide if selection came from time input
   const handleDateChange = (date: Date | undefined, fromTimeInput?: boolean) => {
     onSelectedDateChange(date);
-    // Only close popover if triggered from DayPicker, not time input
     if (!fromTimeInput) {
       setIsPopoverOpen(false);
     }
@@ -89,10 +94,8 @@ export const LoadEffectiveDate = ({
                 <CalendarIcon className="mr-2 h-4 w-4" />
                 {selectedDate ? (
                   <>
-                    {format(selectedDate, "MMMM d, yyyy")},
-                    <span className="ml-1">
-                      {formatTime12(selectedDate)}
-                    </span>
+                    {/* Display date and time in the requested format */}
+                    {formatDateTime24(selectedDate)}
                   </>
                 ) : (
                   <span>Pick a date and time</span>
@@ -116,9 +119,17 @@ export const LoadEffectiveDate = ({
                 disabled={(date) => date < new Date()}
               />
             </PopoverContent>
+            {/* Display selected value in yyyy-MM-dd HH:mm:ss under the button */}
           </Popover>
+          {selectedDate && (
+            <div className="mt-2 text-paycard-navy-700 border border-red-300 bg-red-50 rounded px-2 py-1 w-full flex items-center gap-2">
+              <CalendarIcon className="w-4 h-4" />
+              <span>{formatDateTime24(selectedDate)}</span>
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 };
+

@@ -23,7 +23,7 @@ function getTimeString12(date?: Date) {
   let hours = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
-  const period = hours >= 12 ? "PM" : "AM";
+  const period: "AM" | "PM" = hours >= 12 ? "PM" : "AM";
   let adjHours = hours % 12;
   if (adjHours === 0) adjHours = 12;
   const time = [
@@ -34,7 +34,7 @@ function getTimeString12(date?: Date) {
   return { time, period };
 }
 
-function parseTimeFromString(value: string, current: { period: "AM" | "PM" }) {
+function parseTimeFromString(value: string, period: "AM" | "PM") {
   // value format: "HH:MM:SS" or "HH:MM"
   const [rawHours, rawMinutes, rawSeconds] = value.split(":");
   let h = parseInt(rawHours, 10) || 12;
@@ -43,8 +43,8 @@ function parseTimeFromString(value: string, current: { period: "AM" | "PM" }) {
 
   // Convert to 24-hour based on period
   let hours24 = h;
-  if (current.period === "PM" && h !== 12) hours24 += 12;
-  if (current.period === "AM" && h === 12) hours24 = 0;
+  if (period === "PM" && h !== 12) hours24 += 12;
+  if (period === "AM" && h === 12) hours24 = 0;
   return { hours: hours24, minutes: m, seconds: s };
 }
 
@@ -58,38 +58,32 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  // Local AM/PM state driven by selected date
+  // Local state for input value and period
   const { time: inputTime, period } = getTimeString12(selected);
 
-  // Handle time/ampm input -- fix union event typing
-  const handleTimeChange = (
-    e: React.ChangeEvent<HTMLInputElement> | "period",
-    value?: string
-  ) => {
+  // Handles changing the time (text input)
+  const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selected) return;
-    let h = selected.getHours();
-    let m = selected.getMinutes();
-    let s = selected.getSeconds();
-    let ampm: "AM" | "PM" = period;
-
-    if (typeof e === "string" && e === "period" && value) {
-      // Period dropdown changed
-      ampm = value as "AM" | "PM";
-      // Re-parse hours adjusting for period
-      let currentHour12 = h % 12;
-      if (currentHour12 === 0) currentHour12 = 12;
-      h = ampm === "PM" ? (currentHour12 === 12 ? 12 : currentHour12 + 12) : (currentHour12 === 12 ? 0 : currentHour12);
-    } else if ("target" in e) {
-      // Text input edited
-      const next = parseTimeFromString(e.target.value, { period });
-      h = next.hours;
-      m = next.minutes;
-      s = next.seconds;
-    }
-
+    const val = e.target.value;
+    const next = parseTimeFromString(val, period);
     const updated = new Date(selected.getTime());
-    updated.setHours(h, m, s, 0);
-    // Don't close popover on time input/period change
+    updated.setHours(next.hours, next.minutes, next.seconds, 0);
+    onSelect(updated, { fromTimeInput: true });
+  };
+
+  // Handles toggling AM/PM (by clicking on span)
+  const handleTogglePeriod = () => {
+    if (!selected) return;
+    let hours = selected.getHours();
+    let newPeriod: "AM" | "PM" = period === "AM" ? "PM" : "AM";
+    // Toggle hours for new period
+    if (newPeriod === "PM" && hours < 12) {
+      hours += 12;
+    } else if (newPeriod === "AM" && hours >= 12) {
+      hours -= 12;
+    }
+    const updated = new Date(selected.getTime());
+    updated.setHours(hours);
     onSelect(updated, { fromTimeInput: true });
   };
 
@@ -151,10 +145,10 @@ function Calendar({
       />
       {showTimeInput && selected && (
         <div
-          className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-[95%] mx-auto"
-          style={{ minWidth: 180, maxWidth: 250 }}
+          className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-full mx-auto"
+          style={{ minWidth: 180, maxWidth: 300 }}
         >
-          <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[48px] text-left">
+          <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left">
             {timeLabel}
           </label>
           <input
@@ -163,19 +157,18 @@ function Calendar({
             pattern="^(0?[1-9]|1[0-2]):[0-5][0-9](:[0-5][0-9])?$"
             className="border border-paycard-navy-200 rounded px-2 py-1 bg-white w-[80px] text-left font-mono"
             value={inputTime}
-            onChange={handleTimeChange}
+            onChange={handleTimeInputChange}
             autoComplete="off"
           />
-          <span className="text-xs font-semibold ml-1">{period}</span>
-          <select
-            aria-label="AM/PM"
-            className="border border-paycard-navy-200 rounded px-2 py-1 bg-white ml-1"
-            value={period}
-            onChange={(e) => handleTimeChange("period", e.target.value)}
+          <span
+            className="text-xs font-semibold ml-1 select-none cursor-pointer border rounded px-2 py-1 bg-gray-50 hover:bg-gray-100"
+            onClick={handleTogglePeriod}
+            tabIndex={0}
+            style={{ userSelect: "none" }}
+            title="Toggle AM/PM"
           >
-            <option>AM</option>
-            <option>PM</option>
-          </select>
+            {period}
+          </span>
         </div>
       )}
     </div>
