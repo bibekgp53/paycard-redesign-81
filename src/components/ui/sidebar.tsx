@@ -211,16 +211,7 @@ const Sidebar = React.forwardRef<
             {children}
           </div>
           
-          {/* Footer Section */}
-          <div className="border-t border-sidebar-border py-4 px-4">
-            {variant !== 'collapsed' ? (
-              <div className="text-sidebar-foreground/80 text-sm">{username}</div>
-            ) : (
-              <div className="text-sidebar-foreground/80 text-sm text-center">
-                {username ? username.split(' ').map(name => name[0]).join('') : ''}
-              </div>
-            )}
-          </div>
+          {/* Removed the unnecessary footer section that caused the empty space */}
         </div>
       );
     }
