@@ -135,9 +135,10 @@ export function Sidebar() {
         </div>
       </SidebarContent>
       
-      <div className="border-t border-paycard-navy-800 mt-auto pb-0">
+      {/* Sidebar bottom user section: Remove excess margin/padding and match top spacing */}
+      <div className="border-t border-paycard-navy-800">
         <div className="p-0">
-          <div className="flex items-center justify-between gap-2 min-h-[32px] h-8 pl-4 pr-2 mb-2">
+          <div className="flex items-center justify-between gap-2 min-h-[40px] pl-4 pr-2 mt-2 mb-2">
             <span className="text-gray-300 text-sm leading-none">Test User</span>
             <div className="flex items-center gap-1">
               <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
