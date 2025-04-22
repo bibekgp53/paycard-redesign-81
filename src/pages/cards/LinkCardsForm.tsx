@@ -240,7 +240,7 @@ const LinkCardsForm = () => {
                 placeholder="Enter name"
                 value={formData.processedBy}
                 onChange={(e) => handleChange("processedBy", e.target.value)}
-                className={errors.processedBy ? "border-paycard-red ring-1 ring-paycard-red" : ""}
+                className={`h-8 py-1 text-sm ${errors.processedBy ? "border-paycard-red ring-1 ring-paycard-red" : ""}`}
               />
               {errors.processedBy && (
                 <p className="mt-1 text-sm font-poppins text-paycard-red body-small">{errors.processedBy}</p>
@@ -254,7 +254,7 @@ const LinkCardsForm = () => {
                 placeholder="Enter invoice number"
                 value={formData.invoiceNumber}
                 onChange={(e) => handleChange("invoiceNumber", e.target.value)}
-                className={errors.invoiceNumber ? "border-paycard-red ring-1 ring-paycard-red" : ""}
+                className={`h-8 py-1 text-sm ${errors.invoiceNumber ? "border-paycard-red ring-1 ring-paycard-red" : ""}`}
               />
               {errors.invoiceNumber && (
                 <p className="mt-1 text-sm font-poppins text-paycard-red body-small">{errors.invoiceNumber}</p>
@@ -266,7 +266,7 @@ const LinkCardsForm = () => {
             <Button variant="outline" type="button" onClick={() => navigate(-1)}>
               Back
             </Button>
-            <Button type="submit">
+            <Button type="submit" className="btn-primary">
               Continue
             </Button>
           </div>
