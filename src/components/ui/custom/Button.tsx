@@ -21,7 +21,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     fullWidth,
     ...props 
   }, ref) => {
-    const baseStyles = "inline-flex items-center justify-center font-medium rounded transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
+    const baseStyles = "inline-flex items-center justify-center font-gilroy font-medium rounded transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2";
     
     const variantStyles = {
       primary: "bg-paycard-navy text-white hover:bg-paycard-navy-800 focus:ring-paycard-navy-500",

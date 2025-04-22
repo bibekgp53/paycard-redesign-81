@@ -39,13 +39,13 @@ export function RadioGroup({
   return (
     <div className={cn("mb-4", className)}>
       {label && (
-        <p className="block text-sm font-medium text-paycard-navy mb-2">{label}</p>
+        <p className="block text-sm font-medium font-gilroy text-paycard-navy mb-2">{label}</p>
       )}
       <div className={cn("space-y-2", inline && "flex space-y-0 space-x-6")}>
         {options.map((option) => (
           <label
             key={option.value}
-            className="flex items-center cursor-pointer"
+            className="flex items-center cursor-pointer font-poppins"
           >
             <input
               type="radio"
@@ -59,8 +59,8 @@ export function RadioGroup({
           </label>
         ))}
       </div>
-      {error && <p className="mt-1 text-sm text-paycard-red">{error}</p>}
-      {helpText && !error && <p className="mt-1 text-sm text-gray-500">{helpText}</p>}
+      {error && <p className="mt-1 text-sm font-poppins text-paycard-red">{error}</p>}
+      {helpText && !error && <p className="mt-1 text-sm font-poppins text-gray-500">{helpText}</p>}
     </div>
   );
 }

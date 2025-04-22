@@ -27,7 +27,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
     return (
       <div className="mb-4">
         {label && (
-          <label className="block text-sm font-medium text-paycard-navy mb-1">
+          <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
             {label}
           </label>
         )}
@@ -35,7 +35,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
           <select
             ref={ref}
             className={cn(
-              "appearance-none w-full border border-paycard-navy-200 rounded px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-paycard-navy-300",
+              "appearance-none w-full font-poppins border border-paycard-navy-200 rounded px-3 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-paycard-navy-300",
               error ? "border-paycard-red ring-1 ring-paycard-red" : "",
               className
             )}
@@ -52,8 +52,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             <ChevronDown className="h-4 w-4 text-gray-500" />
           </div>
         </div>
-        {error && <p className="mt-1 text-sm text-paycard-red">{error}</p>}
-        {helpText && !error && <p className="mt-1 text-sm text-gray-500">{helpText}</p>}
+        {error && <p className="mt-1 text-sm font-poppins text-paycard-red">{error}</p>}
+        {helpText && !error && <p className="mt-1 text-sm font-poppins text-gray-500">{helpText}</p>}
       </div>
     );
   }
