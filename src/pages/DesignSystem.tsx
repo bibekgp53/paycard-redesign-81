@@ -6,6 +6,7 @@ import { Typography } from '@/components/design-system/Typography';
 import { FormElements } from '@/components/design-system/FormElements';
 import { SidebarExample } from '@/components/design-system/SidebarExample';
 import { SliderExample } from '@/components/design-system/SliderExample';
+import { IconsExample } from '@/components/design-system/IconsExample';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +27,8 @@ export default function DesignSystem() {
 
       <div className="paycard-container">
         <Typography />
+        
+        <IconsExample />
         
         <Card className="p-8 mb-12">
           <h2 className="text-3xl font-bold mb-6">Components</h2>
