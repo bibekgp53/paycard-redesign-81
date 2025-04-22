@@ -1,4 +1,3 @@
-
 import { CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -60,14 +59,15 @@ export function Sidebar() {
       logoTagline="sandbox"
     >
       <SidebarContent>
-        {/* Logo area and balance block with highly compact padding */}
-        <div className="p-2 pb-1">
-          <div className="text-sm text-gray-300 px-2 pb-1">
+        {/* Logo area - keep as is */}
+        {/* Remove extra margin above "Your Balance", reduce px/pb below */}
+        <div className="pt-0 p-0">
+          <div className="text-sm text-gray-300 px-2 pb-0">
             Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
           </div>
         </div>
-        
-        <div className="flex flex-col gap-0.5"> {/* Decreased vertical gap between sidebar items */}
+        {/* Reduce gap between balance and menu items */}
+        <div className="flex flex-col gap-0">
           {menuItems.map((item) => (
             <div key={item.path} className="mb-0">
               <Link to={item.path}>
@@ -81,7 +81,7 @@ export function Sidebar() {
                       ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
                       : "text-gray-300"
                   )}
-                  style={{ minHeight: 32, paddingTop: 4, paddingBottom: 4 }} // Decreased min height & vertical padding
+                  style={{ minHeight: 32, paddingTop: 4, paddingBottom: 4 }}
                 />
               </Link>
               
@@ -102,7 +102,7 @@ export function Sidebar() {
                               ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
                               : "text-gray-300"
                           )}
-                          style={{ minHeight: 24, paddingTop: 2, paddingBottom: 2 }} // Further decreased min height
+                          style={{ minHeight: 24, paddingTop: 2, paddingBottom: 2 }}
                         />
                       </Link>
                     );
@@ -114,7 +114,7 @@ export function Sidebar() {
         </div>
       </SidebarContent>
       
-      {/* Sidebar footer: reduce min height + vertical padding as much as possible */}
+      {/* Sidebar footer */}
       <div className="border-t border-paycard-navy-800 mt-auto">
         <div className="p-0">
           <div className="flex items-center justify-between gap-2 min-h-[32px] h-8">
@@ -134,4 +134,3 @@ export function Sidebar() {
     </UISidebar>
   );
 }
-
