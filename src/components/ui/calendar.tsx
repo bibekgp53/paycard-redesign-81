@@ -2,7 +2,6 @@
 import * as React from "react";
 import { ChevronLeft, ChevronRight, Clock } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
-
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -19,7 +18,7 @@ export type CalendarProps = Omit<
 
 function getTimeString12(date?: Date) {
   // Returns { time: "HH:MM:SS", period: "AM" | "PM" }
-  if (!date) return { time: "", period: "AM" };
+  if (!date) return { time: "", period: "AM" as "AM" | "PM" };
   let hours = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
@@ -65,6 +64,7 @@ function Calendar({
   const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selected) return;
     const val = e.target.value;
+    // Always pass explicit period of type "AM" | "PM"
     const next = parseTimeFromString(val, period);
     const updated = new Date(selected.getTime());
     updated.setHours(next.hours, next.minutes, next.seconds, 0);
@@ -166,6 +166,7 @@ function Calendar({
             tabIndex={0}
             style={{ userSelect: "none" }}
             title="Toggle AM/PM"
+            aria-label="Toggle AM/PM"
           >
             {period}
           </span>
