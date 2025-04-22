@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -22,47 +21,15 @@ export const LoadEffectiveDate = ({
 }: LoadEffectiveDateProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  // Utility to get time value as "HH:mm:ss" string from a Date, or fallback to default.
-  const getTimeString = (date?: Date) => {
-    if (!date) return "00:00:00";
-    return [
-      date.getHours().toString().padStart(2, "0"),
-      date.getMinutes().toString().padStart(2, "0"),
-      date.getSeconds().toString().padStart(2, "0"),
-    ].join(":");
-  };
-
-  // Date change handler
+  // Date change handler: calendar now handles both date and time
   const handleDateChange = (date: Date | undefined) => {
-    if (!date) {
-      onSelectedDateChange(undefined);
-      return;
-    }
-    // Preserve previous time if selecting with time input; default to 00:00:00
-    let [h, m, s] = selectedDate
-      ? [selectedDate.getHours(), selectedDate.getMinutes(), selectedDate.getSeconds()]
-      : [0, 0, 0];
-    const updated = new Date(date);
-    updated.setHours(h, m, s, 0);
-    onSelectedDateChange(updated);
+    onSelectedDateChange(date);
     setIsPopoverOpen(false); // Close the popover after selecting a date
-  };
-
-  // Time input change handler (value: "HH:mm:ss")
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value || "00:00:00";
-    const [h, m, s] = value.split(":").map((v) => parseInt(v, 10) || 0);
-    if (selectedDate) {
-      const updated = new Date(selectedDate);
-      updated.setHours(h, m, s, 0);
-      onSelectedDateChange(updated);
-    }
   };
 
   // Effective date mode change (immediate/delay)
   const handleRadioChange = (value: "immediate" | "delay") => {
     onEffectiveDateChange(value);
-    // Optionally reset time? For now, leaving previous as is.
   };
 
   return (
@@ -107,29 +74,16 @@ export const LoadEffectiveDate = ({
               </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-              <div>
-                <Calendar
-                  mode="single"
-                  selected={selectedDate}
-                  onSelect={handleDateChange}
-                  initialFocus
-                  className="p-3 pointer-events-auto"
-                  disabled={(date) => date < new Date()}
-                />
-                {/* Time input (HH:mm:ss format) */}
-                <div className="flex items-center gap-2 mt-3 justify-center mb-2">
-                  <Label htmlFor="delay-time" className="text-xs">Time</Label>
-                  <input
-                    id="delay-time"
-                    type="time"
-                    step="1"
-                    className="border rounded px-2 py-1 bg-white"
-                    style={{ marginBottom: 12 }} // a bit more margin for visual clarity
-                    value={getTimeString(selectedDate)}
-                    onChange={handleTimeChange}
-                  />
-                </div>
-              </div>
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateChange}
+                initialFocus
+                className="p-3 pointer-events-auto"
+                showTimeInput={true}
+                timeLabel="Time"
+                disabled={(date) => date < new Date()}
+              />
             </PopoverContent>
           </Popover>
         </div>
