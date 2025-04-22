@@ -2,19 +2,4 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Remove focus ring/border from input and select for all states */
-input:focus, 
-select:focus {
-  outline: none !important;
-  box-shadow: none !important;
-  border-color: transparent !important;
-}
-
-/* If using tailwind forms plugin or shadcn/ui components, also remove tailwind's ring: */
-input:focus-visible,
-select:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-  border-color: transparent !important;
-  box-shadow: none !important;
-}
+/* [REVERTED] Removed custom global styles that disabled input & select focus rings/borders. */
