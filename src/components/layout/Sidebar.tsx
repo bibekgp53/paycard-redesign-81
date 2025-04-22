@@ -60,14 +60,11 @@ export function Sidebar() {
       logoTagline="sandbox"
     >
       <SidebarContent>
-        {/* Logo area - keep as is */}
-        {/* Remove extra margin above "Your Balance", reduce px/pb below, align with menu */}
         <div className="pt-0 p-0">
           <div className="text-sm text-gray-300 pb-0 pl-4">
             Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
           </div>
         </div>
-        {/* Reduce gap between balance and menu items */}
         <div className="flex flex-col gap-0">
           {menuItems.map((item) => (
             <div key={item.path} className="mb-0">
@@ -89,30 +86,31 @@ export function Sidebar() {
               {/* Only render submenus if they exist */}
               {item.submenuItems && (
                 <SidebarGroup title="" className="pl-4 mt-0.5 space-y-0">
-                  {item.submenuItems.map((subItem) => {
+                  {item.submenuItems.map((subItem, idx) => {
                     const isActiveSub = location.pathname === subItem.path || 
                       (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"));
                     return (
-                      <Link key={subItem.path} to={subItem.path}>
-                        <SidebarItem
-                          label={subItem.label}
-                          active={isActiveSub}
-                          className={cn(
-                            // Remove text-sm/py-0.5; use same sizing and highlight logic as menu
-                            "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
-                            isActiveSub
-                              ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
-                              : "text-gray-300"
-                          )}
-                          style={{
-                            minHeight: 32,
-                            paddingTop: 4,
-                            paddingBottom: 4,
-                            // Indent the submenu label even further to show hierarchy
-                            paddingLeft: 32 // This matches pl-4 and moves the highlight/label to line up visually
-                          }}
-                        />
-                      </Link>
+                      <div key={subItem.path} className={idx !== item.submenuItems.length - 1 ? 'mb-0.5' : ''}>
+                        <Link to={subItem.path}>
+                          <SidebarItem
+                            label={subItem.label}
+                            active={isActiveSub}
+                            className={cn(
+                              // Use same typography, height, font as menu items
+                              "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
+                              isActiveSub
+                                ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3 font-medium"
+                                : "text-gray-300 font-medium"
+                            )}
+                            style={{
+                              minHeight: 32,
+                              paddingTop: 4,
+                              paddingBottom: 4,
+                              paddingLeft: 16 // Only slight indent for submenu, consistent with pl-4
+                            }}
+                          />
+                        </Link>
+                      </div>
                     );
                   })}
                 </SidebarGroup>
@@ -122,7 +120,6 @@ export function Sidebar() {
         </div>
       </SidebarContent>
       
-      {/* Sidebar footer; align with menu items by adding pl-4 */}
       <div className="border-t border-paycard-navy-800 mt-auto">
         <div className="p-0">
           <div className="flex items-center justify-between gap-2 min-h-[32px] h-8 pl-4 pr-2">
@@ -138,7 +135,6 @@ export function Sidebar() {
           </div>
         </div>
       </div>
-      {/* No extra spacing or content below footer */}
     </UISidebar>
   );
 }
