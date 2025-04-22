@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -21,7 +22,7 @@ export const LoadEffectiveDate = ({
 }: LoadEffectiveDateProps) => {
   const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
-  // Date change handler: calendar now handles both date and time
+  // Only pick date, calendar will handle time input as needed
   const handleDateChange = (date: Date | undefined) => {
     onSelectedDateChange(date);
     setIsPopoverOpen(false); // Close the popover after selecting a date
@@ -75,7 +76,6 @@ export const LoadEffectiveDate = ({
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
               <Calendar
-                mode="single"
                 selected={selectedDate}
                 onSelect={handleDateChange}
                 initialFocus

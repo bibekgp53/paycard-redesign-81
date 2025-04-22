@@ -1,12 +1,13 @@
+
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker } from "react-day-picker";
+import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
 
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
-// NEW PROP: showTimeInput, onTimeChange, timeLabel
-export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+// Only support single mode for Calendar!
+export type CalendarProps = Omit<React.ComponentProps<typeof DayPicker>, "mode" | "selected" | "onSelect"> & {
   showTimeInput?: boolean;
   timeLabel?: React.ReactNode;
   selected: Date | undefined;
@@ -32,7 +33,12 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  // Local state is NOT needed, everything is controlled by parent
+  // Only for mode="single"
+  const handleDaySelect: SelectSingleEventHandler = (date) => {
+    onSelect(date);
+  };
+
+  // Move time input logic here!
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!selected) return;
     const value = e.target.value || "00:00:00";
@@ -45,6 +51,7 @@ function Calendar({
   return (
     <div>
       <DayPicker
+        mode="single"
         showOutsideDays={showOutsideDays}
         className={cn("p-3 pointer-events-auto", className)}
         classNames={{
@@ -86,12 +93,12 @@ function Calendar({
           IconRight: ({ ..._props }) => <ChevronRight className="h-4 w-4" />,
         }}
         selected={selected}
-        onSelect={onSelect}
+        onSelect={handleDaySelect}
         {...props}
       />
       {showTimeInput && selected && (
         <div
-          className="flex items-center justify-between gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-[95%] mx-auto"
+          className="flex items-center justify-end gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-[95%] mx-auto"
           style={{ minWidth: 180, maxWidth: 250 }}
         >
           <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2">
@@ -113,3 +120,4 @@ function Calendar({
 Calendar.displayName = "Calendar";
 
 export { Calendar };
+
