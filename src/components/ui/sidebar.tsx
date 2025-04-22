@@ -190,18 +190,18 @@ const Sidebar = React.forwardRef<
         <div 
           ref={ref}
           className={cn(
-            `${width} h-full bg-sidebar flex flex-col`,
+            `${width} h-full bg-paycard-navy flex flex-col`,
             className
           )}
           {...props}
         >
           {/* Logo Section */}
           <div className="p-6 flex items-center">
-            <div className="bg-pcard-salmon h-8 w-8 rounded"></div>
+            <div className="bg-paycard-salmon h-8 w-8 rounded"></div>
             {variant !== 'collapsed' && (
               <div className="ml-2">
                 <h1 className="text-sidebar-foreground font-black text-xl">{logoText}</h1>
-                <p className="text-pcard-salmon text-xs font-semibold">{logoTagline}</p>
+                <p className="text-paycard-salmon text-xs font-semibold">{logoTagline}</p>
               </div>
             )}
           </div>
@@ -829,7 +829,7 @@ const SidebarMenuSubButton = React.forwardRef<
 })
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton"
 
-// SidebarItem component that can be used in the custom sidebar
+// SidebarItem component for the custom sidebar style
 const SidebarItem = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
@@ -844,8 +844,8 @@ const SidebarItem = React.forwardRef<
       <div
         ref={ref}
         className={cn(
-          "flex items-center px-4 py-2 cursor-pointer text-sidebar-foreground hover:bg-sidebar-accent",
-          active && "bg-sidebar-accent text-sidebar-primary",
+          "flex items-center px-4 py-2 cursor-pointer text-sidebar-foreground hover:bg-paycard-navy-600 transition-colors",
+          active && "bg-paycard-navy-600 text-paycard-salmon border-l-4 border-l-paycard-salmon pl-3",
           className
         )}
         onClick={onClick}

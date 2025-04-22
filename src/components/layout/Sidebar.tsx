@@ -1,5 +1,5 @@
 
-import { CreditCard, Users, FileText, Settings, Wallet, UserCircle, Bell, LogOut, ChevronDown } from "lucide-react";
+import { CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
@@ -112,7 +112,6 @@ export function Sidebar() {
           <div className="p-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <UserCircle size={24} className="text-gray-300" />
                 <span className="text-sm text-gray-300">{userHeader?.fullName || 'Admin User'}</span>
               </div>
               <div className="flex items-center gap-2">
