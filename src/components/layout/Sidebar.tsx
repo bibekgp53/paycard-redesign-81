@@ -60,14 +60,14 @@ export function Sidebar() {
       logoTagline="sandbox"
     >
       <SidebarContent>
-        {/* Logo area and balance block with compact padding */}
-        <div className="p-3">
+        {/* Logo area and balance block with highly compact padding */}
+        <div className="p-2 pb-1">
           <div className="text-sm text-gray-300 px-2 pb-1">
             Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
           </div>
         </div>
         
-        <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-0.5"> {/* Decreased vertical gap between sidebar items */}
           {menuItems.map((item) => (
             <div key={item.path} className="mb-0">
               <Link to={item.path}>
@@ -81,13 +81,13 @@ export function Sidebar() {
                       ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
                       : "text-gray-300"
                   )}
-                  style={{ minHeight: 36, paddingTop: 6, paddingBottom: 6 }} // More compact menu items (smaller height)
+                  style={{ minHeight: 32, paddingTop: 4, paddingBottom: 4 }} // Decreased min height & vertical padding
                 />
               </Link>
               
               {/* Only render submenus if they exist */}
               {item.submenuItems && (
-                <SidebarGroup title="" className="ml-6 mt-1 space-y-0.5">
+                <SidebarGroup title="" className="ml-6 mt-0.5 space-y-0">
                   {item.submenuItems.map((subItem) => {
                     const isActiveSub = location.pathname === subItem.path || 
                       (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"));
@@ -97,12 +97,12 @@ export function Sidebar() {
                           label={subItem.label}
                           active={isActiveSub}
                           className={cn(
-                            "text-sm py-1 transition-colors hover:bg-paycard-salmon/40 hover:text-white",
+                            "text-sm py-0.5 transition-colors hover:bg-paycard-salmon/40 hover:text-white",
                             isActiveSub
                               ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
                               : "text-gray-300"
                           )}
-                          style={{ minHeight: 28 }}
+                          style={{ minHeight: 24, paddingTop: 2, paddingBottom: 2 }} // Further decreased min height
                         />
                       </Link>
                     );
@@ -114,12 +114,12 @@ export function Sidebar() {
         </div>
       </SidebarContent>
       
-      {/* Sidebar footer: Reduced padding and most compact height possible */}
+      {/* Sidebar footer: reduce min height + vertical padding as much as possible */}
       <div className="border-t border-paycard-navy-800 mt-auto">
-        <div className="p-1">
-          <div className="flex items-center justify-between gap-2 min-h-7">
+        <div className="p-0">
+          <div className="flex items-center justify-between gap-2 min-h-[32px] h-8">
             <span className="text-gray-300 text-sm leading-none">Test User</span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
                 <Bell size={18} />
               </button>
@@ -134,3 +134,4 @@ export function Sidebar() {
     </UISidebar>
   );
 }
+
