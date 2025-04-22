@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -61,8 +60,8 @@ export default function AllocateCards() {
         </div>
 
         <Button
-          variant="primary"
-          fullWidth
+          variant="default"
+          className="w-full"
           onClick={handleContinue}
           disabled={!agreedToTerms}
         >

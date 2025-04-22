@@ -58,7 +58,7 @@ export default function AllocateCardsConfirm() {
 
         <div className="flex justify-end mt-8">
           <Button
-            variant="primary"
+            variant="default"
             onClick={handleConfirm}
           >
             CONFIRM

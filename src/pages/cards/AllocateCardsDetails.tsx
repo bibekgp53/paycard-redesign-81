@@ -142,7 +142,7 @@ export default function AllocateCardsDetails() {
               PREVIOUS
             </Button>
             <Button
-              variant="primary"
+              variant="default"
               onClick={handleNext}
             >
               NEXT
@@ -152,8 +152,8 @@ export default function AllocateCardsDetails() {
 
         <div className="mt-8">
           <Button
-            variant="primary"
-            fullWidth
+            variant="default"
+            className="w-full"
             onClick={handleContinue}
           >
             CONTINUE

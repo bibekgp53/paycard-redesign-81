@@ -36,33 +36,33 @@ export default function AllocateCardsComplete() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <Button
-            variant="primary"
+            variant="default"
+            className="w-full"
             onClick={handleFinished}
-            fullWidth
           >
             I'M FINISHED
           </Button>
           
           <Button
             variant="secondary"
+            className="w-full"
             onClick={handleAllocateMore}
-            fullWidth
           >
             ALLOCATE MORE CARDS
           </Button>
           
           <Button
             variant="secondary"
+            className="w-full"
             onClick={handleDepositFunds}
-            fullWidth
           >
             DEPOSIT FUNDS
           </Button>
           
           <Button
             variant="secondary"
+            className="w-full"
             onClick={handleLoadFunds}
-            fullWidth
           >
             LOAD FUNDS
           </Button>
