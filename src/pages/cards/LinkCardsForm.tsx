@@ -1,9 +1,10 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/custom/Button";
-import { Input } from "@/components/ui/custom/Input";
-import { Select } from "@/components/ui/custom/Select";
-import { RadioGroup } from "@/components/ui/custom/RadioGroup";
+import { CustomButton as Button } from "@/components/ui/custom-button";
+import { CustomInput as Input } from "@/components/ui/custom-input";
+import { CustomSelect as Select } from "@/components/ui/custom-select";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { useApolloQuery } from "@/hooks/useApolloQuery";
 import { GET_PROFILES } from "@/graphql/profiles";
 import { GetProfilesData, Profile } from "@/graphql/types";

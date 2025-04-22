@@ -1,6 +1,7 @@
+
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/custom/Button";
+import { CustomButton as Button } from "@/components/ui/custom-button";
 import { CheckCircle2 } from "lucide-react";
 import { useApolloMutation } from "@/hooks/useApolloMutation";
 import { LINK_CARD_LINKS } from "@/graphql/cards";

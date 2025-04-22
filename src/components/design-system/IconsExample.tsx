@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { Icon, IconName } from '@/components/ui/custom/Icon';
+import { Icon, IconName } from '@/components/ui/icon';
 
 // Group icons by categories for better organization
 const iconGroups: { title: string; icons: IconName[] }[] = [

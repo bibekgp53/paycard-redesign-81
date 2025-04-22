@@ -3,10 +3,10 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 import { CalendarIcon } from "lucide-react";
 import { format } from "date-fns";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 interface LoadEffectiveDateProps {
   effectiveDate: "immediate" | "delay";
@@ -71,20 +71,33 @@ export const LoadEffectiveDate = ({
       <h3 className="text-sm font-medium">
         {effectiveDate === "delay" ? "Delay until" : "Load Effective Date"}
       </h3>
-      <RadioGroup 
-        value={effectiveDate} 
-        onValueChange={(value) => handleRadioChange(value as "immediate" | "delay")}
-        className="flex space-x-4"
-      >
+      <div className="flex space-x-4">
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="immediate" id="immediately" />
+          <input
+            type="radio"
+            id="immediately"
+            name="effective-date"
+            value="immediate"
+            checked={effectiveDate === "immediate"}
+            onChange={() => handleRadioChange("immediate")}
+            className="h-4 w-4 text-paycard-navy border-paycard-navy-300 focus:ring-paycard-navy-500"
+          />
           <Label htmlFor="immediately">Immediately</Label>
         </div>
         <div className="flex items-center space-x-2">
-          <RadioGroupItem value="delay" id="delay" />
+          <input
+            type="radio"
+            id="delay"
+            name="effective-date"
+            value="delay"
+            checked={effectiveDate === "delay"}
+            onChange={() => handleRadioChange("delay")}
+            className="h-4 w-4 text-paycard-navy border-paycard-navy-300 focus:ring-paycard-navy-500"
+          />
           <Label htmlFor="delay">Delay until</Label>
         </div>
-      </RadioGroup>
+      </div>
+
       {effectiveDate === "delay" && (
         <div className="mt-2 w-[260px]">
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>

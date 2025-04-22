@@ -1,6 +1,6 @@
 
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/custom/Button";
+import { CustomButton as Button } from "@/components/ui/custom-button";
 import { ArrowLeft } from "lucide-react";
 
 export default function AllocateCardsConfirm() {

@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
@@ -6,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { RadioGroup as RadioGroupBase, RadioGroupItem } from '@/components/ui/radio-group';
 
 export function FormElements() {
   return (
@@ -105,7 +104,7 @@ export function FormElements() {
         
         <div className="space-y-4">
           <h4 className="font-bold">Radio Buttons</h4>
-          <RadioGroup defaultValue="option-one">
+          <RadioGroupBase defaultValue="option-one">
             <div className="flex items-center space-x-2">
               <RadioGroupItem value="option-one" id="option-one" />
               <Label htmlFor="option-one">Option One</Label>
@@ -118,7 +117,7 @@ export function FormElements() {
               <RadioGroupItem value="option-three" id="option-three" disabled />
               <Label htmlFor="option-three" className="opacity-50">Disabled Option</Label>
             </div>
-          </RadioGroup>
+          </RadioGroupBase>
         </div>
       </div>
       

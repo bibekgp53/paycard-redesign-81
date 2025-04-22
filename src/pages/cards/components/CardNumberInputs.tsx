@@ -1,7 +1,6 @@
-
 import { Plus, Trash2 } from "lucide-react";
-import { Input } from "@/components/ui/custom/Input";
-import { Button } from "@/components/ui/custom/Button";
+import { CustomInput as Input } from "@/components/ui/custom-input";
+import { CustomButton as Button } from "@/components/ui/custom-button";
 
 interface CardField {
   id: string;

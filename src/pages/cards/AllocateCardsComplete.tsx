@@ -1,5 +1,5 @@
 
-import { Button } from "@/components/ui/custom/Button";
+import { CustomButton as Button } from "@/components/ui/custom-button";
 import { useNavigate } from "react-router-dom";
 
 export default function AllocateCardsComplete() {

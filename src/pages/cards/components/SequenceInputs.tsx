@@ -1,5 +1,4 @@
-
-import { Input } from "@/components/ui/custom/Input";
+import { CustomInput as Input } from "@/components/ui/custom-input";
 
 interface SequenceInputsProps {
   startSequence: string;

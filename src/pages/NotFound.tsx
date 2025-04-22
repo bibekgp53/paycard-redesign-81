@@ -1,6 +1,7 @@
+
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { Button } from "@/components/ui/custom/Button";
+import { CustomButton as Button } from "@/components/ui/custom-button";
 import { Home } from "lucide-react";
 
 const NotFound = () => {

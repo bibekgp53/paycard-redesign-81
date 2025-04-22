@@ -1,8 +1,8 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/custom/Button";
-import { RadioGroup } from "@/components/ui/custom/RadioGroup";
+import { CustomButton as Button } from "@/components/ui/custom-button";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 
 export default function AllocateCards() {

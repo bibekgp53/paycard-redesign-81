@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Slider } from '@/components/ui/custom/Slider';
+import { Slider } from '@/components/ui/slider';
 import { Card } from '@/components/ui/card';
 
 export function SliderExample() {

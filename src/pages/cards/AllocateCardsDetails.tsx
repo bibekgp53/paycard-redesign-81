@@ -1,8 +1,8 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/custom/Button";
-import { Input } from "@/components/ui/custom/Input";
+import { CustomButton as Button } from "@/components/ui/custom-button";
+import { CustomInput as Input } from "@/components/ui/custom-input";
 import { ArrowLeft } from "lucide-react";
 
 export default function AllocateCardsDetails() {
