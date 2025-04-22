@@ -1,4 +1,3 @@
-
 import { CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -120,7 +119,7 @@ export function Sidebar() {
         </div>
       </SidebarContent>
       
-      <div className="border-t border-paycard-navy-800 mt-auto">
+      <div className="border-t border-paycard-navy-800 mt-auto pb-0">
         <div className="p-0">
           <div className="flex items-center justify-between gap-2 min-h-[32px] h-8 pl-4 pr-2">
             <span className="text-gray-300 text-sm leading-none">Test User</span>
