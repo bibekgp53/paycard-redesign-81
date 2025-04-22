@@ -87,7 +87,7 @@ export function Sidebar() {
               
               {/* Only render submenus if they exist */}
               {item.submenuItems && (
-                <SidebarGroup title="" className="ml-6 mt-0.5 space-y-0">
+                <SidebarGroup title="" className="pl-4 mt-0.5 space-y-0">
                   {item.submenuItems.map((subItem) => {
                     const isActiveSub = location.pathname === subItem.path || 
                       (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"));
