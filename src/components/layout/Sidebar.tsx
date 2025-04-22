@@ -1,215 +1,133 @@
-import { CreditCard, Link, Wallet, Users, FileText, Settings, LogOut, Bell } from "lucide-react";
-import { Link as RouterLink, useLocation } from "react-router-dom";
+
+import { CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
   Sidebar as UISidebar,
   SidebarContent,
+  SidebarGroup,
   SidebarItem
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
 export function Sidebar() {
   const location = useLocation();
+  const { data: userHeader } = useUserHeaderQuery();
 
-  // Helper for active path
-  const isActive = (path: string) => {
+  // Check if a given submenu path is active
+  const isSubmenuActive = (submenuItems = []) => {
+    return submenuItems.some((subItem) =>
+      location.pathname === subItem.path ||
+      (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"))
+    );
+  };
+
+  const isActive = (path: string, submenuItems?: { path: string }[]) => {
+    // If there are submenus, parent is only active if *not* on submenu
+    if (submenuItems && submenuItems.length > 0 && isSubmenuActive(submenuItems)) {
+      return false;
+    }
+    if (path === "/") {
+      return location.pathname === "/";
+    }
     if (path === "/cards") {
       return location.pathname === "/cards";
     }
-    if (path === "/link-cards") {
-      return location.pathname === "/link-cards";
-    }
-    if (path === "/allocate-cards") {
-      return location.pathname === "/allocate-cards";
-    }
-    if (path === "/funds") {
-      // highlight for parent only, exclude /funds/children
-      return location.pathname === "/funds";
-    }
-    if (path === "/load-funds-to-cards") {
-      return location.pathname === "/load-funds-to-cards";
-    }
-    if (path === "/profiles") {
-      return location.pathname === "/profiles";
-    }
-    if (path === "/reports") {
-      return location.pathname === "/reports";
-    }
-    if (path === "/settings") {
-      return location.pathname === "/settings";
+    if (path === "/load-funds-from") {
+      return location.pathname === "/load-funds-from" || location.pathname.startsWith("/load-funds-from");
     }
     return location.pathname === path;
   };
 
-  // Figma: dark navy background. Use official brand or fallback to closest in Tailwind config.
-  return (
-    <div className="flex flex-col min-h-screen w-[265px] bg-[#0F1F38] text-white shadow-xl">
-      {/* Logo and Bank Section */}
-      <div className="px-7 pt-7 pb-3">
-        <div className="font-black text-xl leading-snug" style={{fontFamily: 'Gilroy, sans-serif'}}>
-          <span>Standard Bank<br />PayCard</span>
-        </div>
-        <div className="mt-5 text-sm text-white/85 font-normal">
-          Your Balance: <span className="font-bold">R 5000.00</span>
-        </div>
-      </div>
+  const menuItems = [
+    { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
+      { label: "Link Cards", path: "/cards/link" },
+      { label: "Allocate Cards", path: "/cards/allocate" }
+    ]},
+    { icon: Wallet, label: "Funds", path: "/load-funds-from", submenuItems: [
+      { label: "Load Funds to Cards", path: "/load-funds-from" }
+    ]},
+    { icon: Users, label: "Profiles", path: "/profiles" },
+    { icon: FileText, label: "Reports", path: "/reports" },
+    { icon: Settings, label: "Settings", path: "/settings" },
+  ];
 
-      {/* Menu Section */}
+  return (
+    <UISidebar 
+      variant="full" 
+      collapsible="none"
+      logoText="Standard Bank PayCard"
+      logoTagline="sandbox"
+    >
       <SidebarContent>
-        <nav className="flex flex-col gap-1 mt-7">
-          {/* Cards */}
-          <RouterLink to="/cards" className="block">
-            <SidebarItem
-              icon={
-                <CreditCard size={20} className={cn(isActive("/cards") ? "text-white" : "text-white/80")} />
-              }
-              label="Cards"
-              active={isActive("/cards")}
-              className={cn(
-                "flex items-center gap-4 rounded-md px-7 py-2 text-base font-medium cursor-pointer transition",
-                "hover:bg-paycard-salmon/80 hover:text-white",
-                isActive("/cards")
-                  ? "bg-paycard-salmon text-white"
-                  : "bg-transparent text-white/90"
-              )}
-            />
-          </RouterLink>
-          {/* Link Cards */}
-          <RouterLink to="/link-cards" className="block">
-            <SidebarItem
-              icon={
-                <Link size={20} className={cn(isActive("/link-cards") ? "text-white" : "text-white/80")} />
-              }
-              label="Link Cards"
-              active={isActive("/link-cards")}
-              className={cn(
-                "flex items-center gap-4 rounded-md px-7 py-2 text-base font-medium cursor-pointer transition",
-                "hover:bg-paycard-salmon/80 hover:text-white",
-                isActive("/link-cards")
-                  ? "bg-paycard-salmon text-white"
-                  : "bg-transparent text-white/90"
-              )}
-            />
-          </RouterLink>
-          {/* Allocate Cards */}
-          <RouterLink to="/allocate-cards" className="block">
-            <SidebarItem
-              icon={
-                <CreditCard size={20} className={cn(isActive("/allocate-cards") ? "text-white" : "text-white/80")} />
-              }
-              label="Allocate Cards"
-              active={isActive("/allocate-cards")}
-              className={cn(
-                "flex items-center gap-4 rounded-md px-7 py-2 text-base font-medium cursor-pointer transition",
-                "hover:bg-paycard-salmon/80 hover:text-white",
-                isActive("/allocate-cards")
-                  ? "bg-paycard-salmon text-white"
-                  : "bg-transparent text-white/90"
-              )}
-            />
-          </RouterLink>
-          {/* Funds */}
-          <RouterLink to="/funds" className="block">
-            <SidebarItem
-              icon={
-                <Wallet size={20} className={cn(isActive("/funds") ? "text-white" : "text-white/80")} />
-              }
-              label="Funds"
-              active={isActive("/funds")}
-              className={cn(
-                "flex items-center gap-4 rounded-md px-7 py-2 text-base font-medium cursor-pointer transition",
-                "hover:bg-paycard-salmon/80 hover:text-white",
-                isActive("/funds")
-                  ? "bg-paycard-salmon text-white"
-                  : "bg-transparent text-white/90"
-              )}
-            />
-          </RouterLink>
-          {/* Load Funds to Cards (as submenu visually) */}
-          <RouterLink to="/load-funds-to-cards" className="block">
-            <SidebarItem
-              icon={
-                <Wallet size={20} className={cn(isActive("/load-funds-to-cards") ? "text-white" : "text-white/80")} />
-              }
-              label="Load Funds to Cards"
-              active={isActive("/load-funds-to-cards")}
-              className={cn(
-                "flex items-center gap-4 rounded-md px-7 py-2 text-base font-medium cursor-pointer transition",
-                "hover:bg-paycard-salmon/80 hover:text-white",
-                "ml-8", // Add this for visual indent of a submenu
-                isActive("/load-funds-to-cards")
-                  ? "bg-paycard-salmon text-white"
-                  : "bg-transparent text-white/90"
-              )}
-            />
-          </RouterLink>
-          {/* Profiles */}
-          <RouterLink to="/profiles" className="block">
-            <SidebarItem
-              icon={
-                <Users size={20} className={cn(isActive("/profiles") ? "text-white" : "text-white/80")} />
-              }
-              label="Profiles"
-              active={isActive("/profiles")}
-              className={cn(
-                "flex items-center gap-4 rounded-md px-7 py-2 text-base font-medium cursor-pointer transition",
-                "hover:bg-paycard-salmon/80 hover:text-white",
-                isActive("/profiles")
-                  ? "bg-paycard-salmon text-white"
-                  : "bg-transparent text-white/90"
-              )}
-            />
-          </RouterLink>
-          {/* Reports */}
-          <RouterLink to="/reports" className="block">
-            <SidebarItem
-              icon={
-                <FileText size={20} className={cn(isActive("/reports") ? "text-white" : "text-white/80")} />
-              }
-              label="Reports"
-              active={isActive("/reports")}
-              className={cn(
-                "flex items-center gap-4 rounded-md px-7 py-2 text-base font-medium cursor-pointer transition",
-                "hover:bg-paycard-salmon/80 hover:text-white",
-                isActive("/reports")
-                  ? "bg-paycard-salmon text-white"
-                  : "bg-transparent text-white/90"
-              )}
-            />
-          </RouterLink>
-          {/* Settings */}
-          <RouterLink to="/settings" className="block">
-            <SidebarItem
-              icon={
-                <Settings size={20} className={cn(isActive("/settings") ? "text-white" : "text-white/80")} />
-              }
-              label="Settings"
-              active={isActive("/settings")}
-              className={cn(
-                "flex items-center gap-4 rounded-md px-7 py-2 text-base font-medium cursor-pointer transition",
-                "hover:bg-paycard-salmon/80 hover:text-white",
-                isActive("/settings")
-                  ? "bg-paycard-salmon text-white"
-                  : "bg-transparent text-white/90"
-              )}
-            />
-          </RouterLink>
-        </nav>
-      </SidebarContent>
-      {/* Footer: Notification, user, logout */}
-      <div className="flex items-center justify-between mt-auto gap-2 bg-[#0F1F38] border-t border-white/10 px-7 py-3">
-        <button className="p-2 rounded-full hover:bg-paycard-salmon/20 transition-colors">
-          <Bell size={20} className="text-white/70" />
-          <span className="sr-only">Notifications</span>
-        </button>
-        <div className="flex items-center gap-2 px-3 py-2 rounded-lg hover:bg-paycard-salmon/20 transition-colors">
-          <Users size={20} className="text-white/70" />
-          <span className="font-medium text-base text-white/90">Test User</span>
+        <div className="p-4">
+          <div className="text-sm text-gray-300 p-3">
+            Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
+          </div>
         </div>
-        <button className="p-2 rounded-full hover:bg-paycard-salmon/20 transition-colors">
-          <LogOut size={20} className="text-white/70" />
-          <span className="sr-only">Logout</span>
-        </button>
+        
+        {menuItems.map((item) => (
+          <div key={item.path}>
+            <Link to={item.path}>
+              <SidebarItem
+                label={item.label}
+                icon={<item.icon size={18} />}
+                active={isActive(item.path, item.submenuItems)}
+                className={cn(
+                  // Active and hover states now both have the same color as Figma
+                  "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
+                  isActive(item.path, item.submenuItems) 
+                    ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
+                    : "text-gray-300"
+                )}
+              />
+            </Link>
+            
+            {/* Only render submenus if they exist */}
+            {item.submenuItems && (
+              <SidebarGroup title="" className="ml-7 mt-2 space-y-1">
+                {item.submenuItems.map((subItem) => {
+                  const isActiveSub = location.pathname === subItem.path || 
+                    (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"));
+                  return (
+                    <Link key={subItem.path} to={subItem.path}>
+                      <SidebarItem
+                        label={subItem.label}
+                        active={isActiveSub}
+                        className={cn(
+                          // Active and hover states both get salmon highlight and white text, all non-active are gray
+                          "text-sm py-1.5 transition-colors hover:bg-paycard-salmon/40 hover:text-white",
+                          isActiveSub
+                            ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
+                            : "text-gray-300"
+                        )}
+                      />
+                    </Link>
+                  );
+                })}
+              </SidebarGroup>
+            )}
+          </div>
+        ))}
+      </SidebarContent>
+      
+      {/* Sidebar footer: show "Test User" and icon buttons only, nothing extra below */}
+      <div className="border-t border-paycard-navy-800 mt-auto">
+        <div className="p-4">
+          <div className="flex items-center justify-between gap-3">
+            <span className="text-gray-300 text-sm">Test User</span>
+            <div className="flex items-center gap-3">
+              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
+                <Bell size={18} />
+              </button>
+              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
+                <LogOut size={18} />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
+      {/* Removed the extra div/section below the footer */}
+    </UISidebar>
   );
 }
