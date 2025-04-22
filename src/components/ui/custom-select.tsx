@@ -16,7 +16,7 @@ interface SelectProps extends Omit<React.SelectHTMLAttributes<HTMLSelectElement>
   onChange?: (value: string) => void;
 }
 
-export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
+export const CustomSelect = React.forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, options, error, helpText, className, onChange, ...props }, ref) => {
     const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
       if (onChange) {
@@ -59,4 +59,4 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
   }
 );
 
-Select.displayName = "Select";
+CustomSelect.displayName = "CustomSelect";

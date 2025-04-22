@@ -2,13 +2,13 @@
 import React from "react";
 import { cn } from "@/lib/utils";
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+interface CustomInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   error?: string;
   helpText?: string;
 }
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
+export const CustomInput = React.forwardRef<HTMLInputElement, CustomInputProps>(
   ({ label, error, helpText, className, ...props }, ref) => {
     return (
       <div className="mb-4">
@@ -33,4 +33,4 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
   }
 );
 
-Input.displayName = "Input";
+CustomInput.displayName = "CustomInput";

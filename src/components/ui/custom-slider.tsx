@@ -16,7 +16,7 @@ interface SliderProps {
   onRangeChange?: (values: [number, number]) => void;
 }
 
-export const Slider: React.FC<SliderProps> = ({
+export const CustomSlider: React.FC<SliderProps> = ({
   min = 0,
   max = 100,
   value,
@@ -151,5 +151,3 @@ export const Slider: React.FC<SliderProps> = ({
     </div>
   );
 };
-
-export default Slider;
