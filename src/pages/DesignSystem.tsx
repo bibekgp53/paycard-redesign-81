@@ -3,6 +3,9 @@ import { ColorPalette } from '@/components/design-system/ColorPalette';
 import { StatusCardGrid } from '@/components/design-system/StatusCard';
 import { ColorGradient } from '@/components/design-system/ColorGradient';
 import { Typography } from '@/components/design-system/Typography';
+import { FormElements } from '@/components/design-system/FormElements';
+import { SidebarExample } from '@/components/design-system/SidebarExample';
+import { SliderExample } from '@/components/design-system/SliderExample';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -101,6 +104,13 @@ export default function DesignSystem() {
           </div>
         </Card>
 
+        <FormElements />
+        
+        <h2 className="text-3xl font-bold mb-6">Navigation</h2>
+        <SidebarExample />
+        
+        <SliderExample />
+        
         <ColorPalette />
         <StatusCardGrid />
         <ColorGradient />
