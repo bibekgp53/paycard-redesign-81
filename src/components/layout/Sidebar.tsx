@@ -1,3 +1,4 @@
+
 import { CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -64,8 +65,8 @@ export function Sidebar() {
             Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
           </div>
         </div>
-        <div className="flex flex-col gap-0">
-          {menuItems.map((item) => (
+        <div className="flex flex-col gap-1">
+          {menuItems.map((item, idx) => (
             <div key={item.path} className="mb-0">
               <Link to={item.path}>
                 <SidebarItem
@@ -84,22 +85,37 @@ export function Sidebar() {
               
               {/* Only render submenus if they exist */}
               {item.submenuItems && (
-                <SidebarGroup title="" className="pl-4 mt-0.5 space-y-0">
-                  {item.submenuItems.map((subItem, idx) => {
+                <SidebarGroup 
+                  title=""
+                  className={cn(
+                    "pl-4",
+                    // Use symmetric top and bottom margins for even vertical gap
+                    "mt-0.5 mb-0.5 space-y-0"
+                  )}
+                >
+                  {item.submenuItems.map((subItem, sIdx) => {
                     const isActiveSub = location.pathname === subItem.path || 
                       (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"));
                     return (
-                      <div key={subItem.path} className={idx !== item.submenuItems.length - 1 ? 'mb-0.5' : ''}>
+                      <div 
+                        key={subItem.path}
+                        // No extra inner margin, vertical spacing handled by parent group
+                      >
                         <Link to={subItem.path}>
                           <SidebarItem
                             label={subItem.label}
                             active={isActiveSub}
                             className={cn(
-                              // Use same typography, height, font as menu items
+                              // Matching main menu font and height, no extra font-medium
                               "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
                               isActiveSub
-                                ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3 font-medium"
-                                : "text-gray-300 font-medium"
+                                ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
+                                : "text-gray-300",
+                              // Remove separate font-medium from submenu, use same as menu
+                              // Add top border on hover for submenu if active and text hovered, to provide gap
+                              isActiveSub && (sIdx === item.submenuItems.length - 1)
+                                ? "relative before:content-[''] before:block before:h-1 before:bg-transparent"
+                                : ""
                             )}
                             style={{
                               minHeight: 32,
@@ -121,7 +137,7 @@ export function Sidebar() {
       
       <div className="border-t border-paycard-navy-800 mt-auto pb-0">
         <div className="p-0">
-          <div className="flex items-center justify-between gap-2 min-h-[32px] h-8 pl-4 pr-2">
+          <div className="flex items-center justify-between gap-2 min-h-[32px] h-8 pl-4 pr-2 mb-2">
             <span className="text-gray-300 text-sm leading-none">Test User</span>
             <div className="flex items-center gap-1">
               <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
