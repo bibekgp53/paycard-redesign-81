@@ -2,6 +2,7 @@
 import { ColorPalette } from '@/components/design-system/ColorPalette';
 import { StatusCardGrid } from '@/components/design-system/StatusCard';
 import { ColorGradient } from '@/components/design-system/ColorGradient';
+import { Typography } from '@/components/design-system/Typography';
 import { Card } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Badge } from '@/components/ui/badge';
@@ -21,48 +22,8 @@ export default function DesignSystem() {
       </header>
 
       <div className="paycard-container">
-        <Card className="p-8 mb-12">
-          <h2 className="text-3xl font-bold mb-6">Typography</h2>
-          <div className="space-y-6">
-            <div>
-              <h1>Heading 1</h1>
-              <p className="text-sm text-gray-500">50px / Bold / Poppins</p>
-            </div>
-            <div>
-              <h2>Heading 2</h2>
-              <p className="text-sm text-gray-500">32px / Bold / Poppins</p>
-            </div>
-            <div>
-              <h3>Heading 3</h3>
-              <p className="text-sm text-gray-500">24px / Bold / Poppins</p>
-            </div>
-            <div>
-              <h4>Heading 4</h4>
-              <p className="text-sm text-gray-500">18px / Bold / Poppins</p>
-            </div>
-            <div>
-              <h5>Heading 5</h5>
-              <p className="text-sm text-gray-500">16px / Bold / Poppins</p>
-            </div>
-            <div>
-              <h6>Heading 6</h6>
-              <p className="text-sm text-gray-500">14px / Bold / Poppins</p>
-            </div>
-            <div>
-              <p className="text-lg">Body Large</p>
-              <p className="text-sm text-gray-500">18px / Regular / Poppins</p>
-            </div>
-            <div>
-              <p>Body Regular</p>
-              <p className="text-sm text-gray-500">16px / Regular / Poppins</p>
-            </div>
-            <div>
-              <p className="text-sm">Body Small</p>
-              <p className="text-sm text-gray-500">14px / Regular / Poppins</p>
-            </div>
-          </div>
-        </Card>
-
+        <Typography />
+        
         <Card className="p-8 mb-12">
           <h2 className="text-3xl font-bold mb-6">Components</h2>
           

@@ -166,3 +166,74 @@
     @apply w-1/2 flex items-center justify-center;
   }
 }
+
+/* Typography classes based on the new design system */
+@layer utilities {
+  .headline-1 {
+    @apply font-bold text-[56px] leading-[64px];
+  }
+  
+  .headline-2 {
+    @apply font-bold text-[44px] leading-[52px];
+  }
+  
+  .headline-3 {
+    @apply font-bold text-[36px] leading-[44px];
+  }
+  
+  .headline-4 {
+    @apply font-bold text-[32px] leading-[40px];
+  }
+  
+  .headline-5 {
+    @apply font-bold text-[24px] leading-[32px];
+  }
+  
+  .headline-6 {
+    @apply font-bold text-[20px] leading-[24px];
+  }
+  
+  .perex {
+    @apply font-medium text-[16px] leading-[24px];
+  }
+  
+  .body-text {
+    @apply font-medium text-[14px] leading-[20px];
+  }
+  
+  .body-small {
+    @apply font-medium text-[12px] leading-[16px];
+  }
+  
+  .link-1 {
+    @apply font-bold text-[14px] leading-[20px];
+  }
+  
+  .link-2 {
+    @apply font-bold text-[12px] leading-[16px];
+  }
+  
+  .link-3 {
+    @apply font-bold text-[18px] leading-[24px];
+  }
+  
+  .button-1 {
+    @apply font-semibold text-[18px] leading-[28px];
+  }
+  
+  .button-2 {
+    @apply font-semibold text-[16px] leading-[24px];
+  }
+  
+  .button-3 {
+    @apply font-semibold text-[14px] leading-[20px];
+  }
+  
+  .input-1 {
+    @apply font-medium text-[14px] leading-[20px];
+  }
+  
+  .input-2 {
+    @apply font-medium text-[12px] leading-[16px];
+  }
+}
