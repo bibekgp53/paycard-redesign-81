@@ -74,8 +74,11 @@ export function Sidebar() {
                 icon={<item.icon size={18} />}
                 active={isActive(item.path, item.submenuItems)}
                 className={cn(
-                  "hover:bg-paycard-navy-600 transition-colors", 
-                  isActive(item.path, item.submenuItems) && "bg-paycard-navy-600 border-l-4 border-l-paycard-salmon pl-3"
+                  // Active and hover states now both have the same color as Figma
+                  "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
+                  isActive(item.path, item.submenuItems) 
+                    ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
+                    : "text-gray-300"
                 )}
               />
             </Link>
@@ -92,8 +95,8 @@ export function Sidebar() {
                         label={subItem.label}
                         active={isActiveSub}
                         className={cn(
-                          // Figma-like active state for submenus
-                          "text-sm py-1.5 hover:bg-paycard-navy-600 transition-colors",
+                          // Active and hover states both get salmon highlight and white text, all non-active are gray
+                          "text-sm py-1.5 transition-colors hover:bg-paycard-salmon/40 hover:text-white",
                           isActiveSub
                             ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
                             : "text-gray-300"
