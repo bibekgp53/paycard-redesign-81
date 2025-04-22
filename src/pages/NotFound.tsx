@@ -1,7 +1,7 @@
 
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import { CustomButton as Button } from "@/components/ui/custom-button";
+import { Button } from "@/components/ui/button";
 import { Home } from "lucide-react";
 
 const NotFound = () => {
@@ -20,10 +20,11 @@ const NotFound = () => {
         <h1 className="text-6xl font-bold mb-6 text-paycard-navy">404</h1>
         <p className="text-xl text-paycard-navy-600 mb-6">Oops! The page you're looking for cannot be found.</p>
         <Button 
-          variant="primary" 
-          iconLeft={<Home size={18} />}
+          variant="default" 
+          className="bg-paycard-navy text-white hover:bg-paycard-navy-800"
           onClick={() => window.location.href = "/dashboard"}
         >
+          <Home size={18} className="mr-2" />
           Return to Dashboard
         </Button>
       </div>

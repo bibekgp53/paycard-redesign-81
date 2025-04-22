@@ -5,7 +5,7 @@ import { Circle } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 // Shadcn components
-const ShadcnRadioGroup = React.forwardRef<
+const RadioGroupBase = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
 >(({ className, ...props }, ref) => {
@@ -17,7 +17,7 @@ const ShadcnRadioGroup = React.forwardRef<
     />
   )
 });
-ShadcnRadioGroup.displayName = RadioGroupPrimitive.Root.displayName;
+RadioGroupBase.displayName = RadioGroupPrimitive.Root.displayName;
 
 const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
@@ -58,7 +58,7 @@ interface RadioGroupProps {
   inline?: boolean;
 }
 
-function CustomRadioGroup({
+function RadioGroup({
   name,
   options,
   value,
@@ -69,9 +69,9 @@ function CustomRadioGroup({
   className,
   inline = false,
 }: RadioGroupProps) {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (value: string) => {
     if (onChange) {
-      onChange(e.target.value);
+      onChange(value);
     }
   };
 
@@ -80,24 +80,19 @@ function CustomRadioGroup({
       {label && (
         <p className="block text-sm font-medium font-gilroy text-paycard-navy mb-2">{label}</p>
       )}
-      <div className={cn("space-y-2", inline && "flex space-y-0 space-x-6")}>
+      <RadioGroupBase value={value} onValueChange={handleChange} className={cn("space-y-2", inline && "flex space-y-0 space-x-6")}>
         {options.map((option) => (
-          <label
-            key={option.value}
-            className="flex items-center cursor-pointer font-poppins body-text"
-          >
-            <input
-              type="radio"
-              name={name}
-              value={option.value}
-              checked={value === option.value}
-              onChange={handleChange}
-              className="h-4 w-4 text-paycard-navy border-paycard-navy-300 focus:ring-paycard-navy-500"
-            />
-            <span className="ml-2 text-sm text-paycard-navy">{option.label}</span>
-          </label>
+          <div key={option.value} className="flex items-center space-x-2">
+            <RadioGroupItem value={option.value} id={`${name}-${option.value}`} />
+            <label
+              htmlFor={`${name}-${option.value}`}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {option.label}
+            </label>
+          </div>
         ))}
-      </div>
+      </RadioGroupBase>
       {error && <p className="mt-1 text-sm font-poppins text-paycard-red body-small">{error}</p>}
       {helpText && !error && <p className="mt-1 text-sm font-poppins text-gray-500 body-small">{helpText}</p>}
     </div>
@@ -105,8 +100,4 @@ function CustomRadioGroup({
 }
 
 // Export both versions
-export { 
-  ShadcnRadioGroup as RadioGroupBase,
-  RadioGroupItem,
-  CustomRadioGroup as RadioGroup 
-};
+export { RadioGroupBase, RadioGroupItem, RadioGroup };
