@@ -1,5 +1,5 @@
 
-import { CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
+import { Home, CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
@@ -12,9 +12,8 @@ import { cn } from "@/lib/utils";
 
 export function Sidebar() {
   const location = useLocation();
-  const { data: userHeader } = useUserHeaderQuery();
 
-  // Check if a given submenu path is active
+  // Highlight logic simplified to use active & hover states visually identical for menu/submenu
   const isSubmenuActive = (submenuItems = []) => {
     return submenuItems.some((subItem) =>
       location.pathname === subItem.path ||
@@ -23,7 +22,6 @@ export function Sidebar() {
   };
 
   const isActive = (path: string, submenuItems?: { path: string }[]) => {
-    // If there are submenus, parent is only active if *not* on submenu
     if (submenuItems && submenuItems.length > 0 && isSubmenuActive(submenuItems)) {
       return false;
     }
@@ -39,95 +37,81 @@ export function Sidebar() {
     return location.pathname === path;
   };
 
+  // Only for demonstration, replace with your actual logo if needed
+  const Logo = () => (
+    <div className="flex items-center gap-3">
+      <div className="w-8 h-8 bg-paycard-salmon rounded-[4px] flex items-center justify-center">
+        <Home className="text-white" size={22} />
+      </div>
+      <div>
+        <div className="font-black text-white text-xl leading-none">Control</div>
+        <div className="text-paycard-salmon font-semibold text-xs leading-none">sandbox</div>
+      </div>
+    </div>
+  );
+
+  // Menu items based on Figma structure
   const menuItems = [
-    { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
-      { label: "Link Cards", path: "/cards/link" },
-      { label: "Allocate Cards", path: "/cards/allocate" }
-    ]},
-    { icon: Wallet, label: "Funds", path: "/load-funds-from", submenuItems: [
-      { label: "Load Funds to Cards", path: "/load-funds-from" }
-    ]},
-    { icon: Users, label: "Profiles", path: "/profiles" },
-    { icon: FileText, label: "Reports", path: "/reports" },
-    { icon: Settings, label: "Settings", path: "/settings" },
+    { icon: Home, label: "Home", path: "/" },
+    { icon: CreditCard, label: "Transactions", path: "/cards" },
+    { icon: Users, label: "Settlements", path: "/profiles" },
+    { icon: FileText, label: "Client Control", path: "/reports" },
+    { icon: Settings, label: "System", path: "/settings" },
   ];
 
   return (
-    <UISidebar 
-      variant="full" 
+    <UISidebar
+      variant="full"
       collapsible="none"
-      logoText="Standard Bank PayCard"
+      logoText="Control"
       logoTagline="sandbox"
+      className="bg-paycard-navy w-[260px] min-h-screen text-white shadow-xl"
     >
+      <div className="p-6 pb-2 border-b border-paycard-navy-700 flex items-center">
+        <Logo />
+      </div>
       <SidebarContent>
-        <div className="p-4">
-          <div className="text-sm text-gray-300 p-3">
-            Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
-          </div>
-        </div>
-        
-        {menuItems.map((item) => (
-          <div key={item.path}>
-            <Link to={item.path}>
-              <SidebarItem
-                label={item.label}
-                icon={<item.icon size={18} />}
-                active={isActive(item.path, item.submenuItems)}
-                className={cn(
-                  // Active and hover states now both have the same color as Figma
-                  "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
-                  isActive(item.path, item.submenuItems) 
-                    ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
-                    : "text-gray-300"
-                )}
-              />
-            </Link>
-            
-            {/* Only render submenus if they exist */}
-            {item.submenuItems && (
-              <SidebarGroup title="" className="ml-7 mt-2 space-y-1">
-                {item.submenuItems.map((subItem) => {
-                  const isActiveSub = location.pathname === subItem.path || 
-                    (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"));
-                  return (
-                    <Link key={subItem.path} to={subItem.path}>
-                      <SidebarItem
-                        label={subItem.label}
-                        active={isActiveSub}
-                        className={cn(
-                          // Active and hover states both get salmon highlight and white text, all non-active are gray
-                          "text-sm py-1.5 transition-colors hover:bg-paycard-salmon/40 hover:text-white",
-                          isActiveSub
-                            ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
-                            : "text-gray-300"
-                        )}
-                      />
-                    </Link>
-                  );
-                })}
-              </SidebarGroup>
-            )}
-          </div>
-        ))}
+        <nav className="flex flex-col py-2 gap-0">
+          {menuItems.map((item) => {
+            const active = isActive(item.path, item.submenuItems);
+            return (
+              <Link to={item.path} key={item.path} className="block">
+                <SidebarItem
+                  label={item.label}
+                  icon={<item.icon size={20} strokeWidth={2} className={cn(active ? "text-white" : "text-white/80")} />}
+                  active={active}
+                  // Highlight and hover same style as Figma: bg salmon, white text
+                  className={cn(
+                    "flex items-center rounded-none px-6 py-3 font-medium text-base cursor-pointer transition-all",
+                    active ||
+                      // Tailwind doesn't "merge" hover: and active: so both need same classes
+                      "hover:bg-paycard-salmon/70 hover:text-white",
+                    active
+                      ? "bg-paycard-salmon/70 text-white"
+                      : "bg-transparent text-white/80"
+                  )}
+                />
+              </Link>
+            );
+          })}
+        </nav>
       </SidebarContent>
-      
-      {/* Sidebar footer: show "Test User" and icon buttons only, nothing extra below */}
-      <div className="border-t border-paycard-navy-800 mt-auto">
-        <div className="p-4">
-          <div className="flex items-center justify-between gap-3">
-            <span className="text-gray-300 text-sm">Test User</span>
-            <div className="flex items-center gap-3">
-              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
-                <Bell size={18} />
-              </button>
-              <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors">
-                <LogOut size={18} />
-              </button>
-            </div>
-          </div>
+
+      {/* Remove old Test User/notifications section - match Figma bottom bar! */}
+      <div className="mt-auto w-full border-t border-paycard-navy-700 px-4 py-2">
+        <div className="flex items-center px-2">
+          <span className="text-white/80 font-medium text-sm flex-1">Antonin Pospisil</span>
+          <button
+            className="ml-2 p-1 rounded-full hover:bg-paycard-salmon/20 transition-colors"
+            tabIndex={0}
+            aria-label="Expand"
+          >
+            <svg className="w-4 h-4 text-white/80" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path d="M7 10l5 5 5-5" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          </button>
         </div>
       </div>
-      {/* Removed the extra div/section below the footer */}
     </UISidebar>
   );
 }
