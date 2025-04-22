@@ -1,7 +1,6 @@
 
-import { Home, CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
+import { Home, CreditCard, Users, FileText, Settings } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
   Sidebar as UISidebar,
   SidebarContent,
@@ -21,8 +20,9 @@ export function Sidebar() {
     );
   };
 
-  const isActive = (path: string, submenuItems?: { path: string }[]) => {
-    if (submenuItems && submenuItems.length > 0 && isSubmenuActive(submenuItems)) {
+  // Accept submenuItems parameter, default to []
+  const isActive = (path: string, submenuItems: { path: string }[] = []) => {
+    if (submenuItems.length > 0 && isSubmenuActive(submenuItems)) {
       return false;
     }
     if (path === "/") {
@@ -37,7 +37,7 @@ export function Sidebar() {
     return location.pathname === path;
   };
 
-  // Only for demonstration, replace with your actual logo if needed
+  // Logo
   const Logo = () => (
     <div className="flex items-center gap-3">
       <div className="w-8 h-8 bg-paycard-salmon rounded-[4px] flex items-center justify-center">
@@ -73,21 +73,27 @@ export function Sidebar() {
       <SidebarContent>
         <nav className="flex flex-col py-2 gap-0">
           {menuItems.map((item) => {
-            const active = isActive(item.path, item.submenuItems);
+            // Fix: always pass an array for submenuItems (currently none, but future-safe)
+            const active = isActive(item.path, []);
             return (
               <Link to={item.path} key={item.path} className="block">
                 <SidebarItem
                   label={item.label}
-                  icon={<item.icon size={20} strokeWidth={2} className={cn(active ? "text-white" : "text-white/80")} />}
+                  icon={
+                    <item.icon
+                      size={20}
+                      strokeWidth={2}
+                      className={cn(active ? "text-white" : "text-white/80")}
+                    />
+                  }
                   active={active}
-                  // Highlight and hover same style as Figma: bg salmon, white text
+                  // Design: Match Figma active and hover colors (bg-paycard-salmon, white text, subtly rounded)
                   className={cn(
-                    "flex items-center rounded-none px-6 py-3 font-medium text-base cursor-pointer transition-all",
-                    active ||
-                      // Tailwind doesn't "merge" hover: and active: so both need same classes
-                      "hover:bg-paycard-salmon/70 hover:text-white",
+                    "flex items-center rounded-[6px] px-6 py-3 font-medium text-base cursor-pointer transition-all duration-150",
+                    // Highlight both active and hover with the same color (Figma: salmon)
+                    "hover:bg-paycard-salmon hover:text-white focus:bg-paycard-salmon focus:text-white",
                     active
-                      ? "bg-paycard-salmon/70 text-white"
+                      ? "bg-paycard-salmon text-white"
                       : "bg-transparent text-white/80"
                   )}
                 />
@@ -96,8 +102,6 @@ export function Sidebar() {
           })}
         </nav>
       </SidebarContent>
-
-      {/* Remove old Test User/notifications section - match Figma bottom bar! */}
       <div className="mt-auto w-full border-t border-paycard-navy-700 px-4 py-2">
         <div className="flex items-center px-2">
           <span className="text-white/80 font-medium text-sm flex-1">Antonin Pospisil</span>
