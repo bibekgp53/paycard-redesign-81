@@ -83,23 +83,25 @@ export function Sidebar() {
             {/* Only render submenus if they exist */}
             {item.submenuItems && (
               <SidebarGroup title="" className="ml-7 mt-2 space-y-1">
-                {item.submenuItems.map((subItem) => (
-                  <Link key={subItem.path} to={subItem.path}>
-                    <SidebarItem
-                      label={subItem.label}
-                      active={location.pathname === subItem.path || 
-                            (subItem.path === "/load-funds-from" && 
-                            location.pathname.startsWith("/load-funds-from"))}
-                      className={cn(
-                        "text-sm py-1.5 hover:bg-paycard-navy-600 transition-colors",
-                        (location.pathname === subItem.path || 
-                        (subItem.path === "/load-funds-from" && 
-                        location.pathname.startsWith("/load-funds-from"))) && 
-                        "bg-paycard-navy-600 border-l-4 border-l-paycard-salmon pl-3"
-                      )}
-                    />
-                  </Link>
-                ))}
+                {item.submenuItems.map((subItem) => {
+                  const isActiveSub = location.pathname === subItem.path || 
+                    (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"));
+                  return (
+                    <Link key={subItem.path} to={subItem.path}>
+                      <SidebarItem
+                        label={subItem.label}
+                        active={isActiveSub}
+                        className={cn(
+                          // Figma-like active state for submenus
+                          "text-sm py-1.5 hover:bg-paycard-navy-600 transition-colors",
+                          isActiveSub
+                            ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
+                            : "text-gray-300"
+                        )}
+                      />
+                    </Link>
+                  );
+                })}
               </SidebarGroup>
             )}
           </div>
@@ -122,6 +124,7 @@ export function Sidebar() {
           </div>
         </div>
       </div>
+      {/* Removed the extra div/section below the footer */}
     </UISidebar>
   );
 }
