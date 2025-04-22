@@ -3,7 +3,39 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Gilroy:wght@400;500;600;700&display=swap');
+/* Define Gilroy font face since it's not on Google Fonts */
+@font-face {
+  font-family: 'Gilroy';
+  src: url('https://cdn.fontshare.com/wf/QXNLI3DIEOXU6ONTVIXVKYVVYM7ENHK2/P22FTIYT2675G4VZZCMF4SQUTW3QZVX5/PBOJMWCF5HTDO7E2WRSVM3ADSPHNEDXF.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('https://cdn.fontshare.com/wf/7JLPDR3LF3Z47Z3FGAXM3UTRYI3ZJD2J/D5UWRDLISI77KSCZFKWVGTHRLF7Z74MT/P5LKSISWP5VPFWZSKEYT6YP7YZ5X6DRR.woff2') format('woff2');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('https://cdn.fontshare.com/wf/P4QATDEC5DGB5CLGJ53KZAJS5TQE6MZI/YVSTT5DKLFHLTGTPKBB3QB76343LRBCV/CNG7FZT2TEHBVTUTW5LF5N4MTKMJBEXH.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Gilroy';
+  src: url('https://cdn.fontshare.com/wf/6GB2FRNFQIPK5F2VKRXIYJAD4AAJIJ6S/SMJDR4COIQYRKJE46M5Y6QVITOOCWXGJ/KFZXMTCCFOPH5BXZEFXSYC7Y2HX3ZVTE.woff2') format('woff2');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 
 @layer base {

@@ -34,7 +34,7 @@ export const Icon: React.FC<IconProps> = ({
   const iconProps = {
     size,
     color,
-    className
+    className: `${className} font-poppins`  // Ensure font-family is applied
   };
 
   switch (name) {
