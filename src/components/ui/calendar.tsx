@@ -29,6 +29,23 @@ function getTimeString24(date?: Date) {
   ].join(":");
 }
 
+// Refactored render function for time input, improving separation
+function RenderTimeSection({
+  showTimeInput,
+  selected,
+  onSelect,
+  timeLabel,
+}: Pick<CalendarProps, "showTimeInput" | "selected" | "onSelect" | "timeLabel">) {
+  if (!showTimeInput || !selected) return null;
+  return (
+    <TimeInput
+      value={selected}
+      onChange={onSelect}
+      label={timeLabel}
+    />
+  );
+}
+
 function Calendar({
   className,
   classNames,
@@ -93,13 +110,12 @@ function Calendar({
         onSelect={handleDaySelect}
         {...props}
       />
-      {showTimeInput && selected && (
-        <TimeInput
-          value={selected}
-          onChange={onSelect}
-          label={timeLabel}
-        />
-      )}
+      <RenderTimeSection
+        showTimeInput={showTimeInput}
+        selected={selected}
+        onSelect={onSelect}
+        timeLabel={timeLabel}
+      />
     </div>
   );
 }

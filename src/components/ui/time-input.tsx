@@ -126,25 +126,36 @@ export const TimeInput: React.FC<TimeInputProps> = ({
   };
 
   return (
-    <div className="flex flex-row items-center gap-2 mt-3 mb-2 px-2 border border-paycard-navy-200 rounded-md bg-white w-full mx-auto" style={{ minWidth: 210, maxWidth: 350, marginLeft: 6, marginRight: 6 }}>
-      <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left">
+    <div
+      className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md bg-white w-full mx-auto"
+      style={{
+        minWidth: 210,
+        maxWidth: 350,
+        marginLeft: 12, // equal L/R margin
+        marginRight: 12,
+        paddingLeft: 14, // symmetric left/right padding
+        paddingRight: 14,
+      }}
+    >
+      <label
+        htmlFor="delay-time"
+        className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left"
+      >
         {label}
       </label>
-      <div className="relative flex items-center">
+      <div className="relative flex items-center w-full">
         <input
           id="delay-time"
           type="text"
           placeholder="HH:mm:ss"
           className={cn(
-            "border font-mono bg-white text-left tracking-widest px-2 py-1 rounded w-[130px] min-w-[130px] max-w-[130px] outline-none transition-colors",
+            "border font-mono bg-white text-left tracking-widest px-2 py-1 rounded w-[145px] min-w-[145px] max-w-[145px] outline-none transition-colors",
             inputError
               ? "border-paycard-red ring-1 ring-paycard-red"
               : "border-paycard-navy-200",
             inputError
               ? ""
-              : inputFocused
-                  ? "focus:border-paycard-navy-400"
-                  : ""
+              : (inputFocused ? "focus:border-paycard-navy-400" : "")
           )}
           value={localTime}
           ref={inputRef}
@@ -157,6 +168,7 @@ export const TimeInput: React.FC<TimeInputProps> = ({
           inputMode="numeric"
           aria-invalid={inputError}
           disabled={disabled}
+          // Remove the title for browser validation msg
         />
         {inputError && (
           <span className="absolute right-1 top-0 flex items-center h-full text-paycard-red z-10">
