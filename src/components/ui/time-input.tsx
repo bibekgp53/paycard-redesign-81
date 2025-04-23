@@ -126,7 +126,7 @@ export const TimeInput: React.FC<TimeInputProps> = ({
 
   return (
     <div
-      className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md bg-white w-full mx-auto px-4"
+      className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md bg-white w-full mx-auto px-3"
       style={{
         minWidth: 210,
         maxWidth: 350,
