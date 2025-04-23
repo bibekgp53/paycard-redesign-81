@@ -1,142 +1,39 @@
-import { useState, useMemo, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
-import { 
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
-import { LoadEffectiveDate } from "./components/LoadEffectiveDate";
-import { CardsTable } from "./components/CardsTable";
-import { CardsPagination } from "./components/CardsPagination";
 import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
-import { AccountCard, ClientSettings } from "@/graphql/types";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useCardLoadsStore, SelectedLoad } from "@/store/useCardLoadsStore";
+import { useCardLoadsStore } from "@/store/useCardLoadsStore";
+import { CardLoadsTable } from "./components/CardLoadsTable";
+import { CardLoadsActionPanel } from "./components/CardLoadsActionPanel";
+import React from "react";
+import { CardsPagination } from "./components/CardsPagination";
 
-// Accept backfilled state from navigation
 export function CardLoads() {
   const navigate = useNavigate();
-
-  // Use zustand for global load state
   const {
-    amountInputs,
-    smsInputs,
+    page,
+    setPage,
+    selectedLoads,
     effectiveDate,
     selectedDate,
-    page,
-    setAmountInputs,
-    setSmsInputs,
-    setEffectiveDate,
-    setSelectedDate,
-    setPage,
-    updateAmountInput,
-    updateSmsInput,
-    resetCardLoadsState,
-    selectedLoads,
-    addOrUpdateSelectedLoad,
-    removeSelectedLoad,
-    clearSelectedLoads
   } = useCardLoadsStore();
 
   const pageSize = 10;
-  
   const { data: userHeader } = useUserHeaderQuery();
   const { data: clientSettings } = useLoadClientQuery();
   const { data: cards, isLoading } = useLoadAllocatedCards();
 
-  // Utility: find the load object for a specific cardId (by accountCardId)
-  function getSelectedLoadObj(accountCardId: number): SelectedLoad | undefined {
-    return selectedLoads.find(l => l.accountCardId === accountCardId);
-  }
+  const totalPages = cards ? Math.ceil(cards.length / pageSize) : 1;
 
-  function getCardInfoByCardId(cardId: string) {
-    return cards?.find(c => c.id === cardId);
-  }
-
-  const handleAmountChange = (cardId: string, value: string) => {
-    const card = getCardInfoByCardId(cardId);
-    if (!clientSettings || !card) return;
-    const numValue = value === "" ? null : parseFloat(value);
-    updateAmountInput(cardId, numValue);
-
-    // Determine if should update/remove in array
-    if (numValue !== null && numValue > 0) {
-      // Use smsInputs, but fallback to selectedLoad
-      let smsChecked = smsInputs[cardId] ?? getSelectedLoadObj(card.accountCardId)?.transferSMSNotification === 1;
-      const obj = {
-        accountCardId: card.accountCardId,
-        transferAmount: numValue,
-        transferFee: +clientSettings.details.clientTransferFee,
-        transferSMSNotificationFee: smsChecked ? +clientSettings.details.clientSMSCost : 0,
-        transferSMSNotification: smsChecked ? 1 : 0,
-        cardholderName: card.cardholder,
-        cardNumber: card.cardNumber,
-      };
-      addOrUpdateSelectedLoad(obj);
-    } else {
-      // Remove from selection if amount is null or 0
-      removeSelectedLoad(card.accountCardId);
-    }
+  // Load Funds From navigation
+  const handleLoadFundsClick = () => {
+    navigate("/load-funds-from");
   };
 
-  const handleSMSChange = (cardId: string, checked: boolean) => {
-    updateSmsInput(cardId, checked);
-    const card = getCardInfoByCardId(cardId);
-    const amount = amountInputs[cardId];
-    if (!card || !clientSettings || !amount || amount <= 0) return;
-    // Always update load if amount positive
-    const obj = {
-      accountCardId: card.accountCardId,
-      transferAmount: amount,
-      transferFee: +clientSettings.details.clientTransferFee,
-      transferSMSNotificationFee: checked ? +clientSettings.details.clientSMSCost : 0,
-      transferSMSNotification: checked ? 1 : 0,
-      cardholderName: card.cardholder,
-      cardNumber: card.cardNumber,
-    };
-    addOrUpdateSelectedLoad(obj);
-  };
-
-  const getTooltipMessage = (cardBalance: number) => {
-    if (!clientSettings) return "";
-    const maxAllowedLoad =
-      clientSettings.details.clientMaximumBalance - cardBalance;
-    const minLoad = clientSettings.details.clientMinimumCardLoad;
-    return `Load amount must be between R ${minLoad.toFixed(2)} - R ${maxAllowedLoad.toFixed(2)}`;
-  };
-
-  const isAmountValid = (cardId: string, cardBalance: number) => {
-    const amount = amountInputs[cardId];
-    if (amount === undefined || amount === null) return true;
-    if (clientSettings) {
-      const minAmount = clientSettings.details.clientMinimumCardLoad;
-      const maxAmount = clientSettings.details.clientMaximumBalance - cardBalance;
-      return amount >= minAmount && amount <= maxAmount;
-    }
-    return true;
-  };
-
-  const getFeeForCard = (cardId: string): string => {
-    const amount = amountInputs[cardId];
-    if (amount === undefined || amount === null || !clientSettings) {
-      return "R 0.00";
-    }
-    const card = cards?.find(c => c.id === cardId);
-    if (card && isAmountValid(cardId, card.balance)) {
-      return `R ${clientSettings.details.clientTransferFee.toFixed(2)}`;
-    }
-    return "R 0.00";
-  };
-
-  const totals = useMemo(() => {
+  // Totals
+  const totals = React.useMemo(() => {
     if (!cards || !clientSettings) return { amount: 0, fee: 0, smsFee: 0 };
     let totalAmount = 0;
     let totalFee = 0;
@@ -148,38 +45,6 @@ export function CardLoads() {
     });
     return { amount: totalAmount, fee: totalFee, smsFee: totalSMS };
   }, [selectedLoads, cards, clientSettings]);
-
-  const paginatedCards = useMemo(() => {
-    if (!cards) return [];
-    const startIndex = (page - 1) * pageSize;
-    return cards.slice(startIndex, startIndex + pageSize);
-  }, [cards, page, pageSize]);
-
-  const totalPages = useMemo(() => {
-    if (!cards) return 1;
-    return Math.ceil(cards.length / pageSize);
-  }, [cards, pageSize]);
-
-  // Optionally, on mount, hydrate amountInputs/smsInputs from selectedLoads (if coming back from Confirm, restore control values)
-  // Not always needed if Zustand is kept for all cards, but good to ensure controls aren't out of sync
-  // useEffect(() => {
-  //   // Hydration logic if needed
-  // }, []);
-
-  // Add this missing function to fix the runtime error
-  const handleLoadFundsClick = () => {
-    navigate("/load-funds-from");
-  };
-
-  // Handle continue, just redirect
-  const handleContinue = () => {
-    if (!clientSettings) return;
-    if (!selectedLoads.length) {
-      // Toast error here, perhaps
-      return;
-    }
-    navigate("/load-funds-from/card-loads/confirm-load");
-  };
 
   return (
     <div className="space-y-6">
@@ -205,92 +70,12 @@ export function CardLoads() {
         </p>
       </Card>
       <Card className="bg-white p-6">
-        <div className="overflow-x-auto">
-          <table className="w-full table-auto border mt-2 mb-4">
-            <thead>
-              <tr>
-                <th className="py-2 px-4 border-b uppercase text-left">Cardholder</th>
-                <th className="py-2 px-4 border-b uppercase text-left">Card Number</th>
-                <th className="py-2 px-4 border-b uppercase text-left">Amount</th>
-                <th className="py-2 px-4 border-b uppercase text-left">Fee</th>
-                <th className="py-2 px-4 border-b uppercase text-left">Notify via SMS</th>
-              </tr>
-            </thead>
-            <tbody>
-              {paginatedCards.map((card) => {
-                // Determine UI value from selectedLoads
-                const selectedLoadObj = getSelectedLoadObj(card.accountCardId);
-                // Only show checked if there's a valid amount; checked state follows amount and smsInputs
-                const amountValue = selectedLoadObj
-                  ? selectedLoadObj.transferAmount
-                  : amountInputs[card.id] ?? "";
-                // Only checked if amount is present and > 0
-                const smsChecked =
-                  (selectedLoadObj
-                    ? selectedLoadObj.transferSMSNotification === 1 && selectedLoadObj.transferAmount > 0
-                    : (smsInputs[card.id] && amountInputs[card.id] && amountInputs[card.id]! > 0) || false
-                  );
-                return (
-                  <tr key={card.id ?? card.cardNumber}>
-                    <td className="py-2 px-4 border-b">{card.cardholder}</td>
-                    <td className="py-2 px-4 border-b">{card.cardNumber}</td>
-                    <td className="py-2 px-4 border-b">
-                      <div className="flex items-center">
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <input
-                                type="number"
-                                min="0"
-                                className={`border rounded px-2 py-1 w-24 ${!isAmountValid(card.id, card.balance) ? 'border-paycard-red ring-1 ring-paycard-red' : ''}`}
-                                value={amountValue}
-                                onChange={(e) =>
-                                  handleAmountChange(card.id, e.target.value)
-                                }
-                                placeholder="R 0.00"
-                              />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <span>
-                                {getTooltipMessage(card.balance)}
-                              </span>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      </div>
-                    </td>
-                    <td className="py-2 px-4 border-b">{getFeeForCard(card.id)}</td>
-                    <td className="py-2 px-4 border-b">
-                      <div className="flex items-center justify-center h-6">
-                        <Checkbox
-                          checked={smsChecked}
-                          onCheckedChange={(checked: boolean) =>
-                            handleSMSChange(card.id, checked)
-                          }
-                          id={`sms-checkbox-${card.id}`}
-                          // Only allow checking the box if a valid amount is present
-                          disabled={!(amountInputs[card.id] && amountInputs[card.id]! > 0)}
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-            <tfoot>
-              <tr>
-                <td className="py-2 px-4 border-b font-semibold" colSpan={2}>Total</td>
-                <td className="py-2 px-4 border-b font-semibold">
-                  R {totals.amount.toFixed(2)}
-                </td>
-                <td className="py-2 px-4 border-b font-semibold">
-                  R {totals.fee.toFixed(2)}
-                </td>
-                <td className="py-2 px-4 border-b"></td>
-              </tr>
-            </tfoot>
-          </table>
-        </div>
+        <CardLoadsTable
+          cards={cards || []}
+          clientSettings={clientSettings}
+          page={page}
+          pageSize={pageSize}
+        />
         {cards && cards.length > pageSize && (
           <CardsPagination
             currentPage={page}
@@ -298,23 +83,15 @@ export function CardLoads() {
             onPageChange={setPage}
           />
         )}
-        <div className="mt-6 space-y-6">
-          <LoadEffectiveDate
-            effectiveDate={effectiveDate}
-            selectedDate={selectedDate}
-            onEffectiveDateChange={setEffectiveDate}
-            onSelectedDateChange={setSelectedDate}
-          />
-          <div className="flex justify-end">
-            <Button 
-              onClick={handleContinue}
-              variant="default"
-              size="default"
-            >
-              Continue
-            </Button>
-          </div>
+        <div className="pt-4 text-right font-semibold text-paycard-navy">
+          Total: R {totals.amount.toFixed(2)} | Fee: R {totals.fee.toFixed(2)} | SMS Notification Fee: R {totals.smsFee.toFixed(2)}
         </div>
+        <CardLoadsActionPanel
+          effectiveDate={effectiveDate}
+          selectedDate={selectedDate}
+          clientSettings={clientSettings}
+          selectedLoads={selectedLoads}
+        />
       </Card>
     </div>
   );
