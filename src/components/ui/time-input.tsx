@@ -1,4 +1,3 @@
-
 import React from "react";
 import { cn } from "@/lib/utils";
 import { AlertCircle } from "lucide-react";
@@ -127,14 +126,10 @@ export const TimeInput: React.FC<TimeInputProps> = ({
 
   return (
     <div
-      className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md bg-white w-full mx-auto"
+      className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md bg-white w-full mx-auto px-4"
       style={{
         minWidth: 210,
         maxWidth: 350,
-        marginLeft: 12, // equal L/R margin
-        marginRight: 12,
-        paddingLeft: 14, // symmetric left/right padding
-        paddingRight: 14,
       }}
     >
       <label
