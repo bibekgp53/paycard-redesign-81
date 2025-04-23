@@ -1,9 +1,10 @@
+
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
-import { AlertCircle } from "lucide-react";
+import { TimeInput } from "./time-input";
 
 // Only support single mode for Calendar!
 export type CalendarProps = Omit<
@@ -28,18 +29,6 @@ function getTimeString24(date?: Date) {
   ].join(":");
 }
 
-function parseTimeFromString24(value: string) {
-  // Supports "HH:mm:ss" or "HH:mm"
-  const [rawHours, rawMinutes, rawSeconds] = value.split(":");
-  let h = Math.min(23, Math.max(0, parseInt(rawHours, 10) || 0));
-  let m = Math.min(59, Math.max(0, parseInt(rawMinutes, 10) || 0));
-  let s = typeof rawSeconds !== "undefined" ? Math.min(59, Math.max(0, parseInt(rawSeconds, 10) || 0)) : 0;
-  return { hours: h, minutes: m, seconds: s };
-}
-
-// Regex for strict format: HH:mm:ss with 24-hour time
-const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/;
-
 function Calendar({
   className,
   classNames,
@@ -50,109 +39,6 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  const [localTime, setLocalTime] = React.useState(() => getTimeString24(selected));
-  const [inputFocused, setInputFocused] = React.useState(false);
-  const [inputError, setInputError] = React.useState(false);
-  const inputRef = React.useRef<HTMLInputElement>(null);
-
-  React.useEffect(() => {
-    if (inputFocused) return;
-    if (!selected) {
-      setLocalTime("");
-    } else {
-      setLocalTime(getTimeString24(selected));
-    }
-    setInputError(false);
-  }, [selected, inputFocused]);
-
-  // Validate input on each key stroke: only allow valid "HH:mm:ss" 24hr
-  const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/[^0-9:]/g, "");
-    setLocalTime(raw);
-
-    // If the field is empty, don't show an error (let them clear/cancel)
-    if (raw === "") {
-      setInputError(false);
-      return;
-    }
-
-    // Show error if not valid
-    if (!TIME_REGEX.test(raw)) {
-      setInputError(true);
-    } else {
-      setInputError(false);
-    }
-  };
-
-  const handleTimeInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    const allowed = [
-      "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"
-    ];
-    if (allowed.includes(e.key)) return;
-
-    // Only accept numbers and colon, block others
-    if (!("0123456789:".includes(e.key))) {
-      e.preventDefault();
-    }
-
-    // Prevent typing more than 8 chars
-    if (
-      !allowed.includes(e.key) &&
-      localTime.length >= 8 &&
-      (!inputRef.current || inputRef.current.selectionStart === inputRef.current.selectionEnd)
-    ) {
-      e.preventDefault();
-    }
-    // Prevent entering colons in unsupported positions (max 2, and must be at 3rd and 6th chars)
-    if (e.key === ":") {
-      const selectionStart = inputRef.current ? inputRef.current.selectionStart || 0 : 0;
-      if (selectionStart !== 2 && selectionStart !== 5) e.preventDefault();
-      if ((localTime.match(/:/g) || []).length >= 2) e.preventDefault();
-    }
-  };
-
-  // Block pasting anything not in strict HH:mm:ss
-  const handleTimeInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const paste = e.clipboardData.getData('Text');
-    const clean = paste.replace(/[^0-9:]/g, "");
-    if (!TIME_REGEX.test(clean)) {
-      e.preventDefault();
-      setInputError(true);
-    }
-  };
-
-  const handleTimeInputBlur = () => {
-    setInputFocused(false);
-    // If cleared, just reset and don't error
-    if (localTime === "") {
-      setInputError(false);
-      setLocalTime("");
-      return;
-    }
-    if (!TIME_REGEX.test(localTime)) {
-      setInputError(true);
-      if (selected) setLocalTime(getTimeString24(selected));
-      else setLocalTime("");
-      return;
-    }
-    setInputError(false);
-    // Only update if valid and changed
-    if (selected) {
-      const { hours, minutes, seconds } = parseTimeFromString24(localTime);
-      const updated = new Date(selected.getTime());
-      updated.setHours(hours, minutes, seconds, 0);
-      if (updated.getTime() !== selected.getTime()) {
-        onSelect(updated, { fromTimeInput: true });
-      }
-      setLocalTime(getTimeString24(updated));
-    }
-  };
-
-  const handleTimeInputFocus = () => {
-    setInputFocused(true);
-    setInputError(false);
-  };
-
   const handleDaySelect: SelectSingleEventHandler = (date) => {
     if (!date) return;
     if (selected) {
@@ -208,48 +94,15 @@ function Calendar({
         {...props}
       />
       {showTimeInput && selected && (
-        <div
-          className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-full mx-auto"
-          style={{ minWidth: 210, maxWidth: 350 }} // increased to ensure adequate space
-        >
-          <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left">
-            {timeLabel}
-          </label>
-          <div className="relative flex items-center">
-            <input
-              id="delay-time"
-              type="text"
-              // pattern removed to suppress browser validation tooltip
-              placeholder="HH:mm:ss"
-              className={cn(
-                "border font-mono bg-white text-left tracking-widest px-2 py-1 rounded outline-none transition-colors",
-                inputError
-                  ? "border-paycard-red ring-1 ring-paycard-red focus:border-paycard-red focus:ring-paycard-red"
-                  : "border-paycard-navy-200 focus:border-paycard-navy-400",
-                "w-[130px] min-w-[130px] max-w-[130px]" // enough for HH:mm:ss + icon + padding
-              )}
-              value={localTime}
-              ref={inputRef}
-              onChange={handleTimeInputChange}
-              onKeyDown={handleTimeInputKeyDown}
-              onPaste={handleTimeInputPaste}
-              onFocus={handleTimeInputFocus}
-              onBlur={handleTimeInputBlur}
-              autoComplete="off"
-              inputMode="numeric"
-              aria-invalid={inputError}
-            />
-            {inputError && (
-              <span className="absolute right-1 top-0 flex items-center h-full text-paycard-red z-10" title="Invalid time format">
-                <AlertCircle size={20} strokeWidth={2} className="text-paycard-red" />
-              </span>
-            )}
-          </div>
-          {/* No error message text below input - icon only */}
-        </div>
+        <TimeInput
+          value={selected}
+          onChange={onSelect}
+          label={timeLabel}
+        />
       )}
     </div>
   );
 }
+
 Calendar.displayName = "Calendar";
 export { Calendar };
