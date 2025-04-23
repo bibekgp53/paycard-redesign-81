@@ -1,3 +1,4 @@
+
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
@@ -15,34 +16,27 @@ export type CalendarProps = Omit<
   onSelect: (date: Date | undefined, opts?: { fromTimeInput?: boolean }) => void;
 };
 
-function getTimeString12(date?: Date) {
-  if (!date) return { time: "", period: "AM" as "AM" | "PM" };
-  let hours = date.getHours();
+// Returns 24 hour formatted string (pad single digits): HH:mm:ss
+function getTimeString24(date?: Date) {
+  if (!date) return "";
+  const hours = date.getHours();
   const minutes = date.getMinutes();
   const seconds = date.getSeconds();
-  const period: "AM" | "PM" = hours >= 12 ? "PM" : "AM";
-  let adjHours = hours % 12;
-  if (adjHours === 0) adjHours = 12;
-  const time = [
-    adjHours.toString().padStart(2, "0"),
+  return [
+    hours.toString().padStart(2, "0"),
     minutes.toString().padStart(2, "0"),
     seconds.toString().padStart(2, "0"),
-    ].join(":");
-  return { time, period };
+  ].join(":");
 }
 
-function parseTimeFromString(value: string, period: "AM" | "PM") {
-  // value format: "HH:MM:SS" or "HH:MM"
+// Parse HH:mm:ss (24-hour time string)
+function parseTimeFromString24(value: string) {
+  // Supports "HH:mm:ss" or "HH:mm"
   const [rawHours, rawMinutes, rawSeconds] = value.split(":");
-  let h = parseInt(rawHours, 10) || 12;
-  let m = parseInt(rawMinutes, 10) || 0;
-  let s = typeof rawSeconds !== "undefined" ? parseInt(rawSeconds, 10) || 0 : 0;
-
-  // Convert to 24-hour based on period
-  let hours24 = h;
-  if (period === "PM" && h !== 12) hours24 += 12;
-  if (period === "AM" && h === 12) hours24 = 0;
-  return { hours: hours24, minutes: m, seconds: s };
+  let h = Math.min(23, Math.max(0, parseInt(rawHours, 10) || 0));
+  let m = Math.min(59, Math.max(0, parseInt(rawMinutes, 10) || 0));
+  let s = typeof rawSeconds !== "undefined" ? Math.min(59, Math.max(0, parseInt(rawSeconds, 10) || 0)) : 0;
+  return { hours: h, minutes: m, seconds: s };
 }
 
 function Calendar({
@@ -55,9 +49,8 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  // Local state for controlled time string
-  const [localTime, setLocalTime] = React.useState(() => getTimeString12(selected).time);
-  const [localPeriod, setLocalPeriod] = React.useState<"AM" | "PM">(getTimeString12(selected).period);
+  // Local state for controlled time string (24-hour format)
+  const [localTime, setLocalTime] = React.useState(() => getTimeString24(selected));
   const [inputFocused, setInputFocused] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
@@ -66,47 +59,46 @@ function Calendar({
     if (inputFocused) return;
     if (!selected) {
       setLocalTime("");
-      setLocalPeriod("AM");
     } else {
-      const { time, period } = getTimeString12(selected);
-      setLocalTime(time);
-      setLocalPeriod(period);
+      setLocalTime(getTimeString24(selected));
     }
   }, [selected, inputFocused]);
 
-  // Handles changing the time (text input), only update local state
+  // Handles changing the time input
   const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalTime(e.target.value);
+    setLocalTime(e.target.value.replace(/[^0-9:]/g, "")); // Accept only numbers and colons
   };
 
-  // On blur, try to parse and sync the complete time to the parent
+  // On blur, parse and sync the complete time to the parent
   const handleTimeInputBlur = () => {
     setInputFocused(false);
     if (!selected) return;
-    // validate input and update
-    const next = parseTimeFromString(localTime, localPeriod);
+    let valid = /^\d{2}:\d{2}:\d{2}$/.test(localTime);
+    let safeTime = localTime;
+
+    // Attempt autoformatting incomplete inputs
+    if (!valid) {
+      // e.g. 4:5 -> 04:05:00 or 15:2 -> 15:02:00
+      const parts = localTime.split(":");
+      let h = parts[0] || "00";
+      let m = parts[1] || "00";
+      let s = parts[2] || "00";
+      if (h.length < 2) h = "0" + h;
+      if (m.length < 2) m = "0" + m;
+      if (s.length < 2) s = s.length > 0 ? "0" + s : "00";
+      safeTime = `${h}:${m}:${s}`;
+      setLocalTime(safeTime);  // Update visually
+    }
+
+    const { hours, minutes, seconds } = parseTimeFromString24(safeTime);
     const updated = new Date(selected.getTime());
-    updated.setHours(next.hours, next.minutes, next.seconds, 0);
+    updated.setHours(hours, minutes, seconds, 0);
     onSelect(updated, { fromTimeInput: true });
   };
 
   // On focus, mark editing mode
   const handleTimeInputFocus = () => {
     setInputFocused(true);
-  };
-
-  // Handles toggling AM/PM (by clicking on span)
-  const handleTogglePeriod = () => {
-    if (!selected) return;
-    let hours = selected.getHours();
-    let newPeriod: "AM" | "PM" = localPeriod === "AM" ? "PM" : "AM";
-    setLocalPeriod(newPeriod);
-
-    // Apply time change on toggle
-    const parsed = parseTimeFromString(localTime, newPeriod);
-    const updated = new Date(selected.getTime());
-    updated.setHours(parsed.hours, parsed.minutes, parsed.seconds, 0);
-    onSelect(updated, { fromTimeInput: true });
   };
 
   // Only close popover when selecting from calendar grid
@@ -177,7 +169,8 @@ function Calendar({
           <input
             id="delay-time"
             type="text"
-            pattern="^(0?[1-9]|1[0-2]):[0-5][0-9](:[0-5][0-9])?$"
+            pattern="^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$"
+            placeholder="HH:mm:ss"
             className="border border-paycard-navy-200 rounded px-3 py-1 bg-white w-[200px] text-left font-mono"
             value={localTime}
             ref={inputRef}
@@ -185,17 +178,8 @@ function Calendar({
             onFocus={handleTimeInputFocus}
             onBlur={handleTimeInputBlur}
             autoComplete="off"
+            maxLength={8}
           />
-          <span
-            className="text-xs font-semibold ml-1 select-none cursor-pointer border rounded px-2 py-1 bg-gray-50 hover:bg-gray-100"
-            onClick={handleTogglePeriod}
-            tabIndex={0}
-            style={{ userSelect: "none" }}
-            title="Toggle AM/PM"
-            aria-label="Toggle AM/PM"
-          >
-            {localPeriod}
-          </span>
         </div>
       )}
     </div>
@@ -203,3 +187,4 @@ function Calendar({
 }
 Calendar.displayName = "Calendar";
 export { Calendar };
+
