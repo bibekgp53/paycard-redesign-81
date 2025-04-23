@@ -1,4 +1,3 @@
-
 export interface Card {
   id: string;
   card_number: string;
@@ -40,24 +39,14 @@ export interface Profile {
   profile_number: string;
   name?: string | null;
   business_name?: string | null;
-  // Added new fields from database update
-  from_account?: string | null;
-  from_balance?: number | null;
 }
 
 export interface GetProfilesData {
   profilesCollection: {
     edges: Array<{
-      node: {
-        id: string;
-        profile_number: string;
-        name: string | null;
-        business_name: string | null;
-        from_account?: string | null;
-        from_balance?: number | null;
-      }
-    }>
-  }
+      node: Profile;
+    }>;
+  };
 }
 
 export interface LinkCardsData {

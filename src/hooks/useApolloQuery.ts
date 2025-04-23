@@ -9,76 +9,27 @@ export function useApolloQuery<TData = any, TVariables = any>(
   const { data, loading, error, refetch, networkStatus } = useQuery<TData, TVariables>(query, {
     ...options,
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: options?.fetchPolicy || 'network-only',
-    errorPolicy: 'all',
-    onCompleted: (data) => {
-      console.log('Query completed successfully:', data);
-      
-      // Check if profiles data came back empty
-      if (data && typeof data === 'object') {
-        if ('profilesCollection' in data) {
-          const profilesData = data as any;
-          if (!profilesData.profilesCollection?.edges || profilesData.profilesCollection?.edges?.length === 0) {
-            console.warn('No profiles found in database. Check if profiles table has data or if RLS policies are preventing access.');
-          } else {
-            console.log('Profiles found:', profilesData.profilesCollection.edges.length);
-          }
-        } else if ('profiles' in data) {
-          const profilesData = data as any;
-          if (!profilesData.profiles || profilesData.profiles.length === 0) {
-            console.warn('No profiles found using direct query. Check if profiles table has data or if RLS policies are preventing access.');
-          } else {
-            console.log('Profiles found with direct query:', profilesData.profiles.length);
-          }
-        }
-      }
-      
-      if (options?.onCompleted) {
-        options.onCompleted(data);
-      }
-    },
+    fetchPolicy: options?.fetchPolicy || 'network-only', // Default to network-only to avoid cache issues
     onError: (error) => {
       console.error('GraphQL query error:', error);
       
-      if (error.networkError) {
-        console.error('Network error details:', error.networkError);
+      if (error.message.includes('JWT')) {
         toast({
-          title: "Network Error",
-          description: "Failed to connect to the server. Please check your connection.",
+          title: "Authentication Error",
+          description: "Your session has expired. Please log in again.",
           variant: "destructive",
         });
-      } else if (error.graphQLErrors?.length) {
-        console.error('GraphQL errors:', error.graphQLErrors);
-        
-        // Look for specific error messages
-        const jwtError = error.graphQLErrors.some(e => e.message.includes('JWT'));
-        const permissionError = error.graphQLErrors.some(e => 
-          e.message.includes('permission') || e.message.includes('access') || e.message.includes('not allowed')
-        );
-        
-        if (jwtError) {
-          toast({
-            title: "Authentication Error",
-            description: "Your session has expired. Please log in again.",
-            variant: "destructive",
-          });
-        } else if (permissionError) {
-          toast({
-            title: "Permission Error",
-            description: "You don't have permission to access this data. Check RLS policies.",
-            variant: "destructive",
-          });
-        } else {
+      } else {
+        // Only show toast for non-auth errors if not suppressed
+        if (options?.onError) {
+          options.onError(error);
+        } else if (!options?.errorPolicy || options.errorPolicy === 'none') {
           toast({
             title: "Error",
             description: `Failed to load data: ${error.message}`,
             variant: "destructive",
           });
         }
-      }
-      
-      if (options?.onError) {
-        options.onError(error);
       }
     }
   });
