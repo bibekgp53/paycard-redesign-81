@@ -15,7 +15,7 @@ export function useApolloQuery<TData = any, TVariables = any>(
       console.log('Query completed successfully:', data);
       
       // Check if profiles data came back empty
-      if (data && 'profilesCollection' in data) {
+      if (data && typeof data === 'object' && 'profilesCollection' in data) {
         const profilesData = data as any;
         if (profilesData.profilesCollection?.edges?.length === 0) {
           console.warn('No profiles found in database. Check if profiles table has data.');
