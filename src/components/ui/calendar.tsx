@@ -64,17 +64,57 @@ function Calendar({
     setInputError(false);
   }, [selected, inputFocused]);
 
-  // Accept ONLY valid "HH:mm:ss"
+  // Only allow input if string will be a valid partial time (e.g. "12:3" or "23:59:0")
+  const allowPartialTime = (val: string) => {
+    // Accept empty, H, HH, HH:, HH:M, HH:MM, HH:MM:, HH:MM:S, HH:MM:SS
+    if (val.length > 8) return false;
+    if (val === "") return true;
+    if (/^\d{1,2}$/.test(val)) return true; // Hour only
+    if (/^\d{2}:$/.test(val)) return true; // "HH:"
+    if (/^\d{2}:\d{1,2}$/.test(val)) return true; // "HH:mm"
+    if (/^\d{2}:\d{2}:$/.test(val)) return true; // "HH:mm:"
+    if (/^\d{2}:\d{2}:\d{1,2}$/.test(val)) return true; // "HH:mm:ss"
+    return false;
+  };
+
   const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/[^0-9:]/g, "");
-    // Block if there's any value not in the shape d{2}:d{2}:d{2} or partial (with ':')
-    // Only allow typing if resulting value is empty OR matches ^\d{0,2}(:\d{0,2}){0,2}$
-    if (
-      raw === "" ||
-      /^(\d{1,2})?(:\d{0,2})?(:\d{0,2})?$/.test(raw)
-    ) {
+    if (allowPartialTime(raw)) {
       setLocalTime(raw);
       setInputError(false);
+    }
+  };
+
+  // Prevent any key except digits, colon, Backspace, Delete, Arrow keys, Home/End, Tab
+  const handleTimeInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    const allowed = [
+      "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"
+    ];
+    if (
+      (e.key >= "0" && e.key <= "9") ||
+      e.key === ":" ||
+      allowed.includes(e.key)
+    ) {
+      // Do nothing
+    } else {
+      e.preventDefault();
+    }
+    // Prevent typing more than 8 characters
+    if (
+      !allowed.includes(e.key) &&
+      localTime.length >= 8 &&
+      // If something selected, allow replacement
+      (!inputRef.current || inputRef.current.selectionStart === inputRef.current.selectionEnd)
+    ) {
+      e.preventDefault();
+    }
+  };
+
+  const handleTimeInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const paste = e.clipboardData.getData('Text');
+    const clean = paste.replace(/[^0-9:]/g, "");
+    if (clean.length > 8 || !allowPartialTime(clean)) {
+      e.preventDefault();
     }
   };
 
@@ -182,17 +222,19 @@ function Calendar({
                 inputError
                   ? "border-paycard-red ring-1 ring-paycard-red pr-8"
                   : "focus:border-paycard-navy-400",
-                "w-[92px]"
+                "w-[8ch] min-w-[8ch] max-w-[8ch]" // exactly 8 characters width
               )}
               value={localTime}
               ref={inputRef}
               onChange={handleTimeInputChange}
+              onKeyDown={handleTimeInputKeyDown}
+              onPaste={handleTimeInputPaste}
               onFocus={handleTimeInputFocus}
               onBlur={handleTimeInputBlur}
               autoComplete="off"
-              maxLength={8}
               inputMode="numeric"
               aria-invalid={inputError}
+              // maxLength removed since we now restrict by logic
             />
             {inputError && (
               <span className="absolute right-1 top-0 flex items-center h-full text-paycard-red" title="Invalid time format">
