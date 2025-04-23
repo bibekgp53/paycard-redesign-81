@@ -1,3 +1,4 @@
+
 import { create } from "zustand";
 
 // Existing types...
@@ -11,6 +12,8 @@ export interface SelectedLoad {
   transferFee: number;
   transferSMSNotificationFee: number;
   transferSMSNotification: 0 | 1;
+  cardholderName: string;
+  cardNumber: string;
 }
 
 interface CardLoadsState {

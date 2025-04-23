@@ -71,12 +71,14 @@ export function CardLoads() {
     if (numValue !== null && numValue > 0) {
       // Use smsInputs, but fallback to selectedLoad
       let smsChecked = smsInputs[cardId] ?? getSelectedLoadObj(card.accountCardId)?.transferSMSNotification === 1;
-      const obj: SelectedLoad = {
+      const obj = {
         accountCardId: card.accountCardId,
         transferAmount: numValue,
         transferFee: +clientSettings.details.clientTransferFee,
         transferSMSNotificationFee: smsChecked ? +clientSettings.details.clientSMSCost : 0,
-        transferSMSNotification: smsChecked ? 1 : 0
+        transferSMSNotification: smsChecked ? 1 : 0,
+        cardholderName: card.cardholder,
+        cardNumber: card.cardNumber,
       };
       addOrUpdateSelectedLoad(obj);
     } else {
@@ -91,12 +93,14 @@ export function CardLoads() {
     const amount = amountInputs[cardId];
     if (!card || !clientSettings || !amount || amount <= 0) return;
     // Always update load if amount positive
-    const obj: SelectedLoad = {
+    const obj = {
       accountCardId: card.accountCardId,
       transferAmount: amount,
       transferFee: +clientSettings.details.clientTransferFee,
       transferSMSNotificationFee: checked ? +clientSettings.details.clientSMSCost : 0,
-      transferSMSNotification: checked ? 1 : 0
+      transferSMSNotification: checked ? 1 : 0,
+      cardholderName: card.cardholder,
+      cardNumber: card.cardNumber,
     };
     addOrUpdateSelectedLoad(obj);
   };

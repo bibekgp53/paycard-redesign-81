@@ -57,23 +57,21 @@ export default function ConfirmLoad() {
           <table className="w-full text-left border mt-2 mb-4">
             <thead>
               <tr>
-                <th className="py-2 px-4 border-b">CARDHOLDER</th>
-                <th className="py-2 px-4 border-b">ACCOUNT CARD ID</th>
+                <th className="py-2 px-4 border-b">NAME</th>
+                <th className="py-2 px-4 border-b">CARD NUMBER</th>
                 <th className="py-2 px-4 border-b">AMOUNT</th>
                 <th className="py-2 px-4 border-b">FEE</th>
                 <th className="py-2 px-4 border-b">SMS NOTIFICATION FEE</th>
-                {/* Removed NOTIFY VIA SMS */}
               </tr>
             </thead>
             <tbody>
               {selectedLoads.map((item, idx) => (
                 <tr key={idx}>
-                  <td className="py-2 px-4 border-b">{item.accountCardId}</td>
-                  <td className="py-2 px-4 border-b">{item.accountCardId}</td>
+                  <td className="py-2 px-4 border-b">{item.cardholderName}</td>
+                  <td className="py-2 px-4 border-b">{item.cardNumber}</td>
                   <td className="py-2 px-4 border-b">R {item.transferAmount.toFixed(2)}</td>
                   <td className="py-2 px-4 border-b">R {item.transferFee.toFixed(2)}</td>
                   <td className="py-2 px-4 border-b">R {item.transferSMSNotificationFee.toFixed(2)}</td>
-                  {/* Removed NOTIFY VIA SMS column */}
                 </tr>
               ))}
             </tbody>
