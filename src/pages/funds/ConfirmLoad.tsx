@@ -11,6 +11,7 @@ import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { XCircle, CheckCircle2 } from "lucide-react";
 import { InvoiceDisplay } from "./components/InvoiceDisplay";
+import { toast } from "@/hooks/use-toast";
 
 type AlertType = null | { type: "success" | "error", message: string };
 
@@ -38,7 +39,7 @@ export default function ConfirmLoad() {
     return "Immediate";
   };
 
-  // Supabase insert handler with proper error handling for RLS
+  // Supabase insert handler with improved RLS handling
   const handleConfirmAndLoad = async () => {
     if (!clientSettings || !selectedLoads.length) {
       setAlertState({
@@ -93,7 +94,9 @@ export default function ConfirmLoad() {
     };
 
     try {
-      const { error } = await supabase.from("load_funds").insert([
+      console.log("Sending payload to Supabase:", payload);
+      
+      const { data, error } = await supabase.from("load_funds").insert([
         {
           account_from: payload.accountFrom,
           transfer_uuid: payload.transferUuid,
@@ -105,10 +108,15 @@ export default function ConfirmLoad() {
           process_type: payload.processType,
           cards: payload.cards,
         }
-      ]);
+      ]).select();
       
       if (error) {
         console.error("Error inserting data:", error);
+        toast({
+          title: "Error",
+          description: `Failed to save load request: ${error.message}`,
+          variant: "destructive"
+        });
         setAlertState({
           type: "error",
           message: "Failed to save load request: " + error.message,
@@ -117,8 +125,9 @@ export default function ConfirmLoad() {
         return;
       }
 
-      // Instead of toast/success, switch to invoice screen:
-      // Compose invoice data from current values:
+      console.log("Load funds insert success:", data);
+      
+      // Switch to invoice screen
       setInvoiceMeta({
         invoiceNumber: Math.floor(Math.random() * 90000000 + 10000000).toString(),
         invoiceDate: format(new Date(), "yyyy/MM/dd"),
@@ -133,6 +142,12 @@ export default function ConfirmLoad() {
         })),
         vatRate: 0.15,
       });
+      
+      toast({
+        title: "Success",
+        description: "Funds loaded successfully",
+      });
+      
       resetCardLoadsState();
       setShowInvoice(true);
     } catch (e) {
