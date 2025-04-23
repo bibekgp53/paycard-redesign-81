@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
@@ -28,7 +27,7 @@ function getTimeString12(date?: Date) {
     adjHours.toString().padStart(2, "0"),
     minutes.toString().padStart(2, "0"),
     seconds.toString().padStart(2, "0"),
-  ].join(":");
+    ].join(":");
   return { time, period };
 }
 
@@ -56,13 +55,15 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  // Local state for controlled time string so caret stores correctly
+  // Local state for controlled time string
   const [localTime, setLocalTime] = React.useState(() => getTimeString12(selected).time);
   const [localPeriod, setLocalPeriod] = React.useState<"AM" | "PM">(getTimeString12(selected).period);
+  const [inputFocused, setInputFocused] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
   // Sync display with selected (except when editing input)
   React.useEffect(() => {
+    if (inputFocused) return;
     if (!selected) {
       setLocalTime("");
       setLocalPeriod("AM");
@@ -71,38 +72,40 @@ function Calendar({
       setLocalTime(time);
       setLocalPeriod(period);
     }
-  }, [selected]);
+  }, [selected, inputFocused]);
 
-  // Handles changing the time (text input)
+  // Handles changing the time (text input), only update local state
   const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const val = e.target.value;
-    setLocalTime(val);
+    setLocalTime(e.target.value);
+  };
 
+  // On blur, try to parse and sync the complete time to the parent
+  const handleTimeInputBlur = () => {
+    setInputFocused(false);
     if (!selected) return;
-
-    // Just update the date/time, do not touch caret: let browser manage cursor naturally.
-    const next = parseTimeFromString(val, localPeriod);
+    // validate input and update
+    const next = parseTimeFromString(localTime, localPeriod);
     const updated = new Date(selected.getTime());
     updated.setHours(next.hours, next.minutes, next.seconds, 0);
     onSelect(updated, { fromTimeInput: true });
   };
 
+  // On focus, mark editing mode
+  const handleTimeInputFocus = () => {
+    setInputFocused(true);
+  };
+
   // Handles toggling AM/PM (by clicking on span)
   const handleTogglePeriod = () => {
     if (!selected) return;
-
     let hours = selected.getHours();
     let newPeriod: "AM" | "PM" = localPeriod === "AM" ? "PM" : "AM";
     setLocalPeriod(newPeriod);
 
-    // Toggle hours for new period
-    if (newPeriod === "PM" && hours < 12) {
-      hours += 12;
-    } else if (newPeriod === "AM" && hours >= 12) {
-      hours -= 12;
-    }
+    // Apply time change on toggle
+    const parsed = parseTimeFromString(localTime, newPeriod);
     const updated = new Date(selected.getTime());
-    updated.setHours(hours);
+    updated.setHours(parsed.hours, parsed.minutes, parsed.seconds, 0);
     onSelect(updated, { fromTimeInput: true });
   };
 
@@ -179,6 +182,8 @@ function Calendar({
             value={localTime}
             ref={inputRef}
             onChange={handleTimeInputChange}
+            onFocus={handleTimeInputFocus}
+            onBlur={handleTimeInputBlur}
             autoComplete="off"
           />
           <span
