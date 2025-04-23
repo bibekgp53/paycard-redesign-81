@@ -42,7 +42,11 @@ export interface Profile {
 }
 
 export interface GetProfilesData {
-  profiles: Profile[];
+  profilesCollection: {
+    edges: Array<{
+      node: Profile;
+    }>;
+  };
 }
 
 export interface LinkCardsData {

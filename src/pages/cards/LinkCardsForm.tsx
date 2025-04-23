@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -52,12 +51,12 @@ const LinkCardsForm = () => {
   const [profileOptions, setProfileOptions] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
-    if (profilesData && profilesData.profiles) {
-      console.log("Profiles data received:", profilesData.profiles);
-      const options = profilesData.profiles.map((profile) => ({
-        value: profile.profile_number,
-        label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}`
-      })) || [];
+    if (profilesData) {
+      const options =
+        profilesData.profilesCollection.edges.map(({ node: profile }) => ({
+          value: profile.profile_number,
+          label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}`
+        })) || [];
       setProfileOptions(options);
     }
 
@@ -67,7 +66,6 @@ const LinkCardsForm = () => {
         description: "Failed to load profiles. Please try again.",
         variant: "destructive",
       });
-      console.error("Profile error:", profilesError);
     }
   }, [profilesData, profilesError]);
 

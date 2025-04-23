@@ -1,5 +1,5 @@
 
-import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink, HttpLink, from } from '@apollo/client';
 import { supabase } from '../integrations/supabase/client';
 
 // Create the http link with the Supabase GraphQL endpoint
@@ -13,16 +13,5 @@ const httpLink = createHttpLink({
 
 export const apolloClient = new ApolloClient({
   link: httpLink,
-  cache: new InMemoryCache({
-    addTypename: false, // This can help with some query issues
-    typePolicies: {
-      Query: {
-        fields: {
-          profiles: {
-            merge: false // Don't merge results, replace them
-          }
-        }
-      }
-    }
-  }),
+  cache: new InMemoryCache(),
 });
