@@ -175,7 +175,7 @@ const Sidebar = React.forwardRef<
       children,
       username,
       logoText = 'PayCard',
-      logoTagline = 'sandbox',
+      logoTagline,
       ...props
     },
     ref
@@ -201,7 +201,9 @@ const Sidebar = React.forwardRef<
             {variant !== 'collapsed' && (
               <div className="ml-2">
                 <h1 className="text-sidebar-foreground font-black text-xl">{logoText}</h1>
-                <p className="text-paycard-salmon text-xs font-semibold">{logoTagline}</p>
+                {!!logoTagline && (
+                  <p className="text-paycard-salmon text-xs font-semibold">{logoTagline}</p>
+                )}
               </div>
             )}
           </div>
