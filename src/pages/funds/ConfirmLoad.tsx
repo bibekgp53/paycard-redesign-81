@@ -10,7 +10,7 @@ import React, { useState } from "react";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { XCircle, CheckCircle2 } from "lucide-react";
-import { InvoiceDisplay } from "./components/InvoiceDisplay"; // New import
+import { InvoiceDisplay } from "./components/InvoiceDisplay";
 
 type AlertType = null | { type: "success" | "error", message: string };
 
@@ -38,7 +38,7 @@ export default function ConfirmLoad() {
     return "Immediate";
   };
 
-  // Supabase insert handler
+  // Supabase insert handler with proper error handling for RLS
   const handleConfirmAndLoad = async () => {
     if (!clientSettings || !selectedLoads.length) {
       setAlertState({
@@ -92,46 +92,58 @@ export default function ConfirmLoad() {
       }))
     };
 
-    const { error } = await supabase.from("load_funds").insert([
-      {
-        account_from: payload.accountFrom,
-        transfer_uuid: payload.transferUuid,
-        process_delay: payload.processDelay,
-        start_date: payload.startDate,
-        end_date: payload.endDate,
-        cards_to_load: payload.cardsToLoad,
-        transfer_from_account_id: payload.transferFromAccountId,
-        process_type: payload.processType,
-        cards: payload.cards,
+    try {
+      const { error } = await supabase.from("load_funds").insert([
+        {
+          account_from: payload.accountFrom,
+          transfer_uuid: payload.transferUuid,
+          process_delay: payload.processDelay,
+          start_date: payload.startDate,
+          end_date: payload.endDate,
+          cards_to_load: payload.cardsToLoad,
+          transfer_from_account_id: payload.transferFromAccountId,
+          process_type: payload.processType,
+          cards: payload.cards,
+        }
+      ]);
+      
+      if (error) {
+        console.error("Error inserting data:", error);
+        setAlertState({
+          type: "error",
+          message: "Failed to save load request: " + error.message,
+        });
+        setLoading(false);
+        return;
       }
-    ]);
-    setLoading(false);
-    if (error) {
+
+      // Instead of toast/success, switch to invoice screen:
+      // Compose invoice data from current values:
+      setInvoiceMeta({
+        invoiceNumber: Math.floor(Math.random() * 90000000 + 10000000).toString(),
+        invoiceDate: format(new Date(), "yyyy/MM/dd"),
+        referenceNumber: "0579245614", // Example static for now
+        vatReg: "687", // Example static
+        company: "Thami's Gmbh Ltd",
+        companyNumbers: ["78687678213", "jghguy", "gyug", "8757656", "7898"],
+        cards: selectedLoads.map(l => ({
+          cardNumber: l.cardNumber, // Masking already handled
+          transferAmount: l.transferAmount,
+          transferFee: l.transferFee,
+        })),
+        vatRate: 0.15,
+      });
+      resetCardLoadsState();
+      setShowInvoice(true);
+    } catch (e) {
+      console.error("Unexpected error:", e);
       setAlertState({
         type: "error",
-        message: "Failed to save load request: " + error.message,
+        message: "An unexpected error occurred. Please try again.",
       });
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    // Instead of toast/success, switch to invoice screen:
-    // Compose invoice data from current values:
-    setInvoiceMeta({
-      invoiceNumber: Math.floor(Math.random() * 90000000 + 10000000).toString(), // Example
-      invoiceDate: format(new Date(), "yyyy/MM/dd"),
-      referenceNumber: "0579245614", // Example static for now
-      vatReg: "687", // Example static
-      company: "Thami's Gmbh Ltd",
-      companyNumbers: ["78687678213", "jghguy", "gyug", "8757656", "7898"],
-      cards: selectedLoads.map(l => ({
-        cardNumber: l.cardNumber, // Masking already handled
-        transferAmount: l.transferAmount,
-        transferFee: l.transferFee,
-      })),
-      vatRate: 0.15,
-    });
-    resetCardLoadsState();
-    setShowInvoice(true);
   };
 
   // Back should not set state, just navigate back to card loads
