@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -11,7 +10,6 @@ import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { XCircle, CheckCircle2 } from "lucide-react";
 import { InvoiceDisplay } from "./components/InvoiceDisplay";
-import { toast } from "@/hooks/use-toast";
 
 type AlertType = null | { type: "success" | "error", message: string };
 
@@ -39,7 +37,6 @@ export default function ConfirmLoad() {
     return "Immediate";
   };
 
-  // Supabase insert handler with improved RLS handling
   const handleConfirmAndLoad = async () => {
     if (!clientSettings || !selectedLoads.length) {
       setAlertState({
@@ -112,11 +109,6 @@ export default function ConfirmLoad() {
       
       if (error) {
         console.error("Error inserting data:", error);
-        toast({
-          title: "Error",
-          description: `Failed to save load request: ${error.message}`,
-          variant: "destructive"
-        });
         setAlertState({
           type: "error",
           message: "Failed to save load request: " + error.message,
@@ -126,6 +118,12 @@ export default function ConfirmLoad() {
       }
 
       console.log("Load funds insert success:", data);
+      
+      // Set success alert
+      setAlertState({
+        type: "success",
+        message: "Funds loaded successfully",
+      });
       
       // Switch to invoice screen
       setInvoiceMeta({
@@ -141,11 +139,6 @@ export default function ConfirmLoad() {
           transferFee: l.transferFee,
         })),
         vatRate: 0.15,
-      });
-      
-      toast({
-        title: "Success",
-        description: "Funds loaded successfully",
       });
       
       resetCardLoadsState();
