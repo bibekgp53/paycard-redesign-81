@@ -7,11 +7,13 @@ export const useLoadAllocatedCards = () => {
   return useQuery({
     queryKey: ["loadAllocatedCards"],
     queryFn: async () => {
+      console.log("Fetching allocated cards");
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) {
         throw new Error('Unauthorized');
       }
 
+      console.log("Making RPC request to search_load_allocated");
       const { data, error } = await supabase
         .rpc('search_load_allocated', {
           account_from: false, // Pass as boolean
@@ -36,6 +38,9 @@ export const useLoadAllocatedCards = () => {
         cardNumber: item.cardnumber,
         ficaValidation: String(item.fica_validation)
       })) as AccountCard[];
-    }
+    },
+    retry: 1,
+    retryDelay: 1000,
+    refetchOnWindowFocus: false
   });
 };

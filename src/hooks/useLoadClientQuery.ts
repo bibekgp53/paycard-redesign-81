@@ -8,8 +8,10 @@ export const useLoadClientQuery = () => {
   return useQuery({
     queryKey: ["loadClient"],
     queryFn: async () => {
+      console.log("Fetching client settings");
       const { data: session } = await supabase.auth.getSession();
       if (!session.session) {
+        console.log("No session found, user is not authenticated");
         throw new Error('Unauthorized');
       }
 
@@ -69,6 +71,9 @@ export const useLoadClientQuery = () => {
       }
       
       return rpcData as unknown as ClientSettings;
-    }
+    },
+    retry: 1,
+    retryDelay: 1000,
+    refetchOnWindowFocus: false
   });
 };

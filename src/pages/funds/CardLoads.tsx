@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -9,6 +10,7 @@ import { CardLoadsTable } from "./components/CardLoadsTable";
 import { CardLoadsActionPanel } from "./components/CardLoadsActionPanel";
 import React from "react";
 import { CardsPagination } from "./components/CardsPagination";
+import { Loader2 } from "lucide-react";
 
 export function CardLoads() {
   const navigate = useNavigate();
@@ -21,10 +23,18 @@ export function CardLoads() {
   } = useCardLoadsStore();
 
   const pageSize = 10;
-  const { data: userHeader } = useUserHeaderQuery();
-  const { data: clientSettings } = useLoadClientQuery();
-  const { data: cards, isLoading } = useLoadAllocatedCards();
+  const { data: userHeader, isLoading: userHeaderLoading } = useUserHeaderQuery();
+  const { data: clientSettings, isLoading: clientLoading } = useLoadClientQuery();
+  const { data: cards, isLoading: cardsLoading } = useLoadAllocatedCards();
 
+  React.useEffect(() => {
+    console.log("CardLoads Page Loaded");
+    console.log("User Header Loading:", userHeaderLoading);
+    console.log("Client Settings Loading:", clientLoading);
+    console.log("Cards Loading:", cardsLoading);
+  }, [userHeaderLoading, clientLoading, cardsLoading]);
+
+  const isLoading = userHeaderLoading || clientLoading || cardsLoading;
   const totalPages = cards ? Math.ceil(cards.length / pageSize) : 1;
 
   // Load Funds From navigation
@@ -69,29 +79,39 @@ export function CardLoads() {
           </span>
         </p>
       </Card>
+
       <Card className="bg-white p-6">
-        <CardLoadsTable
-          cards={cards || []}
-          clientSettings={clientSettings}
-          page={page}
-          pageSize={pageSize}
-        />
-        {cards && cards.length > pageSize && (
-          <CardsPagination
-            currentPage={page}
-            totalPages={totalPages}
-            onPageChange={setPage}
-          />
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 text-paycard-navy animate-spin" />
+            <span className="ml-2 text-lg">Loading card data...</span>
+          </div>
+        ) : (
+          <>
+            <CardLoadsTable
+              cards={cards || []}
+              clientSettings={clientSettings}
+              page={page}
+              pageSize={pageSize}
+            />
+            {cards && cards.length > pageSize && (
+              <CardsPagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+              />
+            )}
+            <div className="pt-4 text-right font-semibold text-paycard-navy">
+              Total: R {totals.amount.toFixed(2)} | Fee: R {totals.fee.toFixed(2)} | SMS Notification Fee: R {totals.smsFee.toFixed(2)}
+            </div>
+            <CardLoadsActionPanel
+              effectiveDate={effectiveDate}
+              selectedDate={selectedDate}
+              clientSettings={clientSettings}
+              selectedLoads={selectedLoads}
+            />
+          </>
         )}
-        <div className="pt-4 text-right font-semibold text-paycard-navy">
-          Total: R {totals.amount.toFixed(2)} | Fee: R {totals.fee.toFixed(2)} | SMS Notification Fee: R {totals.smsFee.toFixed(2)}
-        </div>
-        <CardLoadsActionPanel
-          effectiveDate={effectiveDate}
-          selectedDate={selectedDate}
-          clientSettings={clientSettings}
-          selectedLoads={selectedLoads}
-        />
       </Card>
     </div>
   );
