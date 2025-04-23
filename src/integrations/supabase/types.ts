@@ -178,6 +178,8 @@ export type Database = {
           business_name: string | null
           created_at: string
           email: string | null
+          from_account: string | null
+          from_balance: number | null
           id: string
           name: string | null
           phone: string | null
@@ -188,6 +190,8 @@ export type Database = {
           business_name?: string | null
           created_at?: string
           email?: string | null
+          from_account?: string | null
+          from_balance?: number | null
           id?: string
           name?: string | null
           phone?: string | null
@@ -198,6 +202,8 @@ export type Database = {
           business_name?: string | null
           created_at?: string
           email?: string | null
+          from_account?: string | null
+          from_balance?: number | null
           id?: string
           name?: string | null
           phone?: string | null

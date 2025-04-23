@@ -14,8 +14,12 @@ export const useLoadClientQuery = () => {
     setIsLoading(true);
     setError(null);
 
+    // Pass the correct arguments to the Supabase RPC function (no hardcoded profile data!)
     supabase
-      .rpc("get_load_client", {})
+      .rpc("get_load_client", {
+        account_from: false,
+        transfer_from_account_id: 0,
+      })
       .then(({ data: rpcData, error: rpcError }) => {
         if (!isMounted) return;
         if (rpcError) {
