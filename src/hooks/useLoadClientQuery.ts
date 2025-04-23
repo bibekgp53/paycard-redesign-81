@@ -22,57 +22,6 @@ export const useLoadClientQuery = () => {
           account_from: false,
           transfer_from_account_id: 0,
         });
-
-        // Get the authentication token for the requests
-        const { data: sessionData } = await supabase.auth.getSession();
-        const accessToken = sessionData?.session?.access_token || '';
-
-        // Check if the tables have RLS enabled
-        const rls_check_client_settings_response = await fetch(
-          `https://osopwbxyzmcdymudhtyh.supabase.co/functions/v1/check_rls_enabled`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({ table_name: "client_settings" }),
-          }
-        );
-        
-        const rls_check_profiles_response = await fetch(
-          `https://osopwbxyzmcdymudhtyh.supabase.co/functions/v1/check_rls_enabled`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${accessToken}`,
-            },
-            body: JSON.stringify({ table_name: "profiles" }),
-          }
-        );
-        
-        const rls_info_cs = await rls_check_client_settings_response.json();
-        const rls_info_p = await rls_check_profiles_response.json();
-        
-        console.log("RLS status for client_settings:", rls_info_cs);
-        console.log("RLS status for profiles:", rls_info_p);
-
-        // Check Supabase connection and if data exists
-        const { data: connectionTest, error: connectionError } = await supabase.from('client_settings').select('*').limit(1);
-        console.log("Connection test to client_settings:", connectionTest ? "Succeeded" : "Failed", connectionError || '');
-        console.log("Client settings data sample:", connectionTest);
-        console.log("Does client_settings have data:", Array.isArray(connectionTest) && connectionTest.length > 0);
-        
-        // Check profiles table
-        const { data: profilesTest, error: profilesError } = await supabase.from('profiles').select('*').limit(1);
-        console.log("Connection test to profiles:", profilesTest ? "Succeeded" : "Failed", profilesError || '');
-        console.log("Profiles data sample:", profilesTest);
-        console.log("Do profiles have data:", Array.isArray(profilesTest) && profilesTest.length > 0);
-        
-        // Get the user's current session
-        const { data: currentSession } = await supabase.auth.getSession();
-        console.log("Current session:", currentSession?.session ? "User is logged in" : "No active session");
         
         // Call the RPC function with the current user context
         const { data: rpcData, error: rpcError } = await supabase.rpc("get_load_client", {
