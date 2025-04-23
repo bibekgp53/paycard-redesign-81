@@ -1,3 +1,4 @@
+
 import React from "react";
 import { cn } from "@/lib/utils";
 import { AlertCircle } from "lucide-react";
@@ -126,10 +127,15 @@ export const TimeInput: React.FC<TimeInputProps> = ({
 
   return (
     <div
-      className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md bg-white w-full mx-auto px-3"
+      className="flex flex-row items-center gap-2 mt-3 mb-2 w-full mx-auto px-4 py-3"
       style={{
         minWidth: 210,
         maxWidth: 350,
+        borderTop: "2px solid #9b87f5", // only top border (Primary Purple from the palette)
+        borderLeft: "none",
+        borderRight: "none",
+        borderBottom: "none",
+        background: "white"
       }}
     >
       <label
@@ -144,13 +150,9 @@ export const TimeInput: React.FC<TimeInputProps> = ({
           type="text"
           placeholder="HH:mm:ss"
           className={cn(
-            "border font-mono bg-white text-left tracking-widest px-2 py-1 rounded w-[145px] min-w-[145px] max-w-[145px] outline-none transition-colors",
-            inputError
-              ? "border-paycard-red ring-1 ring-paycard-red"
-              : "border-paycard-navy-200",
-            inputError
-              ? ""
-              : (inputFocused ? "focus:border-paycard-navy-400" : "")
+            "border-none font-mono bg-white text-left tracking-widest px-2 py-1 rounded w-[145px] min-w-[145px] max-w-[145px] outline-none transition-colors pr-8",
+            inputError ? "ring-1 ring-paycard-red" : "",
+            inputError ? "" : (inputFocused ? "focus:border-paycard-navy-400" : "")
           )}
           value={localTime}
           ref={inputRef}
@@ -163,11 +165,10 @@ export const TimeInput: React.FC<TimeInputProps> = ({
           inputMode="numeric"
           aria-invalid={inputError}
           disabled={disabled}
-          // Remove the title for browser validation msg
         />
         {inputError && (
-          <span className="absolute right-1 top-0 flex items-center h-full text-paycard-red z-10">
-            <AlertCircle size={20} strokeWidth={2} className="text-paycard-red" />
+          <span className="absolute right-2 flex items-center h-full pointer-events-none top-0 bottom-0">
+            <AlertCircle size={18} strokeWidth={2} className="text-paycard-red" />
           </span>
         )}
       </div>

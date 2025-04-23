@@ -1,5 +1,4 @@
 
-// Remove any diff/change markers. Write regular valid code only.
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
