@@ -46,6 +46,7 @@ export const LoadEffectiveDate = ({
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium">
+        {/* Default to "Load Effective Date" unless "Delay until" is chosen */}
         {effectiveDate === 1 ? "Delay until" : "Load Effective Date"}
       </h3>
       <div className="flex space-x-4">
@@ -104,7 +105,8 @@ export const LoadEffectiveDate = ({
                     <Clock className="h-4 w-4 mr-1" /> Time
                   </div>
                 }
-                disabled={(date) => date < new Date()}
+                // No longer disable past dates
+                // disabled={(date) => date < new Date()}
               />
             </PopoverContent>
           </Popover>
@@ -113,3 +115,4 @@ export const LoadEffectiveDate = ({
     </div>
   );
 };
+

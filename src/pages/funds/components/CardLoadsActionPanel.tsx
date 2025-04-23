@@ -24,13 +24,12 @@ function isAmountValidForSelectedLoads(selectedLoads: any[], clientSettings: Cli
   );
 }
 
+// Update validation: For "Delay until" (1), selectedDate must simply be set (not undefined)
 function isDateTimeValid(effectiveDate: 0 | 1, selectedDate: Date | undefined) {
   if (effectiveDate === 1) {
-    if (!selectedDate) return false;
-    // Must be a future date and time (strictly)
-    return selectedDate.getTime() > Date.now();
+    return !!selectedDate; // Only check that a date is picked
   }
-  return true; // If not "Delay until", datetime is valid by default
+  return true; // Immediate: always valid
 }
 
 export function CardLoadsActionPanel({
@@ -42,7 +41,6 @@ export function CardLoadsActionPanel({
   const navigate = useNavigate();
   const { setEffectiveDate, setSelectedDate } = useCardLoadsStore();
 
-  // We'll assume for now that selectedLoads are validated only for positive min-amount (UI enforces max elsewhere)
   const amountsValid = isAmountValidForSelectedLoads(selectedLoads, clientSettings);
   const dateValid = isDateTimeValid(effectiveDate, selectedDate);
 
@@ -76,3 +74,4 @@ export function CardLoadsActionPanel({
     </div>
   );
 }
+
