@@ -162,6 +162,11 @@ export function CardLoads() {
   //   // Hydration logic if needed
   // }, []);
 
+  // Add this missing function to fix the runtime error
+  const handleLoadFundsClick = () => {
+    navigate("/load-funds-from");
+  };
+
   // Handle continue, just redirect
   const handleContinue = () => {
     if (!clientSettings) return;
