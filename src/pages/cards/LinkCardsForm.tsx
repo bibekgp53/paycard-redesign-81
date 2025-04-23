@@ -14,7 +14,7 @@ import { useApolloQuery } from "@/hooks/useApolloQuery";
 import { GET_PROFILES } from "@/graphql/profiles";
 import { GetProfilesData } from "@/graphql/types";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, X } from "lucide-react";
 import { CardNumberInputs } from "./components/CardNumberInputs";
 import { SequenceInputs } from "./components/SequenceInputs";
 
@@ -163,6 +163,10 @@ const LinkCardsForm = () => {
     }
   };
 
+  const handleCloseErrorAlert = () => {
+    setShowErrorAlert(false);
+  };
+
   if (loadingProfiles) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -175,10 +179,23 @@ const LinkCardsForm = () => {
     <div className="max-w-3xl mx-auto">
       <div className="bg-white shadow-md rounded-lg p-6">
         {showErrorAlert && (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>Error</AlertTitle>
-            <AlertDescription>{errorMessage}</AlertDescription>
+          <Alert 
+            variant="destructive" 
+            className="mb-4 relative"
+          >
+            <div className="flex items-start">
+              <AlertCircle className="h-4 w-4 mr-3" />
+              <div className="flex-grow">
+                <AlertTitle>Error</AlertTitle>
+                <AlertDescription>{errorMessage}</AlertDescription>
+              </div>
+              <button 
+                onClick={handleCloseErrorAlert} 
+                className="absolute top-2 right-2 text-destructive-foreground hover:opacity-75"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
           </Alert>
         )}
 
