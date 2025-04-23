@@ -11,6 +11,21 @@ export function useApolloQuery<TData = any, TVariables = any>(
     notifyOnNetworkStatusChange: true,
     fetchPolicy: options?.fetchPolicy || 'network-only', // Default to network-only to avoid cache issues
     errorPolicy: 'all', // Handle all errors to prevent crashes
+    onCompleted: (data) => {
+      console.log('Query completed successfully:', data);
+      
+      // Check if profiles data came back empty
+      if (data && 'profilesCollection' in data) {
+        const profilesData = data as any;
+        if (profilesData.profilesCollection?.edges?.length === 0) {
+          console.warn('No profiles found in database. Check if profiles table has data.');
+        }
+      }
+      
+      if (options?.onCompleted) {
+        options.onCompleted(data);
+      }
+    },
     onError: (error) => {
       console.error('GraphQL query error:', error);
       

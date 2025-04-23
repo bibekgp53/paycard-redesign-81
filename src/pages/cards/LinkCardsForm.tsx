@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -52,15 +53,25 @@ const LinkCardsForm = () => {
 
   useEffect(() => {
     if (profilesData) {
+      console.log("Profiles data loaded:", profilesData);
       const options =
         profilesData.profilesCollection.edges.map(({ node: profile }) => ({
           value: profile.profile_number,
-          label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}`
+          label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}${profile.from_account ? ` (Account: ${profile.from_account})` : ''}`
         })) || [];
       setProfileOptions(options);
+      
+      if (options.length === 0) {
+        toast({
+          title: "No Profiles Found",
+          description: "No profiles found in the database. Please create profiles first.",
+          variant: "destructive",
+        });
+      }
     }
 
     if (profilesError) {
+      console.error("Profile data error:", profilesError);
       toast({
         title: "Error",
         description: "Failed to load profiles. Please try again.",
@@ -186,14 +197,18 @@ const LinkCardsForm = () => {
               onValueChange={handleProfileChange}
             >
               <SelectTrigger>
-                <SelectValue placeholder="Select a profile" />
+                <SelectValue placeholder={profileOptions.length > 0 ? "Select a profile" : "No profiles available"} />
               </SelectTrigger>
               <SelectContent>
-                {profileOptions.map(option => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
+                {profileOptions.length > 0 ? (
+                  profileOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <SelectItem value="none" disabled>No profiles available</SelectItem>
+                )}
               </SelectContent>
             </Select>
             {errors.profileNumber && (
