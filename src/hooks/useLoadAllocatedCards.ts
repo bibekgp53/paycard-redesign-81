@@ -9,7 +9,7 @@ export const useLoadAllocatedCards = () => {
     queryFn: async () => {
       const { data, error } = await supabase
         .rpc('search_load_allocated', {
-          account_from: false,
+          account_from: "false", // Pass as string, not boolean
           transfer_from_account_id: 0,
           limit: 100,
           offset: 0
@@ -22,14 +22,14 @@ export const useLoadAllocatedCards = () => {
       
       console.log("Received data from backend:", data);
       
-      return data.map((item) => ({
-        id: item.id,
-        accountCardId: item.accountcardid,
-        accountCardMtd: item.accountcardmtd,
-        balance: item.balance,
+      return (data ?? []).map((item) => ({
+        id: String(item.id),
+        accountCardId: item.account_card_id,
+        accountCardMtd: Number(item.account_card_mtd),
+        balance: Number(item.balance),
         cardholder: item.cardholder,
-        cardNumber: item.cardnumber, // Now using the masked number from the database
-        ficaValidation: item.ficavalidation
+        cardNumber: item.cardnumber, // Masked card number from the DB
+        ficaValidation: String(item.fica_validation)
       })) as AccountCard[];
     }
   });
