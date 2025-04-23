@@ -40,7 +40,8 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 // Better error and logging link
 const loggingLink = new ApolloLink((operation, forward) => {
   console.log(`GraphQL Request: ${operation.operationName}`, { 
-    variables: operation.variables 
+    variables: operation.variables,
+    query: operation.query.loc?.source.body
   });
   
   return forward(operation).map(response => {
@@ -54,7 +55,20 @@ const loggingLink = new ApolloLink((operation, forward) => {
 
 export const apolloClient = new ApolloClient({
   link: from([loggingLink, authMiddleware, httpLink]),
-  cache: new InMemoryCache(),
+  cache: new InMemoryCache({
+    typePolicies: {
+      Query: {
+        fields: {
+          profilesCollection: {
+            // This helps with proper caching of collections
+            merge(existing, incoming) {
+              return incoming;
+            }
+          }
+        }
+      }
+    }
+  }),
   defaultOptions: {
     query: {
       fetchPolicy: 'network-only',

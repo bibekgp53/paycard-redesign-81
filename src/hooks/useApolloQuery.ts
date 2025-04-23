@@ -18,7 +18,9 @@ export function useApolloQuery<TData = any, TVariables = any>(
       if (data && typeof data === 'object' && 'profilesCollection' in data) {
         const profilesData = data as any;
         if (profilesData.profilesCollection?.edges?.length === 0) {
-          console.warn('No profiles found in database. Check if profiles table has data.');
+          console.warn('No profiles found in database. Check if profiles table has data or if RLS policies are preventing access.');
+        } else {
+          console.log('Profiles found:', profilesData.profilesCollection.edges.length);
         }
       }
       
@@ -38,10 +40,23 @@ export function useApolloQuery<TData = any, TVariables = any>(
         });
       } else if (error.graphQLErrors?.length) {
         console.error('GraphQL errors:', error.graphQLErrors);
-        if (error.message.includes('JWT')) {
+        
+        // Look for specific error messages
+        const jwtError = error.graphQLErrors.some(e => e.message.includes('JWT'));
+        const permissionError = error.graphQLErrors.some(e => 
+          e.message.includes('permission') || e.message.includes('access') || e.message.includes('not allowed')
+        );
+        
+        if (jwtError) {
           toast({
             title: "Authentication Error",
             description: "Your session has expired. Please log in again.",
+            variant: "destructive",
+          });
+        } else if (permissionError) {
+          toast({
+            title: "Permission Error",
+            description: "You don't have permission to access this data. Check RLS policies.",
             variant: "destructive",
           });
         } else {
@@ -51,7 +66,9 @@ export function useApolloQuery<TData = any, TVariables = any>(
             variant: "destructive",
           });
         }
-      } else if (options?.onError) {
+      }
+      
+      if (options?.onError) {
         options.onError(error);
       }
     }
