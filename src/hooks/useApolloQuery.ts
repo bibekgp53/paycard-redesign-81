@@ -10,26 +10,34 @@ export function useApolloQuery<TData = any, TVariables = any>(
     ...options,
     notifyOnNetworkStatusChange: true,
     fetchPolicy: options?.fetchPolicy || 'network-only', // Default to network-only to avoid cache issues
+    errorPolicy: 'all', // Handle all errors to prevent crashes
     onError: (error) => {
       console.error('GraphQL query error:', error);
       
-      if (error.message.includes('JWT')) {
+      if (error.networkError) {
+        console.error('Network error details:', error.networkError);
         toast({
-          title: "Authentication Error",
-          description: "Your session has expired. Please log in again.",
+          title: "Network Error",
+          description: "Failed to connect to the server. Please check your connection.",
           variant: "destructive",
         });
-      } else {
-        // Only show toast for non-auth errors if not suppressed
-        if (options?.onError) {
-          options.onError(error);
-        } else if (!options?.errorPolicy || options.errorPolicy === 'none') {
+      } else if (error.graphQLErrors?.length) {
+        console.error('GraphQL errors:', error.graphQLErrors);
+        if (error.message.includes('JWT')) {
+          toast({
+            title: "Authentication Error",
+            description: "Your session has expired. Please log in again.",
+            variant: "destructive",
+          });
+        } else {
           toast({
             title: "Error",
             description: `Failed to load data: ${error.message}`,
             variant: "destructive",
           });
         }
+      } else if (options?.onError) {
+        options.onError(error);
       }
     }
   });
