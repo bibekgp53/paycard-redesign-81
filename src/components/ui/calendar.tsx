@@ -64,84 +64,92 @@ function Calendar({
     setInputError(false);
   }, [selected, inputFocused]);
 
-  // Only allow input if string will be a valid partial time (e.g. "12:3" or "23:59:0")
-  const allowPartialTime = (val: string) => {
-    // Accept empty, H, HH, HH:, HH:M, HH:MM, HH:MM:, HH:MM:S, HH:MM:SS
-    if (val.length > 8) return false;
-    if (val === "") return true;
-    if (/^\d{1,2}$/.test(val)) return true; // Hour only
-    if (/^\d{2}:$/.test(val)) return true; // "HH:"
-    if (/^\d{2}:\d{1,2}$/.test(val)) return true; // "HH:mm"
-    if (/^\d{2}:\d{2}:$/.test(val)) return true; // "HH:mm:"
-    if (/^\d{2}:\d{2}:\d{1,2}$/.test(val)) return true; // "HH:mm:ss"
-    return false;
-  };
-
+  // Validate input on each key stroke: only allow valid "HH:mm:ss" 24hr
   const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/[^0-9:]/g, "");
-    if (allowPartialTime(raw)) {
-      setLocalTime(raw);
+    setLocalTime(raw);
+
+    // If the field is empty, don't show an error (let them clear/cancel)
+    if (raw === "") {
+      setInputError(false);
+      return;
+    }
+
+    // Show error if not valid
+    if (!TIME_REGEX.test(raw)) {
+      setInputError(true);
+    } else {
       setInputError(false);
     }
   };
 
-  // Prevent any key except digits, colon, Backspace, Delete, Arrow keys, Home/End, Tab
+  // Only allow digits or colons to be inputted, but block any attempt to
+  // add digits/colons that would exceed "HH:mm:ss" format (8 chars, but
+  // must also keep correct placement)
   const handleTimeInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const allowed = [
       "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"
     ];
-    if (
-      (e.key >= "0" && e.key <= "9") ||
-      e.key === ":" ||
-      allowed.includes(e.key)
-    ) {
-      // Do nothing
-    } else {
+    // Allow navigation/edit keys
+    if (allowed.includes(e.key)) return;
+
+    // Only accept numbers and colon, block others
+    if (!("0123456789:".includes(e.key))) {
       e.preventDefault();
     }
-    // Prevent typing more than 8 characters
+
+    // Prevent typing more than 8 chars
     if (
       !allowed.includes(e.key) &&
       localTime.length >= 8 &&
-      // If something selected, allow replacement
       (!inputRef.current || inputRef.current.selectionStart === inputRef.current.selectionEnd)
     ) {
       e.preventDefault();
     }
+    // Prevent entering colons in unsupported positions (max 2, and must be at 3rd and 6th chars)
+    if (e.key === ":") {
+      const selectionStart = inputRef.current ? inputRef.current.selectionStart || 0 : 0;
+      if (selectionStart !== 2 && selectionStart !== 5) e.preventDefault();
+      if ((localTime.match(/:/g) || []).length >= 2) e.preventDefault();
+    }
   };
 
+  // Block pasting anything not in strict HH:mm:ss
   const handleTimeInputPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const paste = e.clipboardData.getData('Text');
     const clean = paste.replace(/[^0-9:]/g, "");
-    if (clean.length > 8 || !allowPartialTime(clean)) {
+    if (!TIME_REGEX.test(clean)) {
       e.preventDefault();
+      setInputError(true);
     }
   };
 
   const handleTimeInputBlur = () => {
     setInputFocused(false);
-    if (!selected) {
-      setInputError(false);
-      setLocalTime("");
-      return;
-    }
+    // If cleared, just reset and don't error
     if (localTime === "") {
       setInputError(false);
       setLocalTime("");
       return;
     }
-    // Require strict HH:mm:ss 24-hour
-    if (TIME_REGEX.test(localTime)) {
-      setInputError(false);
+    // Show error, and reset to previous (last valid) if it's not a good time
+    if (!TIME_REGEX.test(localTime)) {
+      setInputError(true);
+      if (selected) setLocalTime(getTimeString24(selected));
+      else setLocalTime("");
+      return;
+    }
+    setInputError(false);
+    // Only update if valid and changed
+    if (selected) {
       const { hours, minutes, seconds } = parseTimeFromString24(localTime);
       const updated = new Date(selected.getTime());
       updated.setHours(hours, minutes, seconds, 0);
-      onSelect(updated, { fromTimeInput: true });
+      if (updated.getTime() !== selected.getTime()) {
+        onSelect(updated, { fromTimeInput: true });
+      }
       setLocalTime(getTimeString24(updated));
-      return;
     }
-    // Not valid: show error
-    setInputError(true);
   };
 
   const handleTimeInputFocus = () => {
@@ -206,7 +214,7 @@ function Calendar({
       {showTimeInput && selected && (
         <div
           className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-full mx-auto"
-          style={{ minWidth: 180, maxWidth: 300 }}
+          style={{ minWidth: 180, maxWidth: 320 }}
         >
           <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left">
             {timeLabel}
@@ -222,7 +230,7 @@ function Calendar({
                 inputError
                   ? "border-paycard-red ring-1 ring-paycard-red pr-8"
                   : "focus:border-paycard-navy-400",
-                "w-[8ch] min-w-[8ch] max-w-[8ch]" // exactly 8 characters width
+                "w-[100px] min-w-[100px] max-w-[100px]" // fits "HH:mm:ss"
               )}
               value={localTime}
               ref={inputRef}
@@ -234,7 +242,6 @@ function Calendar({
               autoComplete="off"
               inputMode="numeric"
               aria-invalid={inputError}
-              // maxLength removed since we now restrict by logic
             />
             {inputError && (
               <span className="absolute right-1 top-0 flex items-center h-full text-paycard-red" title="Invalid time format">
