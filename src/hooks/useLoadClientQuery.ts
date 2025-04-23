@@ -23,6 +23,10 @@ export const useLoadClientQuery = () => {
           transfer_from_account_id: 0,
         });
 
+        // Get the authentication token for the requests
+        const { data: sessionData } = await supabase.auth.getSession();
+        const accessToken = sessionData?.session?.access_token || '';
+
         // Check if the tables have RLS enabled
         const rls_check_client_settings_response = await fetch(
           `https://osopwbxyzmcdymudhtyh.supabase.co/functions/v1/check_rls_enabled`,
@@ -30,7 +34,7 @@ export const useLoadClientQuery = () => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${supabase.auth.session()?.access_token || ''}`,
+              'Authorization': `Bearer ${accessToken}`,
             },
             body: JSON.stringify({ table_name: "client_settings" }),
           }
@@ -42,7 +46,7 @@ export const useLoadClientQuery = () => {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
-              'Authorization': `Bearer ${supabase.auth.session()?.access_token || ''}`,
+              'Authorization': `Bearer ${accessToken}`,
             },
             body: JSON.stringify({ table_name: "profiles" }),
           }
@@ -67,8 +71,8 @@ export const useLoadClientQuery = () => {
         console.log("Do profiles have data:", Array.isArray(profilesTest) && profilesTest.length > 0);
         
         // Get the user's current session
-        const { data: sessionData } = await supabase.auth.getSession();
-        console.log("Current session:", sessionData?.session ? "User is logged in" : "No active session");
+        const { data: currentSession } = await supabase.auth.getSession();
+        console.log("Current session:", currentSession?.session ? "User is logged in" : "No active session");
         
         // Call the RPC function with the current user context
         const { data: rpcData, error: rpcError } = await supabase.rpc("get_load_client", {
