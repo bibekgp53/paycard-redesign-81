@@ -10,19 +10,13 @@ export const useLoadAllocatedCards = () => {
       console.log("Fetching allocated cards");
       const { data: session } = await supabase.auth.getSession();
       
-      // For testing/development purposes - simulate auth to make the query work
-      // This should be removed in production and proper auth implemented
-      // if (!session.session) {
-      //   throw new Error('Unauthorized');
-      // }
-
       console.log("Making RPC request to search_load_allocated");
       const { data, error } = await supabase
         .rpc('search_load_allocated', {
-          account_from: false,
-          transfer_from_account_id: 0,
-          limit: 100,
-          offset: 0
+          p_account_from: false,
+          p_transfer_from_account_id: 0,
+          p_limit: 100,
+          p_offset: 0
         });
       
       if (error) {
