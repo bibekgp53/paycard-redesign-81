@@ -16,7 +16,6 @@ export type CalendarProps = Omit<
   onSelect: (date: Date | undefined, opts?: { fromTimeInput?: boolean }) => void;
 };
 
-// Returns 24 hour formatted string (pad single digits): HH:mm:ss
 function getTimeString24(date?: Date) {
   if (!date) return "";
   const hours = date.getHours();
@@ -29,7 +28,6 @@ function getTimeString24(date?: Date) {
   ].join(":");
 }
 
-// Parse HH:mm:ss (24-hour time string)
 function parseTimeFromString24(value: string) {
   // Supports "HH:mm:ss" or "HH:mm"
   const [rawHours, rawMinutes, rawSeconds] = value.split(":");
@@ -38,6 +36,9 @@ function parseTimeFromString24(value: string) {
   let s = typeof rawSeconds !== "undefined" ? Math.min(59, Math.max(0, parseInt(rawSeconds, 10) || 0)) : 0;
   return { hours: h, minutes: m, seconds: s };
 }
+
+// Regex for strict format: HH:mm:ss with 24-hour time
+const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/;
 
 function Calendar({
   className,
@@ -49,12 +50,11 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  // Local state for controlled time string (24-hour format)
   const [localTime, setLocalTime] = React.useState(() => getTimeString24(selected));
   const [inputFocused, setInputFocused] = React.useState(false);
+  const [inputError, setInputError] = React.useState(false);
   const inputRef = React.useRef<HTMLInputElement>(null);
 
-  // Sync display with selected (except when editing input)
   React.useEffect(() => {
     if (inputFocused) return;
     if (!selected) {
@@ -62,49 +62,85 @@ function Calendar({
     } else {
       setLocalTime(getTimeString24(selected));
     }
+    setInputError(false);
   }, [selected, inputFocused]);
 
-  // Handles changing the time input
-  const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocalTime(e.target.value.replace(/[^0-9:]/g, "")); // Accept only numbers and colons
+  // Only allow in-progress values that could still be valid like "12:", "1", "22:35:4"
+  const possiblePartialTime = (value: string) => {
+    // Allow empty
+    if (value === "") return true;
+    // Up to 8 chars, digits or colons, at most 2 colons
+    if (!/^[0-9:]{0,8}$/.test(value)) return false;
+    if ((value.match(/:/g) || []).length > 2) return false;
+    // "12", "12:3", "12:35:4", etc., are ok in progress
+    return true;
   };
 
-  // On blur, parse and sync the complete time to the parent
+  // As user types: update only if still structurally possible
+  const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/[^0-9:]/g, "");
+    if (raw.length > 8) return;
+    if (possiblePartialTime(raw)) setLocalTime(raw);
+  };
+
+  // On blur, enforce HH:mm:ss or clear/error if invalid
   const handleTimeInputBlur = () => {
     setInputFocused(false);
-    if (!selected) return;
-    let valid = /^\d{2}:\d{2}:\d{2}$/.test(localTime);
-    let safeTime = localTime;
-
-    // Attempt autoformatting incomplete inputs
-    if (!valid) {
-      // e.g. 4:5 -> 04:05:00 or 15:2 -> 15:02:00
-      const parts = localTime.split(":");
-      let h = parts[0] || "00";
-      let m = parts[1] || "00";
-      let s = parts[2] || "00";
-      if (h.length < 2) h = "0" + h;
-      if (m.length < 2) m = "0" + m;
-      if (s.length < 2) s = s.length > 0 ? "0" + s : "00";
-      safeTime = `${h}:${m}:${s}`;
-      setLocalTime(safeTime);  // Update visually
+    if (!selected) {
+      setInputError(false);
+      setLocalTime("");
+      return;
     }
 
-    const { hours, minutes, seconds } = parseTimeFromString24(safeTime);
-    const updated = new Date(selected.getTime());
-    updated.setHours(hours, minutes, seconds, 0);
-    onSelect(updated, { fromTimeInput: true });
+    if (localTime === "") {
+      setInputError(false);
+      setLocalTime("");
+      return;
+    }
+
+    // If valid, update parent and clear error
+    if (TIME_REGEX.test(localTime)) {
+      setInputError(false);
+      const { hours, minutes, seconds } = parseTimeFromString24(localTime);
+      const updated = new Date(selected.getTime());
+      updated.setHours(hours, minutes, seconds, 0);
+      onSelect(updated, { fromTimeInput: true });
+      setLocalTime(getTimeString24(updated));
+      return;
+    }
+
+    // Try to auto-format incomplete (e.g. 5 -> 05:00:00 or 1512 -> 15:12:00)
+    let safeTime = localTime;
+    const parts = localTime.split(":");
+    let h = parts[0] || "00";
+    let m = parts[1] || "00";
+    let s = parts[2] || "00";
+    if (h.length < 2) h = "0" + h;
+    if (m.length < 2) m = m.length > 0 ? "0" + m : "00";
+    if (s.length < 2) s = s.length > 0 ? "0" + s : "00";
+    safeTime = `${h}:${m}:${s}`;
+
+    if (TIME_REGEX.test(safeTime)) {
+      setInputError(false);
+      setLocalTime(safeTime);
+      const { hours, minutes, seconds } = parseTimeFromString24(safeTime);
+      const updated = new Date(selected.getTime());
+      updated.setHours(hours, minutes, seconds, 0);
+      onSelect(updated, { fromTimeInput: true });
+      setLocalTime(getTimeString24(updated));
+    } else {
+      setInputError(true);
+      setLocalTime(""); // Optional: clear input if not valid
+    }
   };
 
-  // On focus, mark editing mode
   const handleTimeInputFocus = () => {
     setInputFocused(true);
+    setInputError(false);
   };
 
-  // Only close popover when selecting from calendar grid
   const handleDaySelect: SelectSingleEventHandler = (date) => {
     if (!date) return;
-    // Use time from currently selected date if available
     if (selected) {
       date.setHours(selected.getHours(), selected.getMinutes(), selected.getSeconds(), 0);
     }
@@ -157,11 +193,10 @@ function Calendar({
         onSelect={handleDaySelect}
         {...props}
       />
-      {/* Only show below if time input is enabled and selected date exists */}
       {showTimeInput && selected && (
         <div
           className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-full mx-auto"
-          style={{ minWidth: 200, maxWidth: 400 }}
+          style={{ minWidth: 180, maxWidth: 300 }}
         >
           <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left">
             {timeLabel}
@@ -169,9 +204,15 @@ function Calendar({
           <input
             id="delay-time"
             type="text"
-            pattern="^([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$"
+            pattern="^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$"
             placeholder="HH:mm:ss"
-            className="border border-paycard-navy-200 rounded px-3 py-1 bg-white w-[200px] text-left font-mono"
+            className={cn(
+              "border border-paycard-navy-200 rounded px-2 py-1 font-mono bg-white text-left tracking-widest",
+              inputError
+                ? "border-paycard-red ring-1 ring-paycard-red"
+                : "focus:border-paycard-navy-400",
+              "w-[90px]"
+            )}
             value={localTime}
             ref={inputRef}
             onChange={handleTimeInputChange}
@@ -179,7 +220,15 @@ function Calendar({
             onBlur={handleTimeInputBlur}
             autoComplete="off"
             maxLength={8}
+            inputMode="numeric"
+            aria-invalid={inputError}
           />
+          {/* Optional: show error message below the input */}
+          {/* {inputError && (
+            <span className="text-xs text-paycard-red pl-1 font-semibold">
+              Invalid time (HH:mm:ss)
+            </span>
+          )} */}
         </div>
       )}
     </div>
