@@ -10,6 +10,8 @@ export const GET_PROFILES = gql`
           profile_number
           name
           business_name
+          from_account
+          from_balance
         }
       }
     }
