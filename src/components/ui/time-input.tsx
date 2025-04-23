@@ -131,7 +131,7 @@ export const TimeInput: React.FC<TimeInputProps> = ({
       style={{
         minWidth: 210,
         maxWidth: 350,
-        borderTop: "2px solid #9b87f5", // only top border (Primary Purple from the palette)
+        borderTop: "2px solid #0F1F38", // Text color (paycard-navy)
         borderLeft: "none",
         borderRight: "none",
         borderBottom: "none",
@@ -150,8 +150,11 @@ export const TimeInput: React.FC<TimeInputProps> = ({
           type="text"
           placeholder="HH:mm:ss"
           className={cn(
-            "border-none font-mono bg-white text-left tracking-widest px-2 py-1 rounded w-[145px] min-w-[145px] max-w-[145px] outline-none transition-colors pr-8",
-            inputError ? "ring-1 ring-paycard-red" : "",
+            // restored border for input
+            "border font-mono bg-white text-left tracking-widest px-2 py-1 rounded w-[145px] min-w-[145px] max-w-[145px] outline-none transition-colors pr-8",
+            inputError
+              ? "border-paycard-red ring-1 ring-paycard-red"
+              : "border-paycard-navy-200",
             inputError ? "" : (inputFocused ? "focus:border-paycard-navy-400" : "")
           )}
           value={localTime}
@@ -167,7 +170,8 @@ export const TimeInput: React.FC<TimeInputProps> = ({
           disabled={disabled}
         />
         {inputError && (
-          <span className="absolute right-2 flex items-center h-full pointer-events-none top-0 bottom-0">
+          // Position icon INSIDE the input, right-aligned, pointer-events-none so user can still click input
+          <span className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center h-full pointer-events-none">
             <AlertCircle size={18} strokeWidth={2} className="text-paycard-red" />
           </span>
         )}
