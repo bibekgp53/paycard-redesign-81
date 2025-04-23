@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
@@ -40,66 +39,109 @@ export const InvoiceDisplay: React.FC<InvoiceDisplayProps> = ({
   const handleDownloadPDF = async () => {
     const pdfDoc = await PDFDocument.create();
     const page = pdfDoc.addPage([595, 842]);
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const helveticaFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
     const darkBlue = rgb(15 / 255, 31 / 255, 56 / 255);
+    const white = rgb(1, 1, 1);
+    const navyBlue = rgb(0.05, 0.08, 0.2);
+    
+    // Helper function to draw text with different fonts
+    const drawText = (text: string, x: number, y: number, fontSize: number, isBold: boolean = false) => {
+      page.drawText(text, { 
+        x, 
+        y, 
+        size: fontSize, 
+        font: isBold ? helveticaBold : helveticaFont 
+      });
+    };
 
-    let y = 810;
     // Header
-    page.drawText("Standard Bank", { x: 40, y, size: 26, font, color: darkBlue });
+    let y = 810;
+    drawText("Standard Bank", 40, y, 28, true);
     y -= 24;
-    page.drawText("The Standard Bank of South Africa Limited", { x: 40, y, size: 10, font });
-    y -= 12;
-    page.drawText("Reg. No. 1962/000738/06 Registered Bank", { x: 40, y, size: 10, font });
-    y -= 12;
-    page.drawText("Vat Registration Number 4010105461", { x: 40, y, size: 10, font });
-    y -= 12;
-    page.drawText("P.O. Box 62355 Marshalltown 2107", { x: 40, y, size: 10, font });
+    drawText("The Standard Bank of South Africa Limited", 40, y, 10);
+    y -= 14;
+    drawText("Reg. No. 1962/000738/06 Registered Bank", 40, y, 10);
+    y -= 14;
+    drawText("Vat Registration Number 4010105461", 40, y, 10);
+    y -= 14;
+    drawText("P.O. Box 62355 Marshalltown 2107", 40, y, 10);
 
-    // Company
+    // Company details
     y -= 30;
-    page.drawText(company, { x: 40, y, size: 12, font, color: darkBlue });
+    drawText(company, 40, y, 12, true);
     companyNumbers.forEach((num, idx) => {
-      page.drawText(num, { x: 40, y: y - (idx + 1) * 13, size: 10, font });
+      drawText(num, 40, y - (idx + 1) * 14, 10);
     });
 
-    // Invoice box
+    // Invoice box (right side)
     y = 810;
-    page.drawRectangle({ x: 350, y: y - 2, width: 200, height: 65, borderColor: darkBlue, color: rgb(1,1,1), opacity: 0, borderWidth: 1 });
-    page.drawText("Tax Invoice", { x: 360, y: y + 40, size: 11, font, color: darkBlue });
-    page.drawText("Date of Invoice", { x: 360, y: y + 26, size: 9, font });
-    page.drawText(invoiceDate, { x: 480, y: y + 26, size: 9, font });
-    page.drawText("Invoice number", { x: 360, y: y + 13, size: 9, font });
-    page.drawText(invoiceNumber, { x: 480, y: y + 13, size: 9, font });
-    page.drawText("Profile/Reference number", { x: 360, y: y, size: 9, font });
-    page.drawText(referenceNumber, { x: 480, y: y, size: 9, font });
-    page.drawText("VAT Registration No", { x: 360, y: y - 13, size: 9, font });
-    page.drawText(vatReg, { x: 480, y: y - 13, size: 9, font });
+    // Draw border for the info box
+    page.drawRectangle({ 
+      x: 350, 
+      y: y - 80, 
+      width: 200, 
+      height: 80, 
+      borderColor: rgb(0, 0, 0), 
+      borderWidth: 1,
+      color: rgb(1,1,1),
+      opacity: 0
+    });
+    
+    // Invoice table headers
+    drawText("Date of Invoice", 360, y - 20, 10);
+    drawText(invoiceDate, 510, y - 20, 10, true);
+    
+    drawText("Invoice number", 360, y - 40, 10);
+    drawText(invoiceNumber, 510, y - 40, 10, true);
+    
+    drawText("Profile/Reference number", 360, y - 60, 10);
+    drawText(referenceNumber, 510, y - 60, 10, true);
+    
+    // VAT registration (outside the box)
+    drawText("VAT Registration No", 360, y - 100, 10);
+    drawText(vatReg, 510, y - 100, 10, true);
 
-    // Table header
-    y -= 90;
-    page.drawRectangle({ x: 40, y: y, width: 515, height: 24, color: darkBlue });
-    page.drawText("Description", { x: 46, y: y + 8, size: 11.5, font, color: rgb(1,1,1) });
-    page.drawText("Amount", { x: 285, y: y + 8, size: 11.5, font, color: rgb(1,1,1) });
-    page.drawText("Fee", { x: 420, y: y + 8, size: 11.5, font, color: rgb(1,1,1) });
+    // Table header - Dark blue background
+    y = 600;
+    page.drawRectangle({
+      x: 40,
+      y: y - 20,
+      width: 515,
+      height: 28,
+      color: navyBlue
+    });
+    
+    // White text for headers
+    drawText("Description", 50, y - 10, 14);
+    page.drawText("Description", { x: 50, y: y - 10, size: 14, font: helveticaBold, color: white });
+    page.drawText("Amount", { x: 320, y: y - 10, size: 14, font: helveticaBold, color: white });
+    page.drawText("Fee", { x: 490, y: y - 10, size: 14, font: helveticaBold, color: white });
 
-    // Table body
-    let rowY = y - 24;
-    cards.forEach(card => {
-      page.drawText(`Card Load for: ${card.cardNumber}`, { x: 46, y: rowY + 8, size: 10.5, font });
-      page.drawText(formatRand(card.transferAmount), { x: 285, y: rowY + 8, size: 10.5, font });
-      page.drawText(formatRand(card.transferFee), { x: 420, y: rowY + 8, size: 10.5, font });
-      rowY -= 24;
+    // Table rows
+    let rowY = y - 50;
+    cards.forEach((card, i) => {
+      drawText(`Card Load for: ${card.cardNumber}`, 50, rowY, 10);
+      drawText(formatRand(card.transferAmount), 320, rowY, 10);
+      drawText(formatRand(card.transferFee), 490, rowY, 10);
+      rowY -= 30;
     });
 
-    // Subtotal, VAT, Total
-    page.drawText("Sub Total", { x: 420, y: rowY + 8, size: 10, font });
-    page.drawText(formatRand(subtotal), { x: 495, y: rowY + 8, size: 10, font });
-    rowY -= 24;
-    page.drawText(`VAT included @ ${(vatRate * 100).toFixed(0)}%`, { x: 420, y: rowY + 8, size: 10, font });
-    page.drawText(formatRand(vat), { x: 495, y: rowY + 8, size: 10, font });
-    rowY -= 24;
-    page.drawText("Total", { x: 420, y: rowY + 8, size: 11, font, color: darkBlue });
-    page.drawText(formatRand(total), { x: 495, y: rowY + 8, size: 11, font, color: darkBlue });
+    // Summary section
+    y = rowY;
+    // Sub Total
+    drawText("Sub Total", 400, y, 10, true);
+    drawText(formatRand(subtotal), 490, y, 10, true);
+    
+    // VAT
+    y -= 25;
+    drawText(`VAT included @ ${(vatRate * 100).toFixed(0)}%`, 400, y, 10);
+    drawText(formatRand(vat), 490, y, 10);
+    
+    // Total
+    y -= 25;
+    drawText("Total", 400, y, 12, true);
+    drawText(formatRand(total), 490, y, 12, true);
 
     // Save
     const pdfBytes = await pdfDoc.save();
