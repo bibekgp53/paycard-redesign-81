@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { AlertCircle } from "lucide-react";
 
 // Only support single mode for Calendar!
 export type CalendarProps = Omit<
@@ -83,14 +84,10 @@ function Calendar({
     }
   };
 
-  // Only allow digits or colons to be inputted, but block any attempt to
-  // add digits/colons that would exceed "HH:mm:ss" format (8 chars, but
-  // must also keep correct placement)
   const handleTimeInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     const allowed = [
       "Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab", "Home", "End"
     ];
-    // Allow navigation/edit keys
     if (allowed.includes(e.key)) return;
 
     // Only accept numbers and colon, block others
@@ -132,7 +129,6 @@ function Calendar({
       setLocalTime("");
       return;
     }
-    // Show error, and reset to previous (last valid) if it's not a good time
     if (!TIME_REGEX.test(localTime)) {
       setInputError(true);
       if (selected) setLocalTime(getTimeString24(selected));
@@ -214,7 +210,7 @@ function Calendar({
       {showTimeInput && selected && (
         <div
           className="flex flex-row items-center gap-2 mt-3 mb-2 border border-paycard-navy-200 rounded-md px-2 py-2 bg-white w-full mx-auto"
-          style={{ minWidth: 180, maxWidth: 340 }} // slightly increased for pattern + icon
+          style={{ minWidth: 210, maxWidth: 350 }} // increased to ensure adequate space
         >
           <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left">
             {timeLabel}
@@ -223,14 +219,14 @@ function Calendar({
             <input
               id="delay-time"
               type="text"
-              pattern="^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$"
+              // pattern removed to suppress browser validation tooltip
               placeholder="HH:mm:ss"
               className={cn(
-                "border font-mono bg-white text-left tracking-widest px-2 py-1 rounded",
+                "border font-mono bg-white text-left tracking-widest px-2 py-1 rounded outline-none transition-colors",
                 inputError
                   ? "border-paycard-red ring-1 ring-paycard-red focus:border-paycard-red focus:ring-paycard-red"
                   : "border-paycard-navy-200 focus:border-paycard-navy-400",
-                "w-[116px] min-w-[116px] max-w-[116px]" // expanded from 100px to 116px for icon space
+                "w-[130px] min-w-[130px] max-w-[130px]" // enough for HH:mm:ss + icon + padding
               )}
               value={localTime}
               ref={inputRef}
@@ -244,13 +240,12 @@ function Calendar({
               aria-invalid={inputError}
             />
             {inputError && (
-              <span className="absolute right-1 top-0 flex items-center h-full text-paycard-red" title="Invalid time format">
-                {/* Lucide AlertCircle icon */}
-                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" className="text-paycard-red" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><circle cx="12" cy="16" r="1" /></svg>
+              <span className="absolute right-1 top-0 flex items-center h-full text-paycard-red z-10" title="Invalid time format">
+                <AlertCircle size={20} strokeWidth={2} className="text-paycard-red" />
               </span>
             )}
           </div>
-          {/* Error message below has been removed */}
+          {/* No error message text below input - icon only */}
         </div>
       )}
     </div>
