@@ -14,7 +14,7 @@ export const useLoadAllocatedCards = () => {
 
       const { data, error } = await supabase
         .rpc('search_load_allocated', {
-          account_from: "false",
+          account_from: false, // Pass as boolean
           transfer_from_account_id: 0,
           limit: 100,
           offset: 0
