@@ -285,13 +285,13 @@ export type Database = {
           p_offset: number
         }
         Returns: {
-          id: number
+          id: string
           account_card_id: number
           account_card_mtd: string
           balance: number
           cardholder: string
           cardnumber: string
-          fica_validation: boolean
+          fica_validation: string
           created_at: string
           updated_at: string
         }[]

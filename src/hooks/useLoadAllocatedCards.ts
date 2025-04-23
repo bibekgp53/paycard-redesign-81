@@ -34,13 +34,13 @@ export const useLoadAllocatedCards = () => {
       // Transform the data to match the expected AccountCard type
       const cards = data.map((item: any) => {
         const card: AccountCard = {
-          id: String(item.id || ''),
+          id: item.id || '',
           accountCardId: Number(item.account_card_id || 0),
           accountCardMtd: Number(item.account_card_mtd || 0),
           balance: Number(item.balance || 0),
-          cardholder: String(item.cardholder || ''),
-          cardNumber: String(item.cardnumber || ''),
-          ficaValidation: String(item.fica_validation || '')
+          cardholder: item.cardholder || '',
+          cardNumber: item.cardnumber || '',
+          ficaValidation: item.fica_validation || ''
         };
         return card;
       });
