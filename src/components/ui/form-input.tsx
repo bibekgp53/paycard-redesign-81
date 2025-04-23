@@ -10,6 +10,7 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 
 export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
   ({ label, error, helpText, className, ...props }, ref) => {
+    const errorPresent = Boolean(error);
     return (
       <div className="mb-4">
         {label && (
@@ -20,10 +21,15 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
         <input
           ref={ref}
           className={cn(
-            "w-full font-poppins input-1 border border-paycard-navy-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-paycard-navy-300",
-            error ? "border-paycard-red ring-1 ring-paycard-red" : "",
+            "w-full font-poppins input-1 border rounded px-3 py-2",
+            errorPresent
+              ? "border-paycard-red ring-1 ring-paycard-red"
+              : "border-paycard-navy-200 focus:border-paycard-navy-400 focus:outline-none focus:ring-2 focus:ring-paycard-navy-300",
+            // Remove any focus/focus-visible border styles if in error state
+            errorPresent ? "" : "",
             className
           )}
+          aria-invalid={errorPresent}
           {...props}
         />
         {error && <p className="mt-1 text-sm font-poppins text-paycard-red body-small">{error}</p>}
