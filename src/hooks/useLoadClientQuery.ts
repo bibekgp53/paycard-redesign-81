@@ -25,10 +25,12 @@ export const useLoadClientQuery = () => {
         // Check Supabase connection
         const { data: connectionTest, error: connectionError } = await supabase.from('client_settings').select('*').limit(1);
         console.log("Connection test to client_settings:", connectionTest ? "Succeeded" : "Failed", connectionError || '');
+        console.log("Client settings data sample:", connectionTest);
         
         // Check profiles table
         const { data: profilesTest, error: profilesError } = await supabase.from('profiles').select('*').limit(1);
         console.log("Connection test to profiles:", profilesTest ? "Succeeded" : "Failed", profilesError || '');
+        console.log("Profiles data sample:", profilesTest);
         
         // Call the RPC function
         const { data: rpcData, error: rpcError } = await supabase.rpc("get_load_client", {
@@ -40,6 +42,23 @@ export const useLoadClientQuery = () => {
         
         // Always log raw result for debugging
         console.log("Supabase get_load_client raw result:", rpcData);
+        console.log("Result type:", typeof rpcData);
+        
+        // Log each top-level property of the response
+        if (rpcData) {
+          console.log("Response properties:");
+          Object.keys(rpcData).forEach(key => {
+            console.log(`- ${key}:`, rpcData[key], typeof rpcData[key]);
+            
+            // For nested objects, log their contents too
+            if (typeof rpcData[key] === 'object' && rpcData[key] !== null) {
+              console.log(`  ${key} properties:`, Object.keys(rpcData[key]));
+              Object.entries(rpcData[key]).forEach(([subKey, subValue]) => {
+                console.log(`    - ${subKey}:`, subValue);
+              });
+            }
+          });
+        }
 
         if (rpcError) {
           console.error("RPC error:", rpcError);
