@@ -32,15 +32,18 @@ export const useUserHeaderQuery = () => {
       console.log("Received user header:", rpcData);
       
       // Ensure we're getting the expected structure or handle missing properties
-      if (typeof rpcData !== 'object' || rpcData === null) {
+      if (!rpcData || typeof rpcData !== 'object') {
         throw new Error('Invalid user header data format received');
       }
       
+      // Cast to any first to safely access properties
+      const dataObj = rpcData as any;
+      
       // Create a properly typed object
       const userHeader: UserHeader = {
-        accountNumber: String(rpcData.accountNumber || ''),
-        balanceAccount: Number(rpcData.balanceAccount || 0),
-        fullName: String(rpcData.fullName || '')
+        accountNumber: String(dataObj.accountNumber || ''),
+        balanceAccount: Number(dataObj.balanceAccount || 0),
+        fullName: String(dataObj.fullName || '')
       };
       
       return userHeader;

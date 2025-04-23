@@ -32,8 +32,13 @@ export const useLoadAllocatedCards = () => {
       
       console.log("Received data from backend:", data);
       
+      if (!Array.isArray(data)) {
+        console.error("Expected array response but received:", typeof data);
+        return [];
+      }
+      
       // Transform the data to match the expected AccountCard type
-      const cards = (data || []).map((item) => {
+      const cards = data.map((item: any) => {
         const card: AccountCard = {
           id: String(item.id || ''),
           accountCardId: Number(item.account_card_id || 0),

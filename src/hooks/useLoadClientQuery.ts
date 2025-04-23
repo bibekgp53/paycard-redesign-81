@@ -51,28 +51,31 @@ export const useLoadClientQuery = () => {
         console.log(`- ${key}:`, rpcData[key], typeof rpcData[key]);
       });
 
+      // Cast to any to safely access nested properties
+      const dataObj = rpcData as any;
+
       // Create a proper ClientSettings object with the correct structure
       const clientSettings: ClientSettings = {
         profile: {
-          fromAccount: String(rpcData.profile?.fromAccount || ''),
-          fromBalance: Number(rpcData.profile?.fromBalance || 0)
+          fromAccount: String(dataObj.profile?.fromAccount || ''),
+          fromBalance: Number(dataObj.profile?.fromBalance || 0)
         },
         details: {
-          clientTerminalID: String(rpcData.details?.clientTerminalID || ''),
-          clientMaximumBalance: Number(rpcData.details?.clientMaximumBalance || 0),
-          clientMerchantTransfers: String(rpcData.details?.clientMerchantTransfers || ''),
-          clientMerchantNumber: String(rpcData.details?.clientMerchantNumber || ''),
-          clientTransferFee: Number(rpcData.details?.clientTransferFee || 0),
-          clientSMSCost: Number(rpcData.details?.clientSMSCost || 0),
-          clientMinimumCardLoad: Number(rpcData.details?.clientMinimumCardLoad || 0),
-          previousTransfers: Number(rpcData.details?.previousTransfers || 0),
-          clientAllowsSMSNotifications: Boolean(rpcData.details?.clientAllowsSMSNotifications || false),
-          clientMaximumMTD: Number(rpcData.details?.clientMaximumMTD || 0)
+          clientTerminalID: String(dataObj.details?.clientTerminalID || ''),
+          clientMaximumBalance: Number(dataObj.details?.clientMaximumBalance || 0),
+          clientMerchantTransfers: String(dataObj.details?.clientMerchantTransfers || ''),
+          clientMerchantNumber: String(dataObj.details?.clientMerchantNumber || ''),
+          clientTransferFee: Number(dataObj.details?.clientTransferFee || 0),
+          clientSMSCost: Number(dataObj.details?.clientSMSCost || 0),
+          clientMinimumCardLoad: Number(dataObj.details?.clientMinimumCardLoad || 0),
+          previousTransfers: Number(dataObj.details?.previousTransfers || 0),
+          clientAllowsSMSNotifications: Boolean(dataObj.details?.clientAllowsSMSNotifications || false),
+          clientMaximumMTD: Number(dataObj.details?.clientMaximumMTD || 0)
         },
-        effectiveStopDate: String(rpcData.effectiveStopDate || ''),
-        rebate: Array.isArray(rpcData.rebate) ? rpcData.rebate : [],
-        transferUUID: String(rpcData.transferUUID || ''),
-        effectiveDate: String(rpcData.effectiveDate || '')
+        effectiveStopDate: String(dataObj.effectiveStopDate || ''),
+        rebate: Array.isArray(dataObj.rebate) ? dataObj.rebate : [],
+        transferUUID: String(dataObj.transferUUID || ''),
+        effectiveDate: String(dataObj.effectiveDate || '')
       };
 
       return clientSettings;
