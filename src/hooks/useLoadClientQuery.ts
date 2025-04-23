@@ -22,7 +22,7 @@ export const useLoadClientQuery = () => {
           setError(rpcError);
           setData(null);
         } else {
-          // Safely assert the unknown value.
+          // The return shape is an object directly as ClientSettings
           setData(rpcData as unknown as ClientSettings);
         }
         setIsLoading(false);

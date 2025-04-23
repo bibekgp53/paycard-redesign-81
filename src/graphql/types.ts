@@ -1,4 +1,3 @@
-
 export interface Card {
   id: string;
   card_number: string;
@@ -66,19 +65,33 @@ export interface UserHeader {
   fullName: string;
 }
 
+// Previous interfaces replaced/updated for new backend response shape
+
+export interface ClientProfile {
+  fromAccount: string;
+  fromBalance: number;
+}
+
+export interface ClientDetails {
+  clientTerminalID: string;
+  clientMaximumBalance: number;
+  clientMerchantTransfers: string;
+  clientMerchantNumber: string;
+  clientTransferFee: number;
+  clientSMSCost: number;
+  clientMinimumCardLoad: number;
+  previousTransfers: number;
+  clientAllowsSMSNotifications: boolean;
+  clientMaximumMTD: number;
+}
+
 export interface ClientSettings {
-  details: {
-    clientMinCardLoad: number;
-    clientMaxBalance: number;
-    clientTransferFee: number;
-    clientSMSCost: number; // Added
-    // Add other values as they are added in get_load_client
-    transferSMSNotificationFee?: number; // Will mirror clientSMSCost for the UI
-  };
-  profile: {
-    fromBalance: number;
-    fromAccount: number;
-  };
+  profile: ClientProfile;
+  details: ClientDetails;
+  effectiveStopDate: string;
+  rebate: unknown[]; // Currently always array, adjust if needed in the future
+  transferUUID: string;
+  effectiveDate: string;
 }
 
 export interface GetLoadClientData {
@@ -95,4 +108,3 @@ export interface AccountCard {
   cardNumber: string;  // This will now contain the masked number
   ficaValidation: string;
 }
-

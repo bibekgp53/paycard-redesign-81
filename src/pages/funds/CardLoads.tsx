@@ -38,20 +38,8 @@ export function CardLoads() {
   const pageSize = 10;
   
   const { data: userHeader } = useUserHeaderQuery();
-  const { data: clientSettingsData } = useLoadClientQuery();
+  const { data: clientSettings } = useLoadClientQuery();
   const { data: cards, isLoading } = useLoadAllocatedCards();
-
-  // Safely mirror transferSMSNotificationFee to clientSMSCost in details
-  const clientSettings = useMemo(() => {
-    if (!clientSettingsData) return null;
-    return {
-      ...clientSettingsData,
-      details: {
-        ...clientSettingsData.details,
-        transferSMSNotificationFee: clientSettingsData.details.clientSMSCost,
-      },
-    };
-  }, [clientSettingsData]);
 
   const handleLoadFundsClick = () => {
     navigate(`/load-funds-from`);
@@ -78,8 +66,9 @@ export function CardLoads() {
 
   const getTooltipMessage = (cardBalance: number) => {
     if (!clientSettings) return "";
-    const maxAllowedLoad = clientSettings.details.clientMaxBalance - cardBalance;
-    const minLoad = clientSettings.details.clientMinCardLoad;
+    const maxAllowedLoad =
+      clientSettings.details.clientMaximumBalance - cardBalance;
+    const minLoad = clientSettings.details.clientMinimumCardLoad;
     return `Load amount must be between R ${minLoad.toFixed(2)} - R ${maxAllowedLoad.toFixed(2)}`;
   };
 
@@ -87,8 +76,8 @@ export function CardLoads() {
     const amount = amountInputs[cardId];
     if (amount === undefined || amount === null) return true;
     if (clientSettings) {
-      const minAmount = clientSettings.details.clientMinCardLoad;
-      const maxAmount = clientSettings.details.clientMaxBalance - cardBalance;
+      const minAmount = clientSettings.details.clientMinimumCardLoad;
+      const maxAmount = clientSettings.details.clientMaximumBalance - cardBalance;
       return amount >= minAmount && amount <= maxAmount;
     }
     return true;
@@ -119,7 +108,7 @@ export function CardLoads() {
           totalAmount += amount;
           totalFee += clientSettings.details.clientTransferFee;
           if (notifySMS) {
-            totalSMS += clientSettings.details.transferSMSNotificationFee;
+            totalSMS += clientSettings.details.clientSMSCost;
           }
         }
       }
@@ -158,7 +147,7 @@ export function CardLoads() {
           accountCardId: card.accountCardId,
           transferAmount: amount,
           transferFeeAmount: clientSettings.details.clientTransferFee,
-          transferSMSNotificationFee: notifySMS ? clientSettings.details.transferSMSNotificationFee : 0,
+          transferSMSNotificationFee: notifySMS ? clientSettings.details.clientSMSCost : 0,
           cardholder: card.cardholder,
           cardNumber: card.cardNumber,
           notifyViaSMS: notifySMS,
@@ -197,7 +186,7 @@ export function CardLoads() {
         <p className="text-gray-600">
           Load funds into cards from your profile or transfer funds from a stopped card.
           <span className="block mt-2 text-sm">
-            The balance available on your profile is R {userHeader?.balanceAccount?.toFixed(2) || '0.00'}
+            The balance available on your profile is R {clientSettings?.profile?.fromBalance?.toFixed(2) || '0.00'}
           </span>
         </p>
       </Card>

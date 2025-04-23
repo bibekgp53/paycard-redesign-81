@@ -118,30 +118,57 @@ export type Database = {
       }
       client_settings: {
         Row: {
+          client_allows_sms_notifications: boolean | null
           client_max_balance: number
+          client_maximum_mtd: number | null
+          client_merchant_number: string | null
+          client_merchant_transfers: string | null
           client_min_card_load: number
+          client_previous_transfers: number | null
           client_sms_cost: number
+          client_terminal_id: string | null
           client_transfer_fee: number
           created_at: string
+          effective_date: string | null
+          effective_stop_date: string | null
           id: string
+          transfer_uuid: string | null
           updated_at: string
         }
         Insert: {
+          client_allows_sms_notifications?: boolean | null
           client_max_balance: number
+          client_maximum_mtd?: number | null
+          client_merchant_number?: string | null
+          client_merchant_transfers?: string | null
           client_min_card_load: number
+          client_previous_transfers?: number | null
           client_sms_cost?: number
+          client_terminal_id?: string | null
           client_transfer_fee: number
           created_at?: string
+          effective_date?: string | null
+          effective_stop_date?: string | null
           id?: string
+          transfer_uuid?: string | null
           updated_at?: string
         }
         Update: {
+          client_allows_sms_notifications?: boolean | null
           client_max_balance?: number
+          client_maximum_mtd?: number | null
+          client_merchant_number?: string | null
+          client_merchant_transfers?: string | null
           client_min_card_load?: number
+          client_previous_transfers?: number | null
           client_sms_cost?: number
+          client_terminal_id?: string | null
           client_transfer_fee?: number
           created_at?: string
+          effective_date?: string | null
+          effective_stop_date?: string | null
           id?: string
+          transfer_uuid?: string | null
           updated_at?: string
         }
         Relationships: []
