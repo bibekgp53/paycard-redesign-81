@@ -1,3 +1,4 @@
+
 import { CreditCard, Users, FileText, Settings, Wallet, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -56,7 +57,7 @@ export function Sidebar() {
       variant="full" 
       collapsible="none"
       logoText="Standard Bank PayCard"
-      logoTagline="sandbox"
+      // logoTagline="sandbox" // Removed the tagline
     >
       {/* Make sidebar full height, column flex, push footer (Test User) to bottom */}
       <div className="flex flex-col h-full min-h-0">

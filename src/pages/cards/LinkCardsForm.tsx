@@ -178,7 +178,7 @@ const LinkCardsForm = () => {
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+            <label className="block text-sm font-medium font-poppins text-paycard-navy mb-1">
               Profile
             </label>
             <Select
@@ -233,7 +233,7 @@ const LinkCardsForm = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
             <div>
-              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+              <label className="block text-sm font-medium font-poppins text-paycard-navy mb-1">
                 Processed By
               </label>
               <Input
@@ -247,7 +247,7 @@ const LinkCardsForm = () => {
               )}
             </div>
             <div>
-              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+              <label className="block text-sm font-medium font-poppins text-paycard-navy mb-1">
                 Invoice Number
               </label>
               <Input

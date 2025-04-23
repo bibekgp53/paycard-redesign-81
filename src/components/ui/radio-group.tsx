@@ -78,7 +78,7 @@ function RadioGroup({
   return (
     <div className={cn("mb-4", className)}>
       {label && (
-        <p className="block text-sm font-medium font-gilroy text-paycard-navy mb-2">{label}</p>
+        <p className="block text-sm font-medium font-poppins text-paycard-navy mb-2">{label}</p>
       )}
       <RadioGroupBase value={value} onValueChange={handleChange} className={cn("space-y-2", inline && "flex space-y-0 space-x-6")}>
         {options.map((option) => (

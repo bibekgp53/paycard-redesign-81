@@ -1,6 +1,8 @@
 /* Removed Gilroy font-face, only Poppins is used */
 
+/* Removed the following as it's already included in index.html:
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+*/
 
 /* Layer base configuration */
 @layer base {
