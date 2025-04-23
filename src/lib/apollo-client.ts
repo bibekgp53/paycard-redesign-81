@@ -1,5 +1,5 @@
 
-import { ApolloClient, InMemoryCache, createHttpLink, HttpLink, from, ApolloLink } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink, HttpLink, from, ApolloLink, Observable } from '@apollo/client';
 import { supabase } from '../integrations/supabase/client';
 
 // Create the http link with the Supabase GraphQL endpoint
@@ -8,27 +8,54 @@ const httpLink = new HttpLink({
   credentials: 'same-origin'
 });
 
-// Create a middleware link to add auth headers
-const authMiddleware = new ApolloLink(async (operation, forward) => {
-  // Get the session token from Supabase
-  const { data: { session } } = await supabase.auth.getSession();
-  const apikey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zb3B3Ynh5em1jZHltdWRodHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5MjI2NzAsImV4cCI6MjA2MDQ5ODY3MH0._49Jlg6STEqs2BevV4n1FFag3VW1xMOFT4nO0Fn3SCw';
-  
-  // Create headers object
-  const headers = {
-    apikey: apikey,
-    authorization: session ? `Bearer ${session.access_token}` : `Bearer ${apikey}`,
-    'Content-Type': 'application/json',
-  };
-  
-  console.log('Apollo GraphQL Headers:', headers);
-  console.log('Authentication status:', session ? 'Authenticated' : 'Anonymous');
-  
-  operation.setContext({
-    headers
-  });
+// Create a middleware link to add auth headers - Fixed to not use async/await directly
+const authMiddleware = new ApolloLink((operation, forward) => {
+  // Return an observable that will get the session and add headers
+  return new Observable(observer => {
+    // Get the session token from Supabase
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      const apikey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zb3B3Ynh5em1jZHltdWRodHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5MjI2NzAsImV4cCI6MjA2MDQ5ODY3MH0._49Jlg6STEqs2BevV4n1FFag3VW1xMOFT4nO0Fn3SCw';
+      
+      // Create headers object
+      const headers = {
+        apikey: apikey,
+        authorization: session ? `Bearer ${session.access_token}` : `Bearer ${apikey}`,
+        'Content-Type': 'application/json',
+      };
+      
+      console.log('Apollo GraphQL Headers:', headers);
+      console.log('Authentication status:', session ? 'Authenticated' : 'Anonymous');
+      
+      operation.setContext({
+        headers
+      });
 
-  return forward(operation);
+      // Continue with the operation
+      forward(operation).subscribe({
+        next: observer.next.bind(observer),
+        error: observer.error.bind(observer),
+        complete: observer.complete.bind(observer)
+      });
+    }).catch(error => {
+      console.error('Error getting auth session:', error);
+      // Continue with the operation anyway, but without auth headers
+      const apikey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zb3B3Ynh5em1jZHltdWRodHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5MjI2NzAsImV4cCI6MjA2MDQ5ODY3MH0._49Jlg6STEqs2BevV4n1FFag3VW1xMOFT4nO0Fn3SCw';
+      
+      operation.setContext({
+        headers: {
+          apikey: apikey,
+          authorization: `Bearer ${apikey}`,
+          'Content-Type': 'application/json',
+        }
+      });
+      
+      forward(operation).subscribe({
+        next: observer.next.bind(observer),
+        error: observer.error.bind(observer),
+        complete: observer.complete.bind(observer)
+      });
+    });
+  });
 });
 
 // Better error and logging link
