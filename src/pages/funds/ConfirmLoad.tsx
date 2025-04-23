@@ -10,6 +10,7 @@ import React, { useState } from "react";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { XCircle, CheckCircle2 } from "lucide-react";
+import { InvoiceDisplay } from "./components/InvoiceDisplay"; // New import
 
 type AlertType = null | { type: "success" | "error", message: string };
 
@@ -24,6 +25,10 @@ export default function ConfirmLoad() {
   const { data: clientSettings } = useLoadClientQuery();
   const [loading, setLoading] = useState(false);
   const [alertState, setAlertState] = useState<AlertType>(null);
+  const [showInvoice, setShowInvoice] = useState(false);
+
+  // Cached invoice data for rendering after success
+  const [invoiceMeta, setInvoiceMeta] = useState<any>(null);
 
   // Format date+time for display
   const renderEffectiveDate = () => {
@@ -53,7 +58,6 @@ export default function ConfirmLoad() {
     function pad2(n: number) {
       return n.toString().padStart(2, "0");
     }
-    // Format datetime as YYYY-MM-DD HH:mm:ss for startDate/endDate
     function formatDT(d: Date) {
       return (
         d.getFullYear() +
@@ -109,22 +113,36 @@ export default function ConfirmLoad() {
       });
       return;
     }
-    setAlertState({
-      type: "success",
-      message: "Funds load request submitted successfully!",
+
+    // Instead of toast/success, switch to invoice screen:
+    // Compose invoice data from current values:
+    setInvoiceMeta({
+      invoiceNumber: Math.floor(Math.random() * 90000000 + 10000000).toString(), // Example
+      invoiceDate: format(new Date(), "yyyy/MM/dd"),
+      referenceNumber: "0579245614", // Example static for now
+      vatReg: "687", // Example static
+      company: "Thami's Gmbh Ltd",
+      companyNumbers: ["78687678213", "jghguy", "gyug", "8757656", "7898"],
+      cards: selectedLoads.map(l => ({
+        cardNumber: l.cardNumber, // Masking already handled
+        transferAmount: l.transferAmount,
+        transferFee: l.transferFee,
+      })),
+      vatRate: 0.15,
     });
     resetCardLoadsState();
-    // Wait briefly before navigation to allow user to see the message
-    setTimeout(() => {
-      setAlertState(null);
-      navigate("/dashboard");
-    }, 1200);
+    setShowInvoice(true);
   };
 
   // Back should not set state, just navigate back to card loads
   const handleBack = () => {
     navigate("/load-funds-from/card-loads");
   };
+
+  // If finished, show invoice
+  if (showInvoice && invoiceMeta) {
+    return <InvoiceDisplay {...invoiceMeta} />;
+  }
 
   return (
     <div className="space-y-6">
