@@ -51,7 +51,31 @@ export const useLoadClientQuery = () => {
         console.log(`- ${key}:`, rpcData[key], typeof rpcData[key]);
       });
 
-      return rpcData as ClientSettings;
+      // Create a proper ClientSettings object with the correct structure
+      const clientSettings: ClientSettings = {
+        profile: {
+          fromAccount: String(rpcData.profile?.fromAccount || ''),
+          fromBalance: Number(rpcData.profile?.fromBalance || 0)
+        },
+        details: {
+          clientTerminalID: String(rpcData.details?.clientTerminalID || ''),
+          clientMaximumBalance: Number(rpcData.details?.clientMaximumBalance || 0),
+          clientMerchantTransfers: String(rpcData.details?.clientMerchantTransfers || ''),
+          clientMerchantNumber: String(rpcData.details?.clientMerchantNumber || ''),
+          clientTransferFee: Number(rpcData.details?.clientTransferFee || 0),
+          clientSMSCost: Number(rpcData.details?.clientSMSCost || 0),
+          clientMinimumCardLoad: Number(rpcData.details?.clientMinimumCardLoad || 0),
+          previousTransfers: Number(rpcData.details?.previousTransfers || 0),
+          clientAllowsSMSNotifications: Boolean(rpcData.details?.clientAllowsSMSNotifications || false),
+          clientMaximumMTD: Number(rpcData.details?.clientMaximumMTD || 0)
+        },
+        effectiveStopDate: String(rpcData.effectiveStopDate || ''),
+        rebate: Array.isArray(rpcData.rebate) ? rpcData.rebate : [],
+        transferUUID: String(rpcData.transferUUID || ''),
+        effectiveDate: String(rpcData.effectiveDate || '')
+      };
+
+      return clientSettings;
     },
     retry: 1,
     staleTime: 300000, // 5 minutes

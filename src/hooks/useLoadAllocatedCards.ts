@@ -32,15 +32,21 @@ export const useLoadAllocatedCards = () => {
       
       console.log("Received data from backend:", data);
       
-      return (data ?? []).map((item) => ({
-        id: String(item.id),
-        accountCardId: item.account_card_id,
-        accountCardMtd: Number(item.account_card_mtd),
-        balance: Number(item.balance),
-        cardholder: item.cardholder,
-        cardNumber: item.cardnumber,
-        ficaValidation: String(item.fica_validation)
-      })) as AccountCard[];
+      // Transform the data to match the expected AccountCard type
+      const cards = (data || []).map((item) => {
+        const card: AccountCard = {
+          id: String(item.id || ''),
+          accountCardId: Number(item.account_card_id || 0),
+          accountCardMtd: Number(item.account_card_mtd || 0),
+          balance: Number(item.balance || 0),
+          cardholder: String(item.cardholder || ''),
+          cardNumber: String(item.cardnumber || ''),
+          ficaValidation: String(item.fica_validation || '')
+        };
+        return card;
+      });
+      
+      return cards;
     },
     retry: 1,
     staleTime: 300000, // 5 minutes
