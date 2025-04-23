@@ -14,7 +14,6 @@ export const useLoadClientQuery = () => {
     setIsLoading(true);
     setError(null);
 
-    // Pass the correct arguments to the Supabase RPC function (no hardcoded profile data!)
     supabase
       .rpc("get_load_client", {
         account_from: false,
@@ -22,12 +21,17 @@ export const useLoadClientQuery = () => {
       })
       .then(({ data: rpcData, error: rpcError }) => {
         if (!isMounted) return;
+        console.log("Supabase get_load_client raw result:", rpcData);
         if (rpcError) {
           setError(rpcError);
           setData(null);
         } else {
-          // The return shape is an object directly as ClientSettings
-          setData(rpcData as unknown as ClientSettings);
+          // Handle cases where data might be nested
+          let extracted: any = rpcData;
+          if (rpcData && typeof rpcData === "object" && "get_load_client" in rpcData) {
+            extracted = (rpcData as any).get_load_client;
+          }
+          setData(extracted as unknown as ClientSettings);
         }
         setIsLoading(false);
       });
