@@ -33,7 +33,7 @@ export function CardLoads() {
   const [amountInputs, setAmountInputs] = useState<AmountInputs>({});
   const [smsInputs, setSmsInputs] = useState<SMSInputs>({});
   const [page, setPage] = useState(1);
-  const [effectiveDate, setEffectiveDate] = useState<"immediate" | "delay">("immediate");
+  const [effectiveDate, setEffectiveDate] = useState<0 | 1>(0);
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
   const pageSize = 10;
   

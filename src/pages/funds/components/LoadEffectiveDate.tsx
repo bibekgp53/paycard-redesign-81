@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -17,9 +18,9 @@ function formatDateTimeCustom(date?: Date) {
 }
 
 interface LoadEffectiveDateProps {
-  effectiveDate: "immediate" | "delay";
+  effectiveDate: 0 | 1;
   selectedDate: Date | undefined;
-  onEffectiveDateChange: (value: "immediate" | "delay") => void;
+  onEffectiveDateChange: (value: 0 | 1) => void;
   onSelectedDateChange: (date: Date | undefined) => void;
 }
 
@@ -38,14 +39,14 @@ export const LoadEffectiveDate = ({
     }
   };
 
-  const handleRadioChange = (value: "immediate" | "delay") => {
+  const handleRadioChange = (value: 0 | 1) => {
     onEffectiveDateChange(value);
   };
 
   return (
     <div className="space-y-2">
       <h3 className="text-sm font-medium">
-        {effectiveDate === "delay" ? "Delay until" : "Load Effective Date"}
+        {effectiveDate === 1 ? "Delay until" : "Load Effective Date"}
       </h3>
       <div className="flex space-x-4">
         <div className="flex items-center space-x-2">
@@ -53,9 +54,9 @@ export const LoadEffectiveDate = ({
             type="radio"
             id="immediately"
             name="effective-date"
-            value="immediate"
-            checked={effectiveDate === "immediate"}
-            onChange={() => handleRadioChange("immediate")}
+            value={0}
+            checked={effectiveDate === 0}
+            onChange={() => handleRadioChange(0)}
             className="h-4 w-4 text-paycard-navy border-paycard-navy-300 focus:ring-paycard-navy-500"
           />
           <Label htmlFor="immediately">Immediately</Label>
@@ -65,16 +66,16 @@ export const LoadEffectiveDate = ({
             type="radio"
             id="delay"
             name="effective-date"
-            value="delay"
-            checked={effectiveDate === "delay"}
-            onChange={() => handleRadioChange("delay")}
+            value={1}
+            checked={effectiveDate === 1}
+            onChange={() => handleRadioChange(1)}
             className="h-4 w-4 text-paycard-navy border-paycard-navy-300 focus:ring-paycard-navy-500"
           />
           <Label htmlFor="delay">Delay until</Label>
         </div>
       </div>
 
-      {effectiveDate === "delay" && (
+      {effectiveDate === 1 && (
         <div className="mt-2 w-[260px]">
           <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
             <PopoverTrigger asChild>

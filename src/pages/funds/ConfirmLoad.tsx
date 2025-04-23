@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -18,17 +19,17 @@ export default function ConfirmLoad() {
       cardNumber: string;
       notifyViaSMS?: boolean;
     }>;
-    effectiveDate?: "immediate" | "delay";
+    effectiveDate?: 0 | 1;
     selectedDate?: Date;
   };
 
   const cards = state.cards ?? [];
-  const effectiveDate = state.effectiveDate ?? "immediate";
+  const effectiveDate = typeof state.effectiveDate === "number" ? state.effectiveDate : 0;
   const selectedDate = state.selectedDate;
 
   // Format date+time for display
   const renderEffectiveDate = () => {
-    if (effectiveDate === "delay" && selectedDate) {
+    if (effectiveDate === 1 && selectedDate) {
       return `Delay until ${format(new Date(selectedDate), "MMMM d, yyyy HH:mm:ss")}`;
     }
     return "Immediate";
