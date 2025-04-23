@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,7 +19,7 @@ import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
 import { AccountCard, ClientSettings } from "@/graphql/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
-import { useCardLoadsStore } from "@/store/useCardLoadsStore";
+import { useCardLoadsStore, SelectedLoad } from "@/store/useCardLoadsStore";
 
 // Accept backfilled state from navigation
 export function CardLoads() {
@@ -40,6 +40,10 @@ export function CardLoads() {
     updateAmountInput,
     updateSmsInput,
     resetCardLoadsState,
+    selectedLoads,
+    addOrUpdateSelectedLoad,
+    removeSelectedLoad,
+    clearSelectedLoads
   } = useCardLoadsStore();
 
   const pageSize = 10;
@@ -48,17 +52,53 @@ export function CardLoads() {
   const { data: clientSettings } = useLoadClientQuery();
   const { data: cards, isLoading } = useLoadAllocatedCards();
 
-  const handleLoadFundsClick = () => {
-    navigate(`/load-funds-from`);
-  };
+  // Utility: find the load object for a specific cardId (by accountCardId)
+  function getSelectedLoadObj(accountCardId: number): SelectedLoad | undefined {
+    return selectedLoads.find(l => l.accountCardId === accountCardId);
+  }
+
+  function getCardInfoByCardId(cardId: string) {
+    return cards?.find(c => c.id === cardId);
+  }
 
   const handleAmountChange = (cardId: string, value: string) => {
+    const card = getCardInfoByCardId(cardId);
+    if (!clientSettings || !card) return;
     const numValue = value === "" ? null : parseFloat(value);
     updateAmountInput(cardId, numValue);
+
+    // Determine if should update/remove in array
+    if (numValue !== null && numValue > 0) {
+      // Use smsInputs, but fallback to selectedLoad
+      let smsChecked = smsInputs[cardId] ?? getSelectedLoadObj(card.accountCardId)?.transferSMSNotification === 1;
+      const obj: SelectedLoad = {
+        accountCardId: card.accountCardId,
+        transferAmount: numValue,
+        transferFee: +clientSettings.details.clientTransferFee,
+        transferSMSNotificationFee: smsChecked ? +clientSettings.details.clientSMSCost : 0,
+        transferSMSNotification: smsChecked ? 1 : 0
+      };
+      addOrUpdateSelectedLoad(obj);
+    } else {
+      // Remove from selection if amount is null or 0
+      removeSelectedLoad(card.accountCardId);
+    }
   };
 
   const handleSMSChange = (cardId: string, checked: boolean) => {
     updateSmsInput(cardId, checked);
+    const card = getCardInfoByCardId(cardId);
+    const amount = amountInputs[cardId];
+    if (!card || !clientSettings || !amount || amount <= 0) return;
+    // Always update load if amount positive
+    const obj: SelectedLoad = {
+      accountCardId: card.accountCardId,
+      transferAmount: amount,
+      transferFee: +clientSettings.details.clientTransferFee,
+      transferSMSNotificationFee: checked ? +clientSettings.details.clientSMSCost : 0,
+      transferSMSNotification: checked ? 1 : 0
+    };
+    addOrUpdateSelectedLoad(obj);
   };
 
   const getTooltipMessage = (cardBalance: number) => {
@@ -97,21 +137,13 @@ export function CardLoads() {
     let totalAmount = 0;
     let totalFee = 0;
     let totalSMS = 0;
-    Object.entries(amountInputs).forEach(([cardId, amount]) => {
-      const notifySMS = smsInputs[cardId];
-      if (amount !== null && amount > 0) {
-        const card = cards.find(c => c.id === cardId);
-        if (card && isAmountValid(cardId, card.balance)) {
-          totalAmount += amount;
-          totalFee += clientSettings.details.clientTransferFee;
-          if (notifySMS) {
-            totalSMS += clientSettings.details.clientSMSCost;
-          }
-        }
-      }
+    selectedLoads.forEach((load) => {
+      totalAmount += load.transferAmount;
+      totalFee += load.transferFee;
+      totalSMS += load.transferSMSNotificationFee;
     });
     return { amount: totalAmount, fee: totalFee, smsFee: totalSMS };
-  }, [amountInputs, smsInputs, cards, clientSettings]);
+  }, [selectedLoads, cards, clientSettings]);
 
   const paginatedCards = useMemo(() => {
     if (!cards) return [];
@@ -124,39 +156,20 @@ export function CardLoads() {
     return Math.ceil(cards.length / pageSize);
   }, [cards, pageSize]);
 
-  // Handle continue, gather all info and redirect to a confirm page - NO state passing now, use global
+  // Optionally, on mount, hydrate amountInputs/smsInputs from selectedLoads (if coming back from Confirm, restore control values)
+  // Not always needed if Zustand is kept for all cards, but good to ensure controls aren't out of sync
+  // useEffect(() => {
+  //   // Hydration logic if needed
+  // }, []);
+
+  // Handle continue, just redirect
   const handleContinue = () => {
     if (!clientSettings) return;
-    const selected = Object.entries(amountInputs)
-      .map(([cardId, amount]) => {
-        const card = cards?.find(c => c.id === cardId);
-        if (
-          !card ||
-          amount === undefined ||
-          amount === null ||
-          !isAmountValid(cardId, card.balance) ||
-          amount <= 0
-        )
-          return null;
-        const notifySMS = !!smsInputs[cardId];
-        return {
-          accountCardId: card.accountCardId,
-          transferAmount: amount,
-          transferFeeAmount: clientSettings.details.clientTransferFee,
-          transferSMSNotificationFee: notifySMS ? clientSettings.details.clientSMSCost : 0,
-          cardholder: card.cardholder,
-          cardNumber: card.cardNumber,
-          notifyViaSMS: notifySMS,
-        };
-      })
-      .filter(Boolean);
-    if (selected.length === 0) {
-      // Optionally display a toast error here.
+    if (!selectedLoads.length) {
+      // Toast error here, perhaps
       return;
     }
-    navigate("/load-funds-from/card-loads/confirm-load", {
-      // Don't need to pass state anymore, all will be in zustand
-    });
+    navigate("/load-funds-from/card-loads/confirm-load");
   };
 
   return (
@@ -182,7 +195,6 @@ export function CardLoads() {
           </span>
         </p>
       </Card>
-
       <Card className="bg-white p-6">
         <div className="overflow-x-auto">
           <table className="w-full table-auto border mt-2 mb-4">
@@ -197,13 +209,19 @@ export function CardLoads() {
             </thead>
             <tbody>
               {paginatedCards.map((card) => {
-                console.log("Render Checkbox for", card.id, "checked=", smsInputs[card.id] || false);
+                // Determine UI value from selectedLoads
+                const selectedLoadObj = getSelectedLoadObj(card.accountCardId);
+                const amountValue = selectedLoadObj
+                  ? selectedLoadObj.transferAmount
+                  : amountInputs[card.id] ?? "";
+                const smsChecked = selectedLoadObj
+                  ? selectedLoadObj.transferSMSNotification === 1
+                  : smsInputs[card.id] || false;
                 return (
                   <tr key={card.id ?? card.cardNumber}>
                     <td className="py-2 px-4 border-b">{card.cardholder}</td>
                     <td className="py-2 px-4 border-b">{card.cardNumber}</td>
                     <td className="py-2 px-4 border-b">
-                      {/* Amount input with tooltip on hover */}
                       <div className="flex items-center">
                         <TooltipProvider>
                           <Tooltip>
@@ -212,7 +230,7 @@ export function CardLoads() {
                                 type="number"
                                 min="0"
                                 className={`border rounded px-2 py-1 w-24 ${!isAmountValid(card.id, card.balance) ? 'border-paycard-red ring-1 ring-paycard-red' : ''}`}
-                                value={amountInputs[card.id] ?? ""}
+                                value={amountValue}
                                 onChange={(e) =>
                                   handleAmountChange(card.id, e.target.value)
                                 }
@@ -232,7 +250,7 @@ export function CardLoads() {
                     <td className="py-2 px-4 border-b">
                       <div className="flex items-center justify-center h-6">
                         <Checkbox
-                          checked={smsInputs[card.id] || false}
+                          checked={smsChecked}
                           onCheckedChange={(checked: boolean) =>
                             handleSMSChange(card.id, checked)
                           }
@@ -244,7 +262,6 @@ export function CardLoads() {
                 );
               })}
             </tbody>
-            {/* Table Footer for totals */}
             <tfoot>
               <tr>
                 <td className="py-2 px-4 border-b font-semibold" colSpan={2}>Total</td>

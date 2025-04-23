@@ -1,4 +1,5 @@
-import { useLocation, useNavigate } from "react-router-dom";
+
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -6,44 +7,16 @@ import { format } from "date-fns";
 import { useCardLoadsStore } from "@/store/useCardLoadsStore";
 
 export default function ConfirmLoad() {
-  const location = useLocation();
   const navigate = useNavigate();
-  // Instead of using location.state, get working state from Zustand
+  // Get working state from Zustand (now: selectedLoads array)
   const {
-    amountInputs,
-    smsInputs,
     effectiveDate,
     selectedDate,
-    page,
-    setAmountInputs,
-    setSmsInputs,
-    setEffectiveDate,
-    setSelectedDate,
-    setPage,
+    selectedLoads,
   } = useCardLoadsStore();
-
-  // Support the ability to grab cards array from navigation if coming fresh
-  const navState = (location.state ?? {}) as {
-    cards?: Array<{
-      accountCardId: number;
-      transferAmount: number;
-      transferFeeAmount: number;
-      transferSMSNotificationFee: number;
-      cardholder: string;
-      cardNumber: string;
-      notifyViaSMS?: boolean;
-    }>;
-  };
-
-  // If navigating direct from CardLoads, navState.cards won't exist, 
-  // but amounts, smsInputs etc. are always global in store
-  // If coming fresh (reload), cards will be undefined.
-
-  const cards = navState.cards ?? [];
 
   // Back should not set state, just navigate back to card loads
   const handleBack = () => {
-    // Just go back to CardLoads (store is always up to date now)
     navigate("/load-funds-from/card-loads");
   };
 
@@ -78,31 +51,29 @@ export default function ConfirmLoad() {
         <p className="text-gray-600 mb-4">
           Please confirm the details before loading funds to these cards:
         </p>
-        {cards.length === 0 ? (
+        {selectedLoads.length === 0 ? (
           <div className="text-sm text-paycard-red">No cards selected for load.</div>
         ) : (
           <table className="w-full text-left border mt-2 mb-4">
             <thead>
               <tr>
                 <th className="py-2 px-4 border-b">CARDHOLDER</th>
-                <th className="py-2 px-4 border-b">CARD NUMBER</th>
+                <th className="py-2 px-4 border-b">ACCOUNT CARD ID</th>
                 <th className="py-2 px-4 border-b">AMOUNT</th>
                 <th className="py-2 px-4 border-b">FEE</th>
-                <th className="py-2 px-4 border-b">SMS NOTIFICATION FEE</th>
+                <th className="py-2 px-4 border-b">SMS FEE</th>
+                <th className="py-2 px-4 border-b">NOTIFY VIA SMS</th>
               </tr>
             </thead>
             <tbody>
-              {cards.map((item, idx) => (
+              {selectedLoads.map((item, idx) => (
                 <tr key={idx}>
-                  <td className="py-2 px-4 border-b">{item.cardholder}</td>
-                  <td className="py-2 px-4 border-b">{item.cardNumber}</td>
+                  <td className="py-2 px-4 border-b">{item.accountCardId}</td>
+                  <td className="py-2 px-4 border-b">{item.accountCardId}</td>
                   <td className="py-2 px-4 border-b">R {item.transferAmount.toFixed(2)}</td>
-                  <td className="py-2 px-4 border-b">R {item.transferFeeAmount.toFixed(2)}</td>
-                  <td className="py-2 px-4 border-b">
-                    {item.notifyViaSMS
-                      ? `R ${item.transferSMSNotificationFee ? item.transferSMSNotificationFee.toFixed(2) : "0.00"}`
-                      : "R 0.00"}
-                  </td>
+                  <td className="py-2 px-4 border-b">R {item.transferFee.toFixed(2)}</td>
+                  <td className="py-2 px-4 border-b">R {item.transferSMSNotificationFee.toFixed(2)}</td>
+                  <td className="py-2 px-4 border-b">{item.transferSMSNotification === 1 ? "Yes" : "No"}</td>
                 </tr>
               ))}
             </tbody>
