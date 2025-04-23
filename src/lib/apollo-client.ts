@@ -1,5 +1,5 @@
 
-import { ApolloClient, InMemoryCache, createHttpLink, HttpLink, from } from '@apollo/client';
+import { ApolloClient, InMemoryCache, createHttpLink, HttpLink, from, ApolloLink } from '@apollo/client';
 import { supabase } from '../integrations/supabase/client';
 
 // Create an async function to get the session
