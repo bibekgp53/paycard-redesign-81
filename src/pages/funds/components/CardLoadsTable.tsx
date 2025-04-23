@@ -1,4 +1,3 @@
-
 import { useCardLoadsStore, SelectedLoad } from "@/store/useCardLoadsStore";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -139,7 +138,11 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
               ? selectedLoadObj.transferSMSNotification === 1 && selectedLoadObj.transferAmount > 0
               : (smsInputs[card.id] && amountInputs[card.id] && amountInputs[card.id]! > 0) || false
             );
-          const showAmountError = !isAmountValid(card.id, card.balance) && (amountInputs[card.id] !== undefined && amountInputs[card.id] !== null && amountInputs[card.id] !== "");
+          // Fix: Only check for undefined/null, not for "" (which can't happen for number | null)
+          const showAmountError =
+            !isAmountValid(card.id, card.balance) &&
+            amountInputs[card.id] !== undefined &&
+            amountInputs[card.id] !== null;
           return (
             <tr key={card.id ?? card.cardNumber}>
               <td className="py-2 px-4 border-b">{card.cardholder}</td>
@@ -187,4 +190,3 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
     </div>
   );
 }
-
