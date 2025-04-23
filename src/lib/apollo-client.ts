@@ -3,9 +3,11 @@ import { ApolloClient, InMemoryCache, createHttpLink, HttpLink, from, ApolloLink
 import { supabase } from '../integrations/supabase/client';
 
 // Create the http link with the Supabase GraphQL endpoint
-const httpLink = createHttpLink({
+const httpLink = new HttpLink({
   uri: 'https://osopwbxyzmcdymudhtyh.supabase.co/graphql/v1',
-  credentials: 'include'
+  // Important: Don't use credentials: 'include' which causes CORS issues
+  // with the '*' Access-Control-Allow-Origin response
+  credentials: 'same-origin'
 });
 
 // Create a middleware link to add auth headers
@@ -20,7 +22,6 @@ const authMiddleware = new ApolloLink((operation, forward) => {
         apikey: apikey,
         authorization: `Bearer ${apikey}`,
         'Content-Type': 'application/json',
-        'Accept': '*/*'
       }
     };
   });
