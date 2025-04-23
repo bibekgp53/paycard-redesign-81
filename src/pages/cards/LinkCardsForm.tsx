@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -12,11 +11,12 @@ import {
 } from "@/components/ui/select";
 import { RadioGroup } from "@/components/ui/radio-group";
 import { useApolloQuery } from "@/hooks/useApolloQuery";
-import { GET_PROFILES } from "@/graphql/profiles";
+import { GET_PROFILES, GET_PROFILES_DIRECT } from "@/graphql/profiles";
 import { GetProfilesData } from "@/graphql/types";
 import { toast } from "@/hooks/use-toast";
 import { CardNumberInputs } from "./components/CardNumberInputs";
 import { SequenceInputs } from "./components/SequenceInputs";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CardField {
   id: string;
@@ -35,8 +35,14 @@ interface FormData {
 
 const LinkCardsForm = () => {
   const navigate = useNavigate();
-  const { data: profilesData, loading: loadingProfiles, error: profilesError } =
+  const { data: profilesData, loading: loadingProfiles, error: profilesError, refetch: refetchProfiles } =
     useApolloQuery<GetProfilesData>(GET_PROFILES);
+
+  // Also try the direct query approach as a fallback
+  const { data: directProfilesData, loading: loadingDirectProfiles } =
+    useApolloQuery(GET_PROFILES_DIRECT, {
+      onError: (error) => console.error("Direct profiles query error:", error)
+    });
 
   const [formData, setFormData] = useState<FormData>({
     profileNumber: "",
@@ -50,35 +56,84 @@ const LinkCardsForm = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profileOptions, setProfileOptions] = useState<{ value: string; label: string }[]>([]);
+  
+  // Debug authentication status
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data } = await supabase.auth.getSession();
+      console.log("Current auth session:", data.session);
+      
+      // If no session, try to get profiles directly from the database for testing
+      if (!data.session) {
+        console.log("No authentication session - trying direct database query");
+        try {
+          const { data: profilesFromSupabase, error } = await supabase
+            .from('profiles')
+            .select('*');
+          
+          console.log("Direct Supabase query results:", { data: profilesFromSupabase, error });
+          
+          if (profilesFromSupabase?.length) {
+            toast({
+              title: "Database Access Status",
+              description: `Found ${profilesFromSupabase.length} profiles via direct query, but GraphQL query might still fail if not authenticated`,
+            });
+          }
+        } catch (err) {
+          console.error("Direct Supabase query error:", err);
+        }
+      }
+    };
+    
+    checkAuth();
+  }, []);
 
   useEffect(() => {
-    if (profilesData) {
-      console.log("Profiles data loaded:", profilesData);
-      const options =
-        profilesData.profilesCollection.edges.map(({ node: profile }) => ({
-          value: profile.profile_number,
-          label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}${profile.from_account ? ` (Account: ${profile.from_account})` : ''}`
-        })) || [];
+    // Try to use data from either query
+    const profiles = profilesData?.profilesCollection?.edges?.map(e => e.node) || 
+                   directProfilesData?.profiles || [];
+    
+    if (profiles.length > 0) {
+      console.log("Profiles loaded successfully:", profiles);
+      
+      const options = profiles.map((profile: any) => ({
+        value: profile.profile_number,
+        label: `${profile.profile_number} - ${profile.business_name || profile.name || 'Unnamed Profile'}${profile.from_account ? ` (Account: ${profile.from_account})` : ''}`
+      }));
+      
       setProfileOptions(options);
       
-      if (options.length === 0) {
-        toast({
-          title: "No Profiles Found",
-          description: "No profiles found in the database. Please create profiles first.",
-          variant: "destructive",
-        });
-      }
+      toast({
+        title: "Profiles Loaded",
+        description: `Successfully loaded ${options.length} profiles.`,
+      });
+    } else if (!loadingProfiles && !loadingDirectProfiles) {
+      console.warn("No profiles found in either query method");
+      
+      toast({
+        title: "No Profiles Found",
+        description: "Please check that profiles exist in the database and RLS policies are configured correctly.",
+        variant: "destructive",
+      });
+      
+      // Provide an empty fallback option for testing
+      setProfileOptions([
+        { value: "TEST001", label: "TEST001 - Test Profile (Demo)" },
+        { value: "TEST002", label: "TEST002 - Another Test Profile (Demo)" }
+      ]);
     }
+  }, [profilesData, directProfilesData, loadingProfiles, loadingDirectProfiles]);
 
+  useEffect(() => {
     if (profilesError) {
       console.error("Profile data error:", profilesError);
       toast({
-        title: "Error",
-        description: "Failed to load profiles. Please try again.",
+        title: "Error Loading Profiles",
+        description: "Unable to load profiles. Check console for details.",
         variant: "destructive",
       });
     }
-  }, [profilesData, profilesError]);
+  }, [profilesError]);
 
   const handleProfileChange = (value: string) => {
     setFormData({ ...formData, profileNumber: value });
@@ -174,7 +229,15 @@ const LinkCardsForm = () => {
     }
   };
 
-  if (loadingProfiles) {
+  const handleRefresh = () => {
+    refetchProfiles();
+    toast({
+      title: "Refreshing Profiles",
+      description: "Attempting to reload profiles from database..."
+    });
+  };
+
+  if (loadingProfiles && loadingDirectProfiles) {
     return (
       <div className="flex items-center justify-center h-64">
         <p className="text-gray-500">Loading profiles...</p>
@@ -185,7 +248,17 @@ const LinkCardsForm = () => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="bg-white shadow-md rounded-lg p-6">
-        <h1 className="text-2xl font-bold text-paycard-navy mb-6">Link Cards</h1>
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-2xl font-bold text-paycard-navy">Link Cards</h1>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={handleRefresh}
+            className="flex items-center gap-1"
+          >
+            Refresh Profiles
+          </Button>
+        </div>
 
         <form onSubmit={handleSubmit}>
           <div className="mb-4">

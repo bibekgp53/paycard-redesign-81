@@ -9,18 +9,27 @@ export function useApolloQuery<TData = any, TVariables = any>(
   const { data, loading, error, refetch, networkStatus } = useQuery<TData, TVariables>(query, {
     ...options,
     notifyOnNetworkStatusChange: true,
-    fetchPolicy: options?.fetchPolicy || 'network-only', // Default to network-only to avoid cache issues
-    errorPolicy: 'all', // Handle all errors to prevent crashes
+    fetchPolicy: options?.fetchPolicy || 'network-only',
+    errorPolicy: 'all',
     onCompleted: (data) => {
       console.log('Query completed successfully:', data);
       
       // Check if profiles data came back empty
-      if (data && typeof data === 'object' && 'profilesCollection' in data) {
-        const profilesData = data as any;
-        if (profilesData.profilesCollection?.edges?.length === 0) {
-          console.warn('No profiles found in database. Check if profiles table has data or if RLS policies are preventing access.');
-        } else {
-          console.log('Profiles found:', profilesData.profilesCollection.edges.length);
+      if (data && typeof data === 'object') {
+        if ('profilesCollection' in data) {
+          const profilesData = data as any;
+          if (!profilesData.profilesCollection?.edges || profilesData.profilesCollection?.edges?.length === 0) {
+            console.warn('No profiles found in database. Check if profiles table has data or if RLS policies are preventing access.');
+          } else {
+            console.log('Profiles found:', profilesData.profilesCollection.edges.length);
+          }
+        } else if ('profiles' in data) {
+          const profilesData = data as any;
+          if (!profilesData.profiles || profilesData.profiles.length === 0) {
+            console.warn('No profiles found using direct query. Check if profiles table has data or if RLS policies are preventing access.');
+          } else {
+            console.log('Profiles found with direct query:', profilesData.profiles.length);
+          }
         }
       }
       

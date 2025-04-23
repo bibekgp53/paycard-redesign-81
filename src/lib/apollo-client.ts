@@ -9,19 +9,20 @@ const httpLink = new HttpLink({
 });
 
 // Create a middleware link to add auth headers
-const authMiddleware = new ApolloLink((operation, forward) => {
+const authMiddleware = new ApolloLink(async (operation, forward) => {
   // Get the session token from Supabase
-  const session = supabase.auth.getSession();
+  const { data: { session } } = await supabase.auth.getSession();
   const apikey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zb3B3Ynh5em1jZHltdWRodHloIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDQ5MjI2NzAsImV4cCI6MjA2MDQ5ODY3MH0._49Jlg6STEqs2BevV4n1FFag3VW1xMOFT4nO0Fn3SCw';
   
-  // Log headers for debugging
+  // Create headers object
   const headers = {
     apikey: apikey,
-    authorization: `Bearer ${apikey}`,
+    authorization: session ? `Bearer ${session.access_token}` : `Bearer ${apikey}`,
     'Content-Type': 'application/json',
   };
   
   console.log('Apollo GraphQL Headers:', headers);
+  console.log('Authentication status:', session ? 'Authenticated' : 'Anonymous');
   
   operation.setContext({
     headers
