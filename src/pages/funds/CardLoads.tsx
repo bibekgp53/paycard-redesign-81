@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -20,25 +19,29 @@ import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
 import { AccountCard, ClientSettings } from "@/graphql/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { useCardLoadsStore } from "@/store/useCardLoadsStore";
 
 // Accept backfilled state from navigation
 export function CardLoads() {
   const navigate = useNavigate();
-  const location = useLocation();
-  // Restore state when available from navigation
-  const navState = (location.state ?? {}) as {
-    amountInputs?: { [key: string]: number | null };
-    smsInputs?: { [key: string]: boolean };
-    effectiveDate?: 0 | 1;
-    selectedDate?: Date;
-    page?: number;
-  };
 
-  const [amountInputs, setAmountInputs] = useState<{ [key: string]: number | null }>(navState.amountInputs ?? {});
-  const [smsInputs, setSmsInputs] = useState<{ [key: string]: boolean }>(navState.smsInputs ?? {});
-  const [page, setPage] = useState<number>(navState.page ?? 1);
-  const [effectiveDate, setEffectiveDate] = useState<0 | 1>(typeof navState.effectiveDate === "number" ? navState.effectiveDate : 0);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(navState.selectedDate ? new Date(navState.selectedDate) : new Date());
+  // Use zustand for global load state
+  const {
+    amountInputs,
+    smsInputs,
+    effectiveDate,
+    selectedDate,
+    page,
+    setAmountInputs,
+    setSmsInputs,
+    setEffectiveDate,
+    setSelectedDate,
+    setPage,
+    updateAmountInput,
+    updateSmsInput,
+    resetCardLoadsState,
+  } = useCardLoadsStore();
+
   const pageSize = 10;
   
   const { data: userHeader } = useUserHeaderQuery();
@@ -51,20 +54,11 @@ export function CardLoads() {
 
   const handleAmountChange = (cardId: string, value: string) => {
     const numValue = value === "" ? null : parseFloat(value);
-    setAmountInputs(prev => ({
-      ...prev,
-      [cardId]: numValue
-    }));
+    updateAmountInput(cardId, numValue);
   };
 
-  console.log("smsInputs state:", smsInputs);
-
   const handleSMSChange = (cardId: string, checked: boolean) => {
-    setSmsInputs((prev) => {
-      const updated = { ...prev, [cardId]: checked };
-      console.log(`smsInputs updated for cardId ${cardId}:`, updated);
-      return updated;
-    });
+    updateSmsInput(cardId, checked);
   };
 
   const getTooltipMessage = (cardBalance: number) => {
@@ -130,7 +124,7 @@ export function CardLoads() {
     return Math.ceil(cards.length / pageSize);
   }, [cards, pageSize]);
 
-  // --- Updated: Handle continue, gather all info and redirect to a confirm page, passing state ---
+  // Handle continue, gather all info and redirect to a confirm page - NO state passing now, use global
   const handleContinue = () => {
     if (!clientSettings) return;
     const selected = Object.entries(amountInputs)
@@ -161,14 +155,7 @@ export function CardLoads() {
       return;
     }
     navigate("/load-funds-from/card-loads/confirm-load", {
-      state: {
-        cards: selected,
-        effectiveDate,
-        selectedDate,
-        amountInputs,
-        smsInputs,
-        page,
-      },
+      // Don't need to pass state anymore, all will be in zustand
     });
   };
 

@@ -1,15 +1,29 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { format } from "date-fns";
+import { useCardLoadsStore } from "@/store/useCardLoadsStore";
 
 export default function ConfirmLoad() {
   const location = useLocation();
   const navigate = useNavigate();
-  // Read passed state (cards to load, etc)
-  const state = (location.state ?? {}) as {
+  // Instead of using location.state, get working state from Zustand
+  const {
+    amountInputs,
+    smsInputs,
+    effectiveDate,
+    selectedDate,
+    page,
+    setAmountInputs,
+    setSmsInputs,
+    setEffectiveDate,
+    setSelectedDate,
+    setPage,
+  } = useCardLoadsStore();
+
+  // Support the ability to grab cards array from navigation if coming fresh
+  const navState = (location.state ?? {}) as {
     cards?: Array<{
       accountCardId: number;
       transferAmount: number;
@@ -19,28 +33,18 @@ export default function ConfirmLoad() {
       cardNumber: string;
       notifyViaSMS?: boolean;
     }>;
-    effectiveDate?: 0 | 1;
-    selectedDate?: Date;
-    amountInputs?: { [key: string]: number | null };
-    smsInputs?: { [key: string]: boolean };
-    page?: number;
   };
 
-  const cards = state.cards ?? [];
-  const effectiveDate = typeof state.effectiveDate === "number" ? state.effectiveDate : 0;
-  const selectedDate = state.selectedDate;
+  // If navigating direct from CardLoads, navState.cards won't exist, 
+  // but amounts, smsInputs etc. are always global in store
+  // If coming fresh (reload), cards will be undefined.
 
-  // New: onBack, go back and restore user input state
+  const cards = navState.cards ?? [];
+
+  // Back should not set state, just navigate back to card loads
   const handleBack = () => {
-    navigate("/load-funds-from/card-loads", {
-      state: {
-        amountInputs: state.amountInputs,
-        smsInputs: state.smsInputs,
-        page: state.page,
-        effectiveDate: state.effectiveDate,
-        selectedDate: state.selectedDate,
-      },
-    });
+    // Just go back to CardLoads (store is always up to date now)
+    navigate("/load-funds-from/card-loads");
   };
 
   // Format date+time for display
