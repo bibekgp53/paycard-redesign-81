@@ -22,6 +22,15 @@ export const useLoadClientQuery = () => {
           transfer_from_account_id: 0,
         });
 
+        // Check Supabase connection
+        const { data: connectionTest, error: connectionError } = await supabase.from('client_settings').select('*').limit(1);
+        console.log("Connection test to client_settings:", connectionTest ? "Succeeded" : "Failed", connectionError || '');
+        
+        // Check profiles table
+        const { data: profilesTest, error: profilesError } = await supabase.from('profiles').select('*').limit(1);
+        console.log("Connection test to profiles:", profilesTest ? "Succeeded" : "Failed", profilesError || '');
+        
+        // Call the RPC function
         const { data: rpcData, error: rpcError } = await supabase.rpc("get_load_client", {
           account_from: false,
           transfer_from_account_id: 0,
@@ -36,7 +45,21 @@ export const useLoadClientQuery = () => {
           console.error("RPC error:", rpcError);
           setError(rpcError);
           setData(null);
+        } else if (!rpcData) {
+          console.error("No data returned from get_load_client");
+          setError(new Error("No data returned from get_load_client"));
+          setData(null);
         } else {
+          // Check if we have any non-null values in the response
+          const hasData = Object.keys(rpcData).some(key => {
+            if (typeof rpcData[key] === 'object' && rpcData[key] !== null) {
+              return Object.values(rpcData[key]).some(val => val !== null);
+            }
+            return rpcData[key] !== null;
+          });
+          
+          console.log("Response has non-null values:", hasData);
+          
           // Set data directly from the response
           setData(rpcData as unknown as ClientSettings);
         }
