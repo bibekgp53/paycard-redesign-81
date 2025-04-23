@@ -4,6 +4,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { AccountCard, ClientSettings } from "@/graphql/types";
 import React from "react";
+import { Input } from "@/components/ui/input"; // Add import for Input
 
 interface CardLoadsTableProps {
   cards: AccountCard[];
@@ -138,6 +139,7 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
               ? selectedLoadObj.transferSMSNotification === 1 && selectedLoadObj.transferAmount > 0
               : (smsInputs[card.id] && amountInputs[card.id] && amountInputs[card.id]! > 0) || false
             );
+          const showAmountError = !isAmountValid(card.id, card.balance) && (amountInputs[card.id] !== undefined && amountInputs[card.id] !== null && amountInputs[card.id] !== "");
           return (
             <tr key={card.id ?? card.cardNumber}>
               <td className="py-2 px-4 border-b">{card.cardholder}</td>
@@ -147,13 +149,14 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
-                        <input
+                        <Input
                           type="number"
                           min="0"
-                          className={`border rounded px-2 py-1 w-24 ${!isAmountValid(card.id, card.balance) ? 'border-paycard-red ring-1 ring-paycard-red' : ''}`}
+                          className="w-24"
                           value={amountValue}
                           onChange={(e) => handleAmountChange(card.id, e.target.value)}
                           placeholder="R 0.00"
+                          error={showAmountError}
                         />
                       </TooltipTrigger>
                       <TooltipContent>
@@ -184,3 +187,4 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
     </div>
   );
 }
+
