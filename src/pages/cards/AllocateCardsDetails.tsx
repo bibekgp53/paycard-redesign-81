@@ -70,7 +70,7 @@ export default function AllocateCardsDetails() {
         <form className="space-y-4 mb-8">
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+              <label className="block text-sm font-medium font-poppins text-paycard-navy mb-1">
                 FIRST NAME
               </label>
               <Input
@@ -80,7 +80,7 @@ export default function AllocateCardsDetails() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+              <label className="block text-sm font-medium font-poppins text-paycard-navy mb-1">
                 SURNAME
               </label>
               <Input
@@ -92,7 +92,7 @@ export default function AllocateCardsDetails() {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+              <label className="block text-sm font-medium font-poppins text-paycard-navy mb-1">
                 ID/PASSPORT NUMBER
               </label>
               <Input
@@ -102,7 +102,7 @@ export default function AllocateCardsDetails() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+              <label className="block text-sm font-medium font-poppins text-paycard-navy mb-1">
                 CELLPHONE NUMBER
               </label>
               <Input
@@ -113,7 +113,7 @@ export default function AllocateCardsDetails() {
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+            <label className="block text-sm font-medium font-poppins text-paycard-navy mb-1">
               REFERENCE
             </label>
             <Input

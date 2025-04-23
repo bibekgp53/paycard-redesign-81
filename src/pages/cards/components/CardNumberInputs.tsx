@@ -20,7 +20,7 @@ export const CardNumberInputs: React.FC<CardNumberInputsProps> = ({
 }) => {
   return (
     <div className="mb-6">
-      <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+      <label className="block text-sm font-medium font-poppins text-paycard-navy mb-1">
         Card Numbers
       </label>
       {cardNumbers.map((card, idx) => (
