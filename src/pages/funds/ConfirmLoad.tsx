@@ -21,11 +21,27 @@ export default function ConfirmLoad() {
     }>;
     effectiveDate?: 0 | 1;
     selectedDate?: Date;
+    amountInputs?: { [key: string]: number | null };
+    smsInputs?: { [key: string]: boolean };
+    page?: number;
   };
 
   const cards = state.cards ?? [];
   const effectiveDate = typeof state.effectiveDate === "number" ? state.effectiveDate : 0;
   const selectedDate = state.selectedDate;
+
+  // New: onBack, go back and restore user input state
+  const handleBack = () => {
+    navigate("/load-funds-from/card-loads", {
+      state: {
+        amountInputs: state.amountInputs,
+        smsInputs: state.smsInputs,
+        page: state.page,
+        effectiveDate: state.effectiveDate,
+        selectedDate: state.selectedDate,
+      },
+    });
+  };
 
   // Format date+time for display
   const renderEffectiveDate = () => {
@@ -89,7 +105,7 @@ export default function ConfirmLoad() {
           </table>
         )}
         <div className="flex justify-between mt-6">
-          <Button variant="outline" onClick={() => navigate(-1)}>Back</Button>
+          <Button variant="outline" onClick={handleBack}>Back</Button>
           <Button className="btn-primary">Confirm & Load</Button>
         </div>
       </Card>

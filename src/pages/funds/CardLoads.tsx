@@ -1,5 +1,6 @@
+
 import { useState, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -20,21 +21,24 @@ import { AccountCard, ClientSettings } from "@/graphql/types";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
-interface AmountInputs {
-  [key: string]: number | null;
-}
-
-interface SMSInputs {
-  [key: string]: boolean;
-}
-
+// Accept backfilled state from navigation
 export function CardLoads() {
   const navigate = useNavigate();
-  const [amountInputs, setAmountInputs] = useState<AmountInputs>({});
-  const [smsInputs, setSmsInputs] = useState<SMSInputs>({});
-  const [page, setPage] = useState(1);
-  const [effectiveDate, setEffectiveDate] = useState<0 | 1>(0);
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const location = useLocation();
+  // Restore state when available from navigation
+  const navState = (location.state ?? {}) as {
+    amountInputs?: { [key: string]: number | null };
+    smsInputs?: { [key: string]: boolean };
+    effectiveDate?: 0 | 1;
+    selectedDate?: Date;
+    page?: number;
+  };
+
+  const [amountInputs, setAmountInputs] = useState<{ [key: string]: number | null }>(navState.amountInputs ?? {});
+  const [smsInputs, setSmsInputs] = useState<{ [key: string]: boolean }>(navState.smsInputs ?? {});
+  const [page, setPage] = useState<number>(navState.page ?? 1);
+  const [effectiveDate, setEffectiveDate] = useState<0 | 1>(typeof navState.effectiveDate === "number" ? navState.effectiveDate : 0);
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(navState.selectedDate ? new Date(navState.selectedDate) : new Date());
   const pageSize = 10;
   
   const { data: userHeader } = useUserHeaderQuery();
@@ -53,7 +57,6 @@ export function CardLoads() {
     }));
   };
 
-  // Debug: log smsInputs on each render and when changed
   console.log("smsInputs state:", smsInputs);
 
   const handleSMSChange = (cardId: string, checked: boolean) => {
@@ -116,7 +119,6 @@ export function CardLoads() {
     return { amount: totalAmount, fee: totalFee, smsFee: totalSMS };
   }, [amountInputs, smsInputs, cards, clientSettings]);
 
-  // Paginate the cards data
   const paginatedCards = useMemo(() => {
     if (!cards) return [];
     const startIndex = (page - 1) * pageSize;
@@ -128,7 +130,7 @@ export function CardLoads() {
     return Math.ceil(cards.length / pageSize);
   }, [cards, pageSize]);
 
-  // --- New/Updated: Handle continue, gather all the info and redirect to a confirm page ---
+  // --- Updated: Handle continue, gather all info and redirect to a confirm page, passing state ---
   const handleContinue = () => {
     if (!clientSettings) return;
     const selected = Object.entries(amountInputs)
@@ -163,6 +165,9 @@ export function CardLoads() {
         cards: selected,
         effectiveDate,
         selectedDate,
+        amountInputs,
+        smsInputs,
+        page,
       },
     });
   };
