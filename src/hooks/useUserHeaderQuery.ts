@@ -2,7 +2,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-// The get_user_header RPC returns a JSON object
 interface UserHeader {
   accountNumber: string;
   balanceAccount: number;
