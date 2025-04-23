@@ -1,5 +1,6 @@
 
 import { DocumentNode, TypedDocumentNode, QueryHookOptions, useQuery } from '@apollo/client';
+import { toast } from '@/hooks/use-toast';
 
 export function useApolloQuery<TData = any, TVariables = any>(
   query: DocumentNode | TypedDocumentNode<TData, TVariables>,
@@ -9,6 +10,28 @@ export function useApolloQuery<TData = any, TVariables = any>(
     ...options,
     notifyOnNetworkStatusChange: true,
     fetchPolicy: options?.fetchPolicy || 'network-only', // Default to network-only to avoid cache issues
+    onError: (error) => {
+      console.error('GraphQL query error:', error);
+      
+      if (error.message.includes('JWT')) {
+        toast({
+          title: "Authentication Error",
+          description: "Your session has expired. Please log in again.",
+          variant: "destructive",
+        });
+      } else {
+        // Only show toast for non-auth errors if not suppressed
+        if (options?.onError) {
+          options.onError(error);
+        } else if (!options?.errorPolicy || options.errorPolicy === 'none') {
+          toast({
+            title: "Error",
+            description: `Failed to load data: ${error.message}`,
+            variant: "destructive",
+          });
+        }
+      }
+    }
   });
 
   return {
