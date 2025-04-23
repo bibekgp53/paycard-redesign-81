@@ -12,6 +12,11 @@ export const useUserHeaderQuery = () => {
   return useQuery({
     queryKey: ["userHeader"],
     queryFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('Unauthorized');
+      }
+
       const { data: rpcData, error: rpcError } = await supabase.rpc("get_user_header", {});
       
       if (rpcError) {

@@ -8,6 +8,11 @@ export const useLoadClientQuery = () => {
   return useQuery({
     queryKey: ["loadClient"],
     queryFn: async () => {
+      const { data: session } = await supabase.auth.getSession();
+      if (!session.session) {
+        throw new Error('Unauthorized');
+      }
+
       console.log("Calling get_load_client with parameters:", {
         account_from: false,
         transfer_from_account_id: 0,

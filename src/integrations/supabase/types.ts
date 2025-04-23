@@ -13,34 +13,40 @@ export type Database = {
         Row: {
           account_card_id: number
           account_card_mtd: number
+          account_from: boolean | null
           balance: number
           card_number: string
           cardholder: string
           created_at: string
           fica_validation: string
           id: string
+          transfer_from_account_id: number | null
           updated_at: string
         }
         Insert: {
           account_card_id: number
           account_card_mtd: number
+          account_from?: boolean | null
           balance: number
           card_number: string
           cardholder: string
           created_at?: string
           fica_validation: string
           id?: string
+          transfer_from_account_id?: number | null
           updated_at?: string
         }
         Update: {
           account_card_id?: number
           account_card_mtd?: number
+          account_from?: boolean | null
           balance?: number
           card_number?: string
           cardholder?: string
           created_at?: string
           fica_validation?: string
           id?: string
+          transfer_from_account_id?: number | null
           updated_at?: string
         }
         Relationships: []
