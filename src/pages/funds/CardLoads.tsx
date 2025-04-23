@@ -216,12 +216,16 @@ export function CardLoads() {
               {paginatedCards.map((card) => {
                 // Determine UI value from selectedLoads
                 const selectedLoadObj = getSelectedLoadObj(card.accountCardId);
+                // Only show checked if there's a valid amount; checked state follows amount and smsInputs
                 const amountValue = selectedLoadObj
                   ? selectedLoadObj.transferAmount
                   : amountInputs[card.id] ?? "";
-                const smsChecked = selectedLoadObj
-                  ? selectedLoadObj.transferSMSNotification === 1
-                  : smsInputs[card.id] || false;
+                // Only checked if amount is present and > 0
+                const smsChecked =
+                  (selectedLoadObj
+                    ? selectedLoadObj.transferSMSNotification === 1 && selectedLoadObj.transferAmount > 0
+                    : (smsInputs[card.id] && amountInputs[card.id] && amountInputs[card.id]! > 0) || false
+                  );
                 return (
                   <tr key={card.id ?? card.cardNumber}>
                     <td className="py-2 px-4 border-b">{card.cardholder}</td>
@@ -260,6 +264,8 @@ export function CardLoads() {
                             handleSMSChange(card.id, checked)
                           }
                           id={`sms-checkbox-${card.id}`}
+                          // Only allow checking the box if a valid amount is present
+                          disabled={!(amountInputs[card.id] && amountInputs[card.id]! > 0)}
                         />
                       </div>
                     </td>

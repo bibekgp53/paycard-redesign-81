@@ -61,8 +61,8 @@ export default function ConfirmLoad() {
                 <th className="py-2 px-4 border-b">ACCOUNT CARD ID</th>
                 <th className="py-2 px-4 border-b">AMOUNT</th>
                 <th className="py-2 px-4 border-b">FEE</th>
-                <th className="py-2 px-4 border-b">SMS FEE</th>
-                <th className="py-2 px-4 border-b">NOTIFY VIA SMS</th>
+                <th className="py-2 px-4 border-b">SMS NOTIFICATION FEE</th>
+                {/* Removed NOTIFY VIA SMS */}
               </tr>
             </thead>
             <tbody>
@@ -73,7 +73,7 @@ export default function ConfirmLoad() {
                   <td className="py-2 px-4 border-b">R {item.transferAmount.toFixed(2)}</td>
                   <td className="py-2 px-4 border-b">R {item.transferFee.toFixed(2)}</td>
                   <td className="py-2 px-4 border-b">R {item.transferSMSNotificationFee.toFixed(2)}</td>
-                  <td className="py-2 px-4 border-b">{item.transferSMSNotification === 1 ? "Yes" : "No"}</td>
+                  {/* Removed NOTIFY VIA SMS column */}
                 </tr>
               ))}
             </tbody>
