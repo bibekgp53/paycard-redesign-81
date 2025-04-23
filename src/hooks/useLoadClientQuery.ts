@@ -24,18 +24,35 @@ export const useLoadClientQuery = () => {
         });
 
         // Check if the tables have RLS enabled
-        const { data: rls_info_cs, error: rls_error_cs } = await supabase.rpc(
-          "check_rls_enabled",
-          { table_name: "client_settings" }
-        ).maybeSingle();
+        const rls_check_client_settings_response = await fetch(
+          `https://osopwbxyzmcdymudhtyh.supabase.co/functions/v1/check_rls_enabled`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${supabase.auth.session()?.access_token || ''}`,
+            },
+            body: JSON.stringify({ table_name: "client_settings" }),
+          }
+        );
         
-        const { data: rls_info_p, error: rls_error_p } = await supabase.rpc(
-          "check_rls_enabled", 
-          { table_name: "profiles" }
-        ).maybeSingle();
+        const rls_check_profiles_response = await fetch(
+          `https://osopwbxyzmcdymudhtyh.supabase.co/functions/v1/check_rls_enabled`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${supabase.auth.session()?.access_token || ''}`,
+            },
+            body: JSON.stringify({ table_name: "profiles" }),
+          }
+        );
         
-        console.log("RLS status for client_settings:", rls_info_cs || "Error checking RLS", rls_error_cs || '');
-        console.log("RLS status for profiles:", rls_info_p || "Error checking RLS", rls_error_p || '');
+        const rls_info_cs = await rls_check_client_settings_response.json();
+        const rls_info_p = await rls_check_profiles_response.json();
+        
+        console.log("RLS status for client_settings:", rls_info_cs);
+        console.log("RLS status for profiles:", rls_info_p);
 
         // Check Supabase connection and if data exists
         const { data: connectionTest, error: connectionError } = await supabase.from('client_settings').select('*').limit(1);
