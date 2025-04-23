@@ -173,6 +173,48 @@ export type Database = {
         }
         Relationships: []
       }
+      load_funds: {
+        Row: {
+          account_from: boolean
+          cards: Json
+          cards_to_load: number[]
+          created_at: string
+          end_date: string
+          id: string
+          process_delay: number
+          process_type: number
+          start_date: string
+          transfer_from_account_id: number
+          transfer_uuid: string
+        }
+        Insert: {
+          account_from: boolean
+          cards: Json
+          cards_to_load: number[]
+          created_at?: string
+          end_date: string
+          id?: string
+          process_delay: number
+          process_type: number
+          start_date: string
+          transfer_from_account_id: number
+          transfer_uuid: string
+        }
+        Update: {
+          account_from?: boolean
+          cards?: Json
+          cards_to_load?: number[]
+          created_at?: string
+          end_date?: string
+          id?: string
+          process_delay?: number
+          process_type?: number
+          start_date?: string
+          transfer_from_account_id?: number
+          transfer_uuid?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           business_name: string | null
