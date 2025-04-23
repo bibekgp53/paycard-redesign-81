@@ -125,7 +125,6 @@ export default {
 				}
 			},
 			fontFamily: {
-				'gilroy': ['Gilroy', 'sans-serif'],
 				'poppins': ['Poppins', 'sans-serif'],
 			},
 			borderRadius: {
@@ -160,3 +159,4 @@ export default {
 	},
 	plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+

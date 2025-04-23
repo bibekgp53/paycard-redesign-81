@@ -260,7 +260,7 @@ export type Database = {
     }
     Functions: {
       get_load_client: {
-        Args: { account_from?: boolean; transfer_from_account_id?: number }
+        Args: { account_from: boolean; transfer_from_account_id: number }
         Returns: Json
       }
       get_user_header: {
@@ -273,21 +273,21 @@ export type Database = {
       }
       search_load_allocated: {
         Args: {
-          account_from?: boolean
-          transfer_from_account_id?: number
-          limit?: number
-          offset?: number
+          account_from: string
+          transfer_from_account_id: number
+          limit: number
+          offset: number
         }
         Returns: {
-          id: string
-          accountcardid: number
-          accountcardmtd: number
+          id: number
+          account_card_id: number
+          account_card_mtd: string
           balance: number
           cardholder: string
           cardnumber: string
-          ficavalidation: string
-          createdat: string
-          updatedat: string
+          fica_validation: boolean
+          created_at: string
+          updated_at: string
         }[]
       }
     }

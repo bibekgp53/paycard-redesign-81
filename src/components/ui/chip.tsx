@@ -27,7 +27,7 @@ export const Chip: React.FC<ChipProps> = ({
   return (
     <div
       className={cn(
-        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-gilroy font-semibold body-small',
+        'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-poppins font-semibold body-small',
         variantStyles[variant],
         className
       )}
@@ -45,3 +45,4 @@ export const Chip: React.FC<ChipProps> = ({
     </div>
   );
 };
+

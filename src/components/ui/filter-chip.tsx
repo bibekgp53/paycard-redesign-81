@@ -26,7 +26,7 @@ export const FilterChip: React.FC<FilterChipProps> = ({
       variant="outline"
       size="sm"
       className={cn(
-        "flex items-center gap-1 font-gilroy button-3",
+        "flex items-center gap-1 font-poppins button-3",
         active && "bg-pcard-blue-100 border-pcard-blue-200",
         className
       )}
@@ -52,3 +52,4 @@ export const FilterChip: React.FC<FilterChipProps> = ({
     </Button>
   );
 };
+

@@ -14,7 +14,7 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
     return (
       <div className="mb-4">
         {label && (
-          <label className="block text-sm font-medium font-gilroy text-paycard-navy mb-1">
+          <label className="block text-sm font-medium font-poppins text-paycard-navy mb-1">
             {label}
           </label>
         )}
@@ -25,7 +25,6 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
             errorPresent
               ? "border-paycard-red ring-1 ring-paycard-red"
               : "border-paycard-navy-200 focus:border-paycard-navy-400 focus:outline-none focus:ring-2 focus:ring-paycard-navy-300",
-            // Remove any focus/focus-visible border styles if in error state
             errorPresent ? "" : "",
             className
           )}
@@ -40,3 +39,4 @@ export const FormInput = React.forwardRef<HTMLInputElement, FormInputProps>(
 );
 
 FormInput.displayName = "FormInput";
+
