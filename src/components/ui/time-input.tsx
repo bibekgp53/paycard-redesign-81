@@ -1,4 +1,3 @@
-
 import React from "react";
 import { cn } from "@/lib/utils";
 import { AlertCircle } from "lucide-react";
@@ -154,7 +153,8 @@ export const TimeInput: React.FC<TimeInputProps> = ({
             inputError
               ? "border-paycard-red ring-1 ring-paycard-red"
               : "border-paycard-navy-200",
-            inputError ? "" : (inputFocused ? "focus:border-paycard-navy-400" : "")
+            // Remove focus border if in error state
+            !inputError && inputFocused ? "focus:border-paycard-navy-400" : ""
           )}
           value={localTime}
           ref={inputRef}
