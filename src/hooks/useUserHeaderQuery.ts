@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 
 interface UserHeader {
@@ -9,32 +9,17 @@ interface UserHeader {
 }
 
 export const useUserHeaderQuery = () => {
-  const [data, setData] = useState<UserHeader | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-
-  useEffect(() => {
-    let isMounted = true;
-    setIsLoading(true);
-    setError(null);
-
-    supabase
-      .rpc("get_user_header", {})
-      .then(({ data: rpcData, error: rpcError }) => {
-        if (!isMounted) return;
-        if (rpcError) {
-          setError(rpcError);
-          setData(null);
-        } else {
-          setData(rpcData as unknown as UserHeader);
-        }
-        setIsLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  return { data, isLoading, error };
+  return useQuery({
+    queryKey: ["userHeader"],
+    queryFn: async () => {
+      const { data: rpcData, error: rpcError } = await supabase.rpc("get_user_header", {});
+      
+      if (rpcError) {
+        console.error("Error fetching user header:", rpcError);
+        throw rpcError;
+      }
+      
+      return rpcData as unknown as UserHeader;
+    }
+  });
 };
