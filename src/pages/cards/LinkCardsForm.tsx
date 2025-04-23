@@ -13,7 +13,8 @@ import { RadioGroup } from "@/components/ui/radio-group";
 import { useApolloQuery } from "@/hooks/useApolloQuery";
 import { GET_PROFILES } from "@/graphql/profiles";
 import { GetProfilesData } from "@/graphql/types";
-import { toast } from "@/hooks/use-toast";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { AlertCircle } from "lucide-react";
 import { CardNumberInputs } from "./components/CardNumberInputs";
 import { SequenceInputs } from "./components/SequenceInputs";
 
@@ -49,6 +50,8 @@ const LinkCardsForm = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [profileOptions, setProfileOptions] = useState<{ value: string; label: string }[]>([]);
+  const [showErrorAlert, setShowErrorAlert] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     if (profilesData) {
@@ -61,11 +64,8 @@ const LinkCardsForm = () => {
     }
 
     if (profilesError) {
-      toast({
-        title: "Error",
-        description: "Failed to load profiles. Please try again.",
-        variant: "destructive",
-      });
+      setShowErrorAlert(true);
+      setErrorMessage("Failed to load profiles. Please try again.");
     }
   }, [profilesData, profilesError]);
 
@@ -174,6 +174,14 @@ const LinkCardsForm = () => {
   return (
     <div className="max-w-3xl mx-auto">
       <div className="bg-white shadow-md rounded-lg p-6">
+        {showErrorAlert && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Error</AlertTitle>
+            <AlertDescription>{errorMessage}</AlertDescription>
+          </Alert>
+        )}
+
         <h1 className="text-2xl font-bold text-paycard-navy mb-6">Link Cards</h1>
 
         <form onSubmit={handleSubmit}>
