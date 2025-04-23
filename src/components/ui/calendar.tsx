@@ -1,4 +1,3 @@
-
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
@@ -65,25 +64,20 @@ function Calendar({
     setInputError(false);
   }, [selected, inputFocused]);
 
-  // Only allow in-progress values that could still be valid like "12:", "1", "22:35:4"
-  const possiblePartialTime = (value: string) => {
-    // Allow empty
-    if (value === "") return true;
-    // Up to 8 chars, digits or colons, at most 2 colons
-    if (!/^[0-9:]{0,8}$/.test(value)) return false;
-    if ((value.match(/:/g) || []).length > 2) return false;
-    // "12", "12:3", "12:35:4", etc., are ok in progress
-    return true;
-  };
-
-  // As user types: update only if still structurally possible
+  // Accept ONLY valid "HH:mm:ss"
   const handleTimeInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/[^0-9:]/g, "");
-    if (raw.length > 8) return;
-    if (possiblePartialTime(raw)) setLocalTime(raw);
+    // Block if there's any value not in the shape d{2}:d{2}:d{2} or partial (with ':')
+    // Only allow typing if resulting value is empty OR matches ^\d{0,2}(:\d{0,2}){0,2}$
+    if (
+      raw === "" ||
+      /^(\d{1,2})?(:\d{0,2})?(:\d{0,2})?$/.test(raw)
+    ) {
+      setLocalTime(raw);
+      setInputError(false);
+    }
   };
 
-  // On blur, enforce HH:mm:ss or clear/error if invalid
   const handleTimeInputBlur = () => {
     setInputFocused(false);
     if (!selected) {
@@ -91,14 +85,12 @@ function Calendar({
       setLocalTime("");
       return;
     }
-
     if (localTime === "") {
       setInputError(false);
       setLocalTime("");
       return;
     }
-
-    // If valid, update parent and clear error
+    // Require strict HH:mm:ss 24-hour
     if (TIME_REGEX.test(localTime)) {
       setInputError(false);
       const { hours, minutes, seconds } = parseTimeFromString24(localTime);
@@ -108,30 +100,8 @@ function Calendar({
       setLocalTime(getTimeString24(updated));
       return;
     }
-
-    // Try to auto-format incomplete (e.g. 5 -> 05:00:00 or 1512 -> 15:12:00)
-    let safeTime = localTime;
-    const parts = localTime.split(":");
-    let h = parts[0] || "00";
-    let m = parts[1] || "00";
-    let s = parts[2] || "00";
-    if (h.length < 2) h = "0" + h;
-    if (m.length < 2) m = m.length > 0 ? "0" + m : "00";
-    if (s.length < 2) s = s.length > 0 ? "0" + s : "00";
-    safeTime = `${h}:${m}:${s}`;
-
-    if (TIME_REGEX.test(safeTime)) {
-      setInputError(false);
-      setLocalTime(safeTime);
-      const { hours, minutes, seconds } = parseTimeFromString24(safeTime);
-      const updated = new Date(selected.getTime());
-      updated.setHours(hours, minutes, seconds, 0);
-      onSelect(updated, { fromTimeInput: true });
-      setLocalTime(getTimeString24(updated));
-    } else {
-      setInputError(true);
-      setLocalTime(""); // Optional: clear input if not valid
-    }
+    // Not valid: show error
+    setInputError(true);
   };
 
   const handleTimeInputFocus = () => {
@@ -201,34 +171,42 @@ function Calendar({
           <label htmlFor="delay-time" className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left">
             {timeLabel}
           </label>
-          <input
-            id="delay-time"
-            type="text"
-            pattern="^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$"
-            placeholder="HH:mm:ss"
-            className={cn(
-              "border border-paycard-navy-200 rounded px-2 py-1 font-mono bg-white text-left tracking-widest",
-              inputError
-                ? "border-paycard-red ring-1 ring-paycard-red"
-                : "focus:border-paycard-navy-400",
-              "w-[90px]"
+          <div className="relative flex items-center">
+            <input
+              id="delay-time"
+              type="text"
+              pattern="^([01]\\d|2[0-3]):[0-5]\\d:[0-5]\\d$"
+              placeholder="HH:mm:ss"
+              className={cn(
+                "border border-paycard-navy-200 rounded px-2 py-1 font-mono bg-white text-left tracking-widest",
+                inputError
+                  ? "border-paycard-red ring-1 ring-paycard-red pr-8"
+                  : "focus:border-paycard-navy-400",
+                "w-[92px]"
+              )}
+              value={localTime}
+              ref={inputRef}
+              onChange={handleTimeInputChange}
+              onFocus={handleTimeInputFocus}
+              onBlur={handleTimeInputBlur}
+              autoComplete="off"
+              maxLength={8}
+              inputMode="numeric"
+              aria-invalid={inputError}
+            />
+            {inputError && (
+              <span className="absolute right-1 top-0 flex items-center h-full text-paycard-red" title="Invalid time format">
+                {/* Lucide AlertCircle icon */}
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" className="text-paycard-red" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><circle cx="12" cy="16" r="1" /></svg>
+              </span>
             )}
-            value={localTime}
-            ref={inputRef}
-            onChange={handleTimeInputChange}
-            onFocus={handleTimeInputFocus}
-            onBlur={handleTimeInputBlur}
-            autoComplete="off"
-            maxLength={8}
-            inputMode="numeric"
-            aria-invalid={inputError}
-          />
-          {/* Optional: show error message below the input */}
-          {/* {inputError && (
-            <span className="text-xs text-paycard-red pl-1 font-semibold">
-              Invalid time (HH:mm:ss)
+          </div>
+          {/* Error message below for accessibility */}
+          {inputError && (
+            <span className="text-xs text-paycard-red pl-1 font-semibold flex items-center mt-0.5">
+              Invalid time format (HH:mm:ss)
             </span>
-          )} */}
+          )}
         </div>
       )}
     </div>
@@ -236,4 +214,3 @@ function Calendar({
 }
 Calendar.displayName = "Calendar";
 export { Calendar };
-
