@@ -66,6 +66,12 @@ export default function SearchLoadTo() {
 
   const totalPages = metadata ? Math.ceil(metadata.filtered_count / pageSize) : 1;
 
+  const accountFrom = searchParams.get('accountFrom') === 'true';
+  const { data: allocatedCards } = useLoadAllocatedCards({ 
+    accountFrom,
+    cardsToLoad: selectedCards
+  });
+
   const handleContinue = async () => {
     if (selectedCards.length === 1) {
       try {
