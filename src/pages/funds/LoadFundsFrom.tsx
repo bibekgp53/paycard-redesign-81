@@ -28,9 +28,9 @@ export default function LoadFundsFrom() {
           }}
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
-          <Card className={`p-8 h-full border-2 shadow-lg hover:shadow-xl transition-all ${
+          <Card className={`p-8 h-full border-2 ${
             selectedLoadFundsToCard === "card-loads"
-              ? "border-paycard-salmon bg-paycard-salmon/5"
+              ? "border-paycard-salmon"
               : "hover:border-paycard-salmon border-transparent"
           }`}>
             <div className="flex items-start gap-6">
@@ -56,9 +56,9 @@ export default function LoadFundsFrom() {
           }}
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
-          <Card className={`p-8 h-full border-2 shadow-lg hover:shadow-xl transition-all ${
+          <Card className={`p-8 h-full border-2 ${
             selectedLoadFundsToCard === "search"
-              ? "border-paycard-salmon bg-paycard-salmon/5"
+              ? "border-paycard-salmon"
               : "hover:border-paycard-salmon border-transparent"
           }`}>
             <div className="flex items-start gap-6">
