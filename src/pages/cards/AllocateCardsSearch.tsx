@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
-import { RadioGroupBase, RadioGroupItem } from "@/components/ui/radio-group";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Generate more complete mock data
 const mockData = Array.from({ length: 50 }, (_, i) => ({
@@ -107,52 +107,45 @@ export default function AllocateCardsSearch() {
             </Select>
           </div>
 
-          <div className="rounded-lg">
+          <div className="rounded-lg border overflow-hidden">
             <Table>
               <TableHeader>
-                <TableRow className="border-0 bg-paycard-navy-100">
-                  <TableHead className="w-[50px] border-0 text-left pl-4"></TableHead>
-                  <TableHead className="border-0 text-paycard-navy font-semibold text-left pl-0">Card Number</TableHead>
-                  <TableHead className="border-0 text-paycard-navy font-semibold text-left pl-0">Card Holder Name</TableHead>
-                  <TableHead className="border-0 text-paycard-navy font-semibold text-left pl-0">Expiration Date</TableHead>
-                  <TableHead className="border-0 text-paycard-navy font-semibold text-left pl-0">Status</TableHead>
+                <TableRow>
+                  <TableHead className="w-[50px]"></TableHead>
+                  <TableHead>Card Number</TableHead>
+                  <TableHead>Card Holder Name</TableHead>
+                  <TableHead>Expiration Date</TableHead>
+                  <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                <RadioGroupBase 
-                  value={selectedCard || undefined}
-                  onValueChange={setSelectedCard}
-                >
-                  {paginatedData.map((card) => (
-                    <TableRow 
-                      key={card.id}
-                      className={`border-0 hover:bg-paycard-navy-100 transition-colors ${
-                        selectedCard === card.id ? 'bg-paycard-navy-150' : ''
-                      }`}
-                    >
-                      <TableCell className="border-0 pl-4">
-                        <RadioGroupItem 
-                          value={card.id} 
-                          id={`card-${card.id}`} 
-                        />
-                      </TableCell>
-                      <TableCell className="border-0 pl-0">{card.cardNumber}</TableCell>
-                      <TableCell className="border-0 pl-0">{card.cardHolderName}</TableCell>
-                      <TableCell className="border-0 pl-0">{card.expirationDate}</TableCell>
-                      <TableCell className="border-0 pl-0">
-                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                          card.status === 'ACTIVE' 
-                            ? 'bg-pcard-status-green-light text-pcard-status-green-dark'
-                            : card.status === 'EXPIRED'
-                            ? 'bg-pcard-status-red-light text-pcard-status-red-dark'
-                            : 'bg-pcard-status-orange-light text-pcard-status-orange-dark'
-                        }`}>
-                          {card.status}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </RadioGroupBase>
+                {paginatedData.map((card) => (
+                  <TableRow 
+                    key={card.id}
+                    className={selectedCard === card.id ? 'bg-blue-50' : undefined}
+                  >
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedCard === card.id}
+                        onCheckedChange={() => setSelectedCard(card.id)}
+                      />
+                    </TableCell>
+                    <TableCell>{card.cardNumber}</TableCell>
+                    <TableCell>{card.cardHolderName}</TableCell>
+                    <TableCell>{card.expirationDate}</TableCell>
+                    <TableCell>
+                      <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                        card.status === 'ACTIVE' 
+                          ? 'bg-green-100 text-green-800'
+                          : card.status === 'EXPIRED'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {card.status}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
