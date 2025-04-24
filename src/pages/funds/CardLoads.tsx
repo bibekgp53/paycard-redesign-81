@@ -9,14 +9,7 @@ import { CardLoadsActionPanel } from "./components/CardLoadsActionPanel";
 import React from "react";
 import { CardsPagination } from "./components/CardsPagination";
 import { Loader2 } from "lucide-react";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 export function CardLoads() {
   const navigate = useNavigate();
@@ -60,20 +53,8 @@ export function CardLoads() {
 
   return (
     <div className="space-y-6">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={() => navigate("/load-funds-from")}>
-              Load Funds From
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Card Loads</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
+      <Breadcrumb items={breadcrumbItems} />
+      
       <Card className="bg-white p-6">
         <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
         <p className="text-gray-600">

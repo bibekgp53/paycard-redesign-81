@@ -5,14 +5,7 @@ import { Users, Search, AlertTriangle } from "lucide-react";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { FundsPageHeader } from "./components/FundsPageHeader";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 export default function LoadFundsTo() {
   const navigate = useNavigate();
@@ -46,22 +39,15 @@ export default function LoadFundsTo() {
     }
   };
 
+  const breadcrumbItems = [
+    { label: "Load Funds From", path: "/load-funds-from" },
+    { label: "To", isCurrentPage: true }
+  ];
+
   return (
     <div className="space-y-6">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={() => navigate("/load-funds-from")}>
-              Load Funds From
-            </BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>To</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
+      <Breadcrumb items={breadcrumbItems} />
+      
       {error && (
         <Alert variant="destructive">
           <AlertTriangle className="h-4 w-4" />
