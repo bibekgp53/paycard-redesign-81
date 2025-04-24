@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -14,7 +13,7 @@ export default function AllocateCardsComplete() {
   const totalSteps = allocationType === "search" ? 4 : 3;
 
   const handleFinished = () => {
-    navigate("/dashboard");
+    navigate("/cards/allocate");
   };
 
   return (
@@ -71,4 +70,3 @@ export default function AllocateCardsComplete() {
     </div>
   );
 }
-
