@@ -126,7 +126,7 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
             <TableHead>Card Number</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Fee</TableHead>
-            <TableHead className="text-center w-24 whitespace-nowrap">SMS Notify</TableHead>
+            <TableHead className="text-center w-24">Notify via SMS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
