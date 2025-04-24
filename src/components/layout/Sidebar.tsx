@@ -1,5 +1,4 @@
-
-import { CreditCard, WalletCards, Bell, LogOut, CreditCard as AllocateCardIcon } from "lucide-react";
+import { CreditCard, WalletCards, Bell, LogOut, CreditCard as AllocateCardIcon, Package } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
@@ -36,6 +35,7 @@ export function Sidebar() {
     { icon: CreditCard, label: "Link Cards", path: "/cards/link" },
     { icon: AllocateCardIcon, label: "Allocate Cards", path: "/cards/allocate" },
     { icon: WalletCards, label: "Load Funds to Cards", path: "/load-funds-from" },
+    { icon: Package, label: "Request Cards", path: "/cards/request" },
   ];
 
   return (
