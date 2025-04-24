@@ -10,6 +10,7 @@ import { CardLoadsActionPanel } from "./components/CardLoadsActionPanel";
 import React from "react";
 import { CardsPagination } from "./components/CardsPagination";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 export function CardLoads() {
   const navigate = useNavigate();
@@ -103,6 +104,21 @@ export function CardLoads() {
           </>
         )}
       </Card>
+      
+      <div className="flex justify-between">
+        <Button 
+          onClick={handleLoadFundsClick} 
+          variant="outline"
+        >
+          Back
+        </Button>
+        <Button 
+          disabled={selectedLoads.length === 0} 
+          variant="secondary"
+        >
+          Load Funds
+        </Button>
+      </div>
     </div>
   );
 }
