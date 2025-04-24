@@ -62,3 +62,4 @@ export const useLoadAllocatedCards = ({
     refetchOnWindowFocus: false
   });
 };
+
