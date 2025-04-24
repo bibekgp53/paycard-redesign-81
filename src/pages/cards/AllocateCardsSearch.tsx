@@ -40,7 +40,7 @@ export default function AllocateCardsSearch() {
   };
 
   const totalCards = 40; // Total cards in system
-  const allocatedCards = 10; // Number of allocated cards
+  const allocatedCards = 20; // Number of allocated cards
   const unallocatedCards = 20; // Number of unallocated cards
 
   return (
@@ -105,6 +105,7 @@ export default function AllocateCardsSearch() {
                   <TableHead className="text-paycard-navy-900 font-semibold">Card Number</TableHead>
                   <TableHead className="text-paycard-navy-900 font-semibold">Sequence Number</TableHead>
                   <TableHead className="text-paycard-navy-900 font-semibold">Tracking Number</TableHead>
+                  <TableHead className="text-paycard-navy-900 font-semibold">Cardholder Name</TableHead>
                   <TableHead className="text-paycard-navy-900 font-semibold">Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -116,12 +117,13 @@ export default function AllocateCardsSearch() {
                       <TableCell><Skeleton className="h-4 w-32" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
                       <TableCell><Skeleton className="h-4 w-16" /></TableCell>
                     </TableRow>
                   ))
                 ) : cards?.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
+                    <TableCell colSpan={6} className="text-center py-8">
                       No cards found
                     </TableCell>
                   </TableRow>
@@ -143,6 +145,7 @@ export default function AllocateCardsSearch() {
                       <TableCell>{card.card_number}</TableCell>
                       <TableCell>{card.sequence_number}</TableCell>
                       <TableCell>{card.tracking_number}</TableCell>
+                      <TableCell>{card.cardholder_name}</TableCell>
                       <TableCell>
                         <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                           card.status === 'active' 

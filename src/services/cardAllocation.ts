@@ -9,6 +9,15 @@ export interface CardAllocationForm {
   reference?: string;
 }
 
+export interface AvailableCard {
+  id: string;
+  card_number: string;
+  sequence_number: string;
+  tracking_number: string;
+  status: string;
+  cardholder_name?: string;
+}
+
 export async function allocateCard(cardId: string, formData: CardAllocationForm) {
   const { error } = await supabase
     .from('card_allocations')
@@ -30,7 +39,7 @@ export async function searchAvailableCards(
   searchTerm?: string, 
   page: number = 1, 
   pageSize: number = 10
-) {
+): Promise<AvailableCard[]> {
   const { data, error } = await supabase
     .rpc('get_available_cards', {
       search_term: searchTerm,
