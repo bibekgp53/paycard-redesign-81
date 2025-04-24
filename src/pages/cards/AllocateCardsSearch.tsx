@@ -16,7 +16,9 @@ const mockData = Array.from({ length: 20 }, (_, i) => ({
   cardNumber: Math.random().toString().slice(2, 14),
   sequenceNumber: Math.floor(Math.random() * 900000) + 100000,
   trackingNumber: Math.random() > 0.5 ? Math.floor(Math.random() * 900000) + 100000 : null,
-  status: ["INACTIVE", "EXPIRED"][Math.floor(Math.random() * 2)]
+  cardHolderName: Math.random() > 0.7 ? `User ${i + 1}` : null,
+  expirationDate: Math.random() > 0.6 ? `${Math.floor(Math.random() * 12) + 1}/${Math.floor(Math.random() * 5) + 24}` : null,
+  status: ["INACTIVE", "EXPIRED", "ACTIVE"][Math.floor(Math.random() * 3)]
 }));
 
 export default function AllocateCardsSearch() {

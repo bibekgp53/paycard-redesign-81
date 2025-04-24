@@ -1,3 +1,4 @@
+
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -6,7 +7,10 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
-  numberOfCards: z.string().transform((val) => parseInt(val, 10)),
+  numberOfCards: z.string().transform((val) => {
+    const parsed = parseInt(val, 10);
+    return isNaN(parsed) ? 0 : parsed;
+  }),
   reference: z.string().optional(),
 });
 
