@@ -1,5 +1,4 @@
-
-import { CreditCard, Wallet, Bell, LogOut } from "lucide-react";
+import { CreditCard, Wallet, Bell, LogOut, WalletCards } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
@@ -22,10 +21,7 @@ export function Sidebar() {
     );
   };
 
-  const isActive = (path: string, submenuItems?: { path: string }[]) => {
-    if (submenuItems && submenuItems.length > 0 && isSubmenuActive(submenuItems)) {
-      return false;
-    }
+  const isActive = (path: string) => {
     if (path === "/") {
       return location.pathname === "/";
     }
@@ -37,17 +33,20 @@ export function Sidebar() {
 
   const menuItems = [
     { icon: CreditCard, label: "Link Cards", path: "/cards/link" },
-    { icon: CreditCard, label: "Allocate Cards", path: "/cards/allocate" },
-    { icon: Wallet, label: "Funds", path: "/load-funds-from", submenuItems: [
-      { label: "Load Funds to Cards", path: "/load-funds-from" }
-    ]},
+    { icon: WalletCards, label: "Allocate Cards", path: "/cards/allocate" },
+    { icon: WalletCards, label: "Load Funds to Cards", path: "/load-funds-from" },
   ];
 
   return (
     <UISidebar 
       variant="full" 
       collapsible="none"
-      logoText="Standard Bank PayCard"
+      logoText={
+        <div className="flex items-center gap-2">
+          <CreditCard className="h-5 w-5 text-paycard-salmon" />
+          <span>Standard Bank PayCard</span>
+        </div>
+      }
     >
       <div className="flex flex-col h-full min-h-0">
         <SidebarContent>
@@ -57,58 +56,22 @@ export function Sidebar() {
             </div>
           </div>
           <div className="flex flex-col gap-1 flex-1 min-h-0">
-            {menuItems.map((item, idx) => (
+            {menuItems.map((item) => (
               <div key={item.path} className="mb-0">
                 <Link to={item.path}>
                   <SidebarItem
                     label={item.label}
                     icon={<item.icon size={18} />}
-                    active={isActive(item.path, item.submenuItems)}
+                    active={isActive(item.path)}
                     className={cn(
                       "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
-                      isActive(item.path, item.submenuItems) 
+                      isActive(item.path)
                         ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
                         : "text-gray-300"
                     )}
                     style={{ minHeight: 32, paddingTop: 4, paddingBottom: 4 }}
                   />
                 </Link>
-                {item.submenuItems && (
-                  <SidebarGroup 
-                    title=""
-                    className={cn(
-                      "pl-4",
-                      "mt-0 mb-0 space-y-0"
-                    )}
-                  >
-                    {item.submenuItems.map((subItem, sIdx) => {
-                      const isActiveSub = location.pathname === subItem.path || 
-                        (subItem.path === "/load-funds-from" && location.pathname.startsWith("/load-funds-from"));
-                      return (
-                        <div key={subItem.path}>
-                          <Link to={subItem.path}>
-                            <SidebarItem
-                              label={subItem.label}
-                              active={isActiveSub}
-                              className={cn(
-                                "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
-                                isActiveSub
-                                  ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
-                                  : "text-gray-300"
-                              )}
-                              style={{
-                                minHeight: 32,
-                                paddingTop: 4,
-                                paddingBottom: 4,
-                                paddingLeft: 16
-                              }}
-                            />
-                          </Link>
-                        </div>
-                      );
-                    })}
-                  </SidebarGroup>
-                )}
               </div>
             ))}
           </div>
