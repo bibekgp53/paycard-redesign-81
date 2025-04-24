@@ -3,6 +3,7 @@ import { ReactNode } from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft, ChevronRight } from "lucide-react"
+import { useLocation } from "react-router-dom";
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -464,12 +465,18 @@ const SidebarGroup = React.forwardRef<
   }
 >(({ className, title, children, collapsible = false, defaultCollapsed = false, ...props }, ref) => {
   const [collapsed, setCollapsed] = React.useState(defaultCollapsed);
+  const location = useLocation(); // Add this line to get current location
 
   const toggleCollapsed = () => {
     if (collapsible) {
       setCollapsed(!collapsed);
     }
   };
+
+  // Check if any child item is active
+  const hasActiveChild = React.Children.toArray(children).some((child: any) => 
+    child.props && child.props.active
+  );
 
   // If title exists, render as a custom collapsible group
   if (title !== undefined) {
@@ -488,9 +495,11 @@ const SidebarGroup = React.forwardRef<
               <ChevronRight 
                 className={cn(
                   "ml-auto h-4 w-4 transition-transform",
-                  !collapsed 
-                    ? "transform rotate-90 text-[#9b87f5]" // Primary Purple when expanded
-                    : "text-[#8E9196]" // Neutral Gray when collapsed
+                  collapsed 
+                    ? hasActiveChild 
+                      ? "text-paycard-salmon" // Active color when collapsed
+                      : "text-[#8E9196]" // Neutral gray when collapsed
+                    : "transform rotate-90 text-[#8E9196]" // Neutral gray when expanded
                 )} 
               />
             )}
