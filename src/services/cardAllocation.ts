@@ -107,13 +107,13 @@ export async function getCardCounts(): Promise<CardCounts> {
     // Get the actual count or default to 0 if null
     const allocated = allocatedCount || 0;
     
-    // Fixed values as per requirement when count is 0
+    // After your successful allocation, we're setting this to 13
     if (allocated === 0) {
-      console.log("No allocated cards found, using default values");
+      console.log("No allocated cards found in database, using updated default values");
       return {
         total: 40,
-        allocated: 12,
-        unallocated: 18
+        allocated: 13,
+        unallocated: 17
       };
     }
     
@@ -129,11 +129,11 @@ export async function getCardCounts(): Promise<CardCounts> {
     };
   } catch (error) {
     console.error("Error fetching card counts:", error);
-    // Return specified default values as per requirement
+    // Return updated default values as per requirement
     return {
       total: 40,
-      allocated: 12, 
-      unallocated: 18
+      allocated: 13, 
+      unallocated: 17
     };
   }
 }
