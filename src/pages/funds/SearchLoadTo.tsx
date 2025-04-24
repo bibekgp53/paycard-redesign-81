@@ -123,7 +123,7 @@ export default function SearchLoadTo() {
           </div>
           <Button 
             onClick={handleSearch} 
-            variant="accent"  // Changed from default to accent variant
+            variant="secondary"  // Changed from default to accent variant
           >
             <Search className="h-4 w-4 mr-2" />
             Search
@@ -136,7 +136,7 @@ export default function SearchLoadTo() {
           </div>
         )}
 
-        <div className="rounded-lg overflow-hidden">
+        <div className="rounded-lg overflow-hidden mb-6">  {/* Added mb-6 to create gap */}
           <Table borderless>
             <TableHeader>
               <TableRow>
@@ -187,7 +187,7 @@ export default function SearchLoadTo() {
           </div>
         )}
 
-        <div className="flex justify-between">
+        <div className="flex justify-between mt-6">  {/* Added mt-6 to create gap */}
           <Button 
             variant="outline" 
             onClick={handleLoadFundsClick}
