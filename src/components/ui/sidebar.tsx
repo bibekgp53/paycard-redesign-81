@@ -492,7 +492,7 @@ const SidebarGroup = React.forwardRef<
                   "ml-auto h-4 w-4 transition-transform",
                   collapsed
                     ? "text-paycard-salmon" // Salmon when collapsed
-                    : "text-[#8E9196]" // Neutral gray when expanded
+                    : "text-[#8E9196] transform rotate-90" // Neutral gray when expanded and rotated
                 )} 
               />
             )}
