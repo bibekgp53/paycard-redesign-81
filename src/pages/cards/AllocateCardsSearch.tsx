@@ -111,11 +111,11 @@ export default function AllocateCardsSearch() {
             <Table>
               <TableHeader>
                 <TableRow className="border-0 bg-paycard-navy-100">
-                  <TableHead className="w-[50px] border-0"></TableHead>
-                  <TableHead className="border-0 text-paycard-navy font-semibold">Card Number</TableHead>
-                  <TableHead className="border-0 text-paycard-navy font-semibold">Card Holder Name</TableHead>
-                  <TableHead className="border-0 text-paycard-navy font-semibold">Expiration Date</TableHead>
-                  <TableHead className="border-0 text-paycard-navy font-semibold">Status</TableHead>
+                  <TableHead className="w-[50px] border-0 text-left pl-4"></TableHead>
+                  <TableHead className="border-0 text-paycard-navy font-semibold text-left pl-0">Card Number</TableHead>
+                  <TableHead className="border-0 text-paycard-navy font-semibold text-left pl-0">Card Holder Name</TableHead>
+                  <TableHead className="border-0 text-paycard-navy font-semibold text-left pl-0">Expiration Date</TableHead>
+                  <TableHead className="border-0 text-paycard-navy font-semibold text-left pl-0">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -130,16 +130,16 @@ export default function AllocateCardsSearch() {
                         selectedCard === card.id ? 'bg-paycard-navy-150' : ''
                       }`}
                     >
-                      <TableCell className="border-0">
+                      <TableCell className="border-0 pl-4">
                         <RadioGroupItem 
                           value={card.id} 
                           id={`card-${card.id}`} 
                         />
                       </TableCell>
-                      <TableCell className="border-0">{card.cardNumber}</TableCell>
-                      <TableCell className="border-0">{card.cardHolderName}</TableCell>
-                      <TableCell className="border-0">{card.expirationDate}</TableCell>
-                      <TableCell className="border-0">
+                      <TableCell className="border-0 pl-0">{card.cardNumber}</TableCell>
+                      <TableCell className="border-0 pl-0">{card.cardHolderName}</TableCell>
+                      <TableCell className="border-0 pl-0">{card.expirationDate}</TableCell>
+                      <TableCell className="border-0 pl-0">
                         <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                           card.status === 'ACTIVE' 
                             ? 'bg-pcard-status-green-light text-pcard-status-green-dark'
