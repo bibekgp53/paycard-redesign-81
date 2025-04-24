@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -8,12 +9,14 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { FlashMessage } from "@/components/ui/flash-message";
 
 export default function AllocateCardsConfirm() {
   const location = useLocation();
   const navigate = useNavigate();
   const { formData, id, cardNumber, allocationType } = location.state || {};
   const [isAllocating, setIsAllocating] = useState(false);
+  const [allocationError, setAllocationError] = useState<string | null>(null);
 
   const currentStep = allocationType === "search" ? 3 : 2;
   const totalSteps = allocationType === "search" ? 4 : 3;
@@ -23,6 +26,7 @@ export default function AllocateCardsConfirm() {
       if (!id) {
         throw new Error("Card ID is missing or invalid");
       }
+      setAllocationError(null);
       return allocateCard(id, formData);
     },
     onSuccess: () => {
@@ -31,6 +35,7 @@ export default function AllocateCardsConfirm() {
     },
     onError: (error) => {
       setIsAllocating(false);
+      setAllocationError(error instanceof Error ? error.message : "Failed to allocate card. Please try again.");
       toast.error("Failed to allocate card. Please try again.");
       console.error("Allocation error:", error);
     }
@@ -72,6 +77,17 @@ export default function AllocateCardsConfirm() {
           </div>
         </Card>
       </div>
+
+      {allocationError && (
+        <div className="mb-4">
+          <FlashMessage 
+            type="error"
+            title="Allocation Error"
+            message={allocationError}
+            onClose={() => setAllocationError(null)}
+          />
+        </div>
+      )}
 
       <Card>
         <div className="p-6">

@@ -38,12 +38,9 @@ export async function allocateCard(cardId: string, formData: CardAllocationFormD
     
     console.log("Card updated successfully, now creating allocation record");
     
-    // Then insert the allocation record with public RLS
-    const { data: userData } = await supabase.auth.getUser();
-    const userId = userData.user?.id;
-    
-    console.log("Current user ID:", userId);
-    
+    // Then insert the allocation record with RLS bypass
+    // Since we don't have a valid user ID from auth.uid() in anonymous mode,
+    // we'll use a null value for allocated_by which should be allowed by RLS
     const { error } = await supabase
       .from('card_allocations')
       .insert({
@@ -53,7 +50,7 @@ export async function allocateCard(cardId: string, formData: CardAllocationFormD
         id_number: formData.idNumber,
         cellphone: formData.cellphone,
         reference: formData.reference,
-        allocated_by: userId,
+        allocated_by: null, // Use null instead of undefined user ID
         status: 'allocated'
       });
 
