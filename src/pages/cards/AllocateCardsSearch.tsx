@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroupBase, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Generate more complete mock data
 const mockData = Array.from({ length: 50 }, (_, i) => ({
@@ -125,13 +125,13 @@ export default function AllocateCardsSearch() {
                     className={`border-none hover:bg-paycard-navy-100 ${selectedCard === card.id ? 'bg-paycard-navy-150' : ''}`}
                   >
                     <TableCell>
-                      <RadioGroup 
-                        value={selectedCard}
+                      <RadioGroupBase 
+                        value={selectedCard || ""}
                         onValueChange={setSelectedCard}
                         className="flex items-center"
                       >
                         <RadioGroupItem value={card.id} id={`card-${card.id}`} />
-                      </RadioGroup>
+                      </RadioGroupBase>
                     </TableCell>
                     <TableCell>{card.cardNumber}</TableCell>
                     <TableCell>{card.cardHolderName}</TableCell>
