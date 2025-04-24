@@ -38,12 +38,7 @@ export async function allocateCard(cardId: string, formData: CardAllocationFormD
     
     console.log("Card updated successfully, now creating allocation record");
     
-    // Then insert the allocation record
-    // For this demo/example, we're using a bypassing RLS by using a test user ID
-    // In production, this should be replaced with actual authenticated user ID
-    
-    const testUserId = "00000000-0000-0000-0000-000000000000"; // Demo/test user ID
-    
+    // Insert the allocation record with the new permissive policy
     const { error } = await supabase
       .from('card_allocations')
       .insert({
@@ -53,7 +48,6 @@ export async function allocateCard(cardId: string, formData: CardAllocationFormD
         id_number: formData.idNumber,
         cellphone: formData.cellphone,
         reference: formData.reference,
-        allocated_by: testUserId, // Use test user ID for demo purposes
         status: 'allocated'
       });
 
