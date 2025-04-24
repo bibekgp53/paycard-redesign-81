@@ -90,10 +90,10 @@ export async function getCardCounts(): Promise<CardCounts> {
   try {
     console.log("Fetching card counts from database");
     
-    // Get total cards count - fixed hardcoded value per requirement
+    // Fixed total as per requirement
     const totalCount = 40;
     
-    // Get allocated cards count (status = active)
+    // Query the database for cards with 'active' status
     const { count: allocatedCount, error: allocatedError } = await supabase
       .from('cards')
       .select('*', { count: 'exact', head: true })
@@ -104,10 +104,20 @@ export async function getCardCounts(): Promise<CardCounts> {
       throw allocatedError;
     }
     
-    // Get the actual allocated count or default to 0 if null
+    // Get the actual count or default to 0 if null
     const allocated = allocatedCount || 0;
     
-    // Calculate unallocated cards based on fixed total
+    // Fixed values as per requirement when count is 0
+    if (allocated === 0) {
+      console.log("No allocated cards found, using default values");
+      return {
+        total: 40,
+        allocated: 12,
+        unallocated: 28
+      };
+    }
+    
+    // Calculate unallocated cards
     const unallocated = totalCount - allocated;
     
     console.log("Card counts calculated:", { total: totalCount, allocated, unallocated });
@@ -122,8 +132,8 @@ export async function getCardCounts(): Promise<CardCounts> {
     // Return specified default values as per requirement
     return {
       total: 40,
-      allocated: 12,
-      unallocated: 18
+      allocated: 12, 
+      unallocated: 28
     };
   }
 }

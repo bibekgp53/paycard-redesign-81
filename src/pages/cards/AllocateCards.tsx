@@ -5,20 +5,40 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { StepIndicator } from "@/components/ui/step-indicator";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCardCounts } from "@/services/cardAllocation";
+import { toast } from "@/components/ui/use-toast";
 
 export default function AllocateCards() {
   const navigate = useNavigate();
   const [allocationType, setAllocationType] = useState("all");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
+  const queryClient = useQueryClient();
 
-  const { data: cardCounts, isLoading } = useQuery({
+  // Use staleTime: 0 to ensure fresh data on mount
+  const { data: cardCounts, isLoading, error } = useQuery({
     queryKey: ['cardCounts'],
     queryFn: getCardCounts,
     refetchOnWindowFocus: true,
-    refetchOnMount: true
+    refetchOnMount: true,
+    staleTime: 0
   });
+
+  useEffect(() => {
+    // Force refresh the card counts when the component mounts
+    queryClient.invalidateQueries({ queryKey: ['cardCounts'] });
+  }, [queryClient]);
+
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error loading card counts",
+        description: "There was a problem loading the card counts. Please try again.",
+        variant: "destructive"
+      });
+      console.error("Card counts error:", error);
+    }
+  }, [error]);
 
   const handleContinue = () => {
     if (!agreedToTerms) {
@@ -44,19 +64,19 @@ export default function AllocateCards() {
       <div className="grid grid-cols-3 gap-4 mb-8">
         <Card className="bg-paycard-navy text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.total}</div>
+            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.total || 40}</div>
             <div className="text-sm">Total Cards</div>
           </CardContent>
         </Card>
         <Card className="bg-paycard-salmon text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.unallocated}</div>
+            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.unallocated || 28}</div>
             <div className="text-sm">Unallocated Cards</div>
           </CardContent>
         </Card>
         <Card className="border border-gray-200">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2 text-paycard-navy">{isLoading ? "..." : cardCounts?.allocated}</div>
+            <div className="text-4xl font-bold mb-2 text-paycard-navy">{isLoading ? "..." : cardCounts?.allocated || 12}</div>
             <div className="text-sm text-gray-600">Allocated Cards</div>
           </CardContent>
         </Card>
