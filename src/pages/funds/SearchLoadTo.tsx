@@ -10,6 +10,7 @@ import { Search } from "lucide-react";
 import { SearchField, useSearchLoadTo } from "@/hooks/useSearchLoadTo";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { CardsPagination } from "./components/CardsPagination";
+import { FundsPageHeader } from "./components/FundsPageHeader"; // Import the new component
 
 const searchFields = [
   { value: 'cardNumber', label: 'Card Number' },
@@ -92,12 +93,7 @@ export default function SearchLoadTo() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-paycard-navy">Load funds into card</h1>
-        <p className="text-gray-600">
-          Load funds into cards from your Profile or transfer funds from a stopped card.
-        </p>
-      </div>
+      <FundsPageHeader /> {/* Use the new reusable component */}
 
       <Card className="mb-8 p-6">
         <h2 className="text-xl font-semibold text-paycard-navy mb-6">Search Card</h2>

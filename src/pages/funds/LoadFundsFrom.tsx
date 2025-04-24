@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Wallet, CreditCard, AlertTriangle } from "lucide-react";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { FundsPageHeader } from "./components/FundsPageHeader"; // Import the new component
 
 export default function LoadFundsFrom() {
   const navigate = useNavigate();
@@ -41,12 +42,7 @@ export default function LoadFundsFrom() {
         </Alert>
       )}
 
-      <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-paycard-navy">Load funds into card</h1>
-        <p className="text-gray-600">
-          Load funds into cards from your profile or transfer funds from a stopped card.
-        </p>
-      </div>
+      <FundsPageHeader /> {/* Use the new reusable component */}
 
       <div className="flex flex-col gap-6">
         <button

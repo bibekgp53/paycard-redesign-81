@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -13,6 +12,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { FundsPageHeader } from "./components/FundsPageHeader"; // Import the new component
 
 export default function LoadFundsTo() {
   const navigate = useNavigate();
@@ -68,12 +68,7 @@ export default function LoadFundsTo() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-paycard-navy">Load funds into card</h1>
-        <p className="text-gray-600">
-          Load funds into cards from your Profile or transfer funds from a stopped card.
-        </p>
-      </div>
+      <FundsPageHeader /> {/* Use the new reusable component */}
 
       <div className="flex flex-col gap-6">
         <button
