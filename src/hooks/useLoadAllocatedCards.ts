@@ -2,19 +2,23 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AccountCard } from "@/graphql/types";
+import { useSearchParams } from "react-router-dom";
 
 export const useLoadAllocatedCards = () => {
+  const [searchParams] = useSearchParams();
+  const accountFrom = searchParams.get('accountFrom') === 'true';
+
   return useQuery({
-    queryKey: ["loadAllocatedCards"],
+    queryKey: ["loadAllocatedCards", accountFrom],
     queryFn: async () => {
       console.log("Fetching allocated cards");
-      const { data: session } = await supabase.auth.getSession();
       
       console.log("Making RPC request to search_load_allocated");
       const { data, error } = await supabase
         .rpc('search_load_allocated', {
-          p_account_from: false,
+          p_account_from: accountFrom,
           p_transfer_from_account_id: 0,
+          p_cards_to_load: [], // This will be populated in the card loads page
           p_limit: 100,
           p_offset: 0
         });
