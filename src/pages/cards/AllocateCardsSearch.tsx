@@ -8,51 +8,33 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { RadioGroupBase, RadioGroupItem } from "@/components/ui/radio-group";
-
-// Generate more complete mock data
-const mockData = Array.from({ length: 50 }, (_, i) => ({
-  id: (i + 1).toString(),
-  cardNumber: Math.random().toString().slice(2, 14),
-  sequenceNumber: Math.floor(Math.random() * 900000) + 100000,
-  trackingNumber: Math.floor(Math.random() * 900000) + 100000,
-  cardHolderName: `User ${i + 1}`,
-  expirationDate: `${Math.floor(Math.random() * 12) + 1}/${Math.floor(Math.random() * 5) + 24}`,
-  status: ["INACTIVE", "EXPIRED", "ACTIVE"][Math.floor(Math.random() * 3)]
-}));
+import { useQuery } from "@tanstack/react-query";
+import { searchAvailableCards } from "@/services/cardAllocation";
 
 export default function AllocateCardsSearch() {
   const navigate = useNavigate();
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
+  const { data: cards, isLoading } = useQuery({
+    queryKey: ['availableCards', searchTerm, currentPage],
+    queryFn: () => searchAvailableCards(searchTerm, currentPage, itemsPerPage)
+  });
+
   const handleContinue = () => {
     if (selectedCard) {
-      const card = mockData.find(c => c.id === selectedCard);
+      const card = cards?.find(c => c.id === selectedCard);
       navigate("/cards/allocate/details", { 
         state: { 
-          cardNumber: card?.cardNumber,
-          sequenceNumber: card?.sequenceNumber,
-          trackingNumber: card?.trackingNumber,
+          cardNumber: card?.card_number,
+          sequenceNumber: card?.sequence_number,
+          trackingNumber: card?.tracking_number,
           allocationType: "search"
         } 
       });
     }
-  };
-
-  const paginatedData = mockData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const totalPages = Math.ceil(mockData.length / itemsPerPage);
-
-  const handlePreviousPage = () => {
-    setCurrentPage((prev) => Math.max(prev - 1, 1));
-  };
-
-  const handleNextPage = () => {
-    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
   };
 
   return (
@@ -93,6 +75,8 @@ export default function AllocateCardsSearch() {
               <Input
                 placeholder="Search cards..."
                 className="pl-10"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
               />
             </div>
             <Select>
@@ -120,49 +104,63 @@ export default function AllocateCardsSearch() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedData.map((card) => (
-                  <TableRow 
-                    key={card.id}
-                    className={`border-none hover:bg-paycard-navy-100 ${selectedCard === card.id ? 'bg-paycard-navy-150' : ''}`}
-                  >
-                    <TableCell>
-                      <RadioGroupBase 
-                        value={selectedCard || ""}
-                        onValueChange={setSelectedCard}
-                        className="flex items-center"
-                      >
-                        <RadioGroupItem value={card.id} id={`card-${card.id}`} />
-                      </RadioGroupBase>
-                    </TableCell>
-                    <TableCell>{card.cardNumber}</TableCell>
-                    <TableCell>{card.cardHolderName}</TableCell>
-                    <TableCell>{card.expirationDate}</TableCell>
-                    <TableCell>
-                      <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                        card.status === 'ACTIVE' 
-                          ? 'bg-pcard-status-green-light text-pcard-status-green-dark'
-                          : card.status === 'EXPIRED'
-                          ? 'bg-pcard-status-red-light text-pcard-status-red-dark'
-                          : 'bg-pcard-status-orange-light text-pcard-status-orange-dark'
-                      }`}>
-                        {card.status}
-                      </span>
+                {isLoading ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8">
+                      Loading cards...
                     </TableCell>
                   </TableRow>
-                ))}
+                ) : cards?.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-8">
+                      No cards found
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  cards?.map((card) => (
+                    <TableRow 
+                      key={card.id}
+                      className={`border-none hover:bg-paycard-navy-100 ${selectedCard === card.id ? 'bg-paycard-navy-150' : ''}`}
+                    >
+                      <TableCell>
+                        <RadioGroupBase 
+                          value={selectedCard || ""}
+                          onValueChange={setSelectedCard}
+                          className="flex items-center"
+                        >
+                          <RadioGroupItem value={card.id} id={`card-${card.id}`} />
+                        </RadioGroupBase>
+                      </TableCell>
+                      <TableCell>{card.card_number}</TableCell>
+                      <TableCell>{card.sequence_number}</TableCell>
+                      <TableCell>{card.tracking_number}</TableCell>
+                      <TableCell>
+                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                          card.status === 'ACTIVE' 
+                            ? 'bg-pcard-status-green-light text-pcard-status-green-dark'
+                            : card.status === 'EXPIRED'
+                            ? 'bg-pcard-status-red-light text-pcard-status-red-dark'
+                            : 'bg-pcard-status-orange-light text-pcard-status-orange-dark'
+                        }`}>
+                          {card.status}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
               </TableBody>
             </Table>
           </div>
 
           <div className="mt-4 flex items-center justify-between px-2">
             <div className="text-sm text-gray-500">
-              Page {currentPage} of {totalPages}
+              Page {currentPage} of {Math.ceil((cards?.length || 0) / itemsPerPage)}
             </div>
             <div className="flex items-center space-x-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handlePreviousPage}
+                onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
                 disabled={currentPage === 1}
               >
                 <ChevronLeft className="h-4 w-4" />
@@ -171,8 +169,8 @@ export default function AllocateCardsSearch() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil((cards?.length || 0) / itemsPerPage)))}
+                disabled={currentPage === Math.ceil((cards?.length || 0) / itemsPerPage)}
               >
                 Next
                 <ChevronRight className="h-4 w-4" />

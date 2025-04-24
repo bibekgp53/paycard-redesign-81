@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { StepIndicator } from "@/components/ui/step-indicator";
+import { allocateCard, CardAllocationForm } from "@/services/cardAllocation";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 export default function AllocateCardsDetails() {
   const navigate = useNavigate();
@@ -13,7 +16,7 @@ export default function AllocateCardsDetails() {
   const currentStep = allocationType === "search" ? 2 : 1;
   const totalSteps = allocationType === "search" ? 4 : 3;
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<CardAllocationForm>({
     firstName: "",
     surname: "",
     idNumber: "",
@@ -21,7 +24,26 @@ export default function AllocateCardsDetails() {
     reference: ""
   });
 
-  const handleChange = (field: keyof typeof formData) => (
+  const { mutate: submitAllocation, isLoading } = useMutation({
+    mutationFn: () => allocateCard(cardNumber, formData),
+    onSuccess: () => {
+      navigate("/cards/allocate/confirm", { 
+        state: { 
+          formData,
+          cardNumber,
+          sequenceNumber,
+          trackingNumber,
+          allocationType
+        } 
+      });
+    },
+    onError: (error) => {
+      toast.error("Failed to allocate card. Please try again.");
+      console.error("Allocation error:", error);
+    }
+  });
+
+  const handleChange = (field: keyof CardAllocationForm) => (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     setFormData(prev => ({
@@ -31,15 +53,7 @@ export default function AllocateCardsDetails() {
   };
 
   const handleContinue = () => {
-    navigate("/cards/allocate/confirm", { 
-      state: { 
-        formData,
-        cardNumber,
-        sequenceNumber,
-        trackingNumber,
-        allocationType
-      } 
-    });
+    submitAllocation();
   };
 
   return (
@@ -145,7 +159,7 @@ export default function AllocateCardsDetails() {
         >
           Back
         </Button>
-        <Button onClick={handleContinue}>
+        <Button onClick={handleContinue} disabled={isLoading}>
           Continue
         </Button>
       </div>
