@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
@@ -10,6 +11,7 @@ import { StepIndicator } from "@/components/ui/step-indicator";
 import { RadioGroupBase, RadioGroupItem } from "@/components/ui/radio-group";
 import { useQuery } from "@tanstack/react-query";
 import { searchAvailableCards } from "@/services/cardAllocation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AllocateCardsSearch() {
   const navigate = useNavigate();
@@ -37,6 +39,10 @@ export default function AllocateCardsSearch() {
     }
   };
 
+  const totalCards = 40; // Total cards in system
+  const allocatedCards = 10; // Number of allocated cards
+  const unallocatedCards = 20; // Number of unallocated cards
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
@@ -47,19 +53,19 @@ export default function AllocateCardsSearch() {
       <div className="grid grid-cols-3 gap-4 mb-8">
         <Card className="bg-paycard-navy text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">40</div>
+            <div className="text-4xl font-bold mb-2">{totalCards}</div>
             <div className="text-sm">Total Cards</div>
           </CardContent>
         </Card>
         <Card className="bg-paycard-salmon text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">20</div>
+            <div className="text-4xl font-bold mb-2">{unallocatedCards}</div>
             <div className="text-sm">Unallocated Cards</div>
           </CardContent>
         </Card>
         <Card className="border border-gray-200">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2 text-paycard-navy">10</div>
+            <div className="text-4xl font-bold mb-2 text-paycard-navy">{allocatedCards}</div>
             <div className="text-sm text-gray-600">Allocated Cards</div>
           </CardContent>
         </Card>
@@ -73,7 +79,7 @@ export default function AllocateCardsSearch() {
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
               <Input
-                placeholder="Search cards..."
+                placeholder="Search by card number or tracking number..."
                 className="pl-10"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -87,7 +93,6 @@ export default function AllocateCardsSearch() {
                 <SelectItem value="all">All Statuses</SelectItem>
                 <SelectItem value="active">Active</SelectItem>
                 <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="expired">Expired</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -98,18 +103,22 @@ export default function AllocateCardsSearch() {
                 <TableRow className="border-none hover:bg-transparent">
                   <TableHead className="w-[50px] text-paycard-navy-900 font-semibold">Select</TableHead>
                   <TableHead className="text-paycard-navy-900 font-semibold">Card Number</TableHead>
-                  <TableHead className="text-paycard-navy-900 font-semibold">Card Holder Name</TableHead>
-                  <TableHead className="text-paycard-navy-900 font-semibold">Expiration Date</TableHead>
+                  <TableHead className="text-paycard-navy-900 font-semibold">Sequence Number</TableHead>
+                  <TableHead className="text-paycard-navy-900 font-semibold">Tracking Number</TableHead>
                   <TableHead className="text-paycard-navy-900 font-semibold">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
-                      Loading cards...
-                    </TableCell>
-                  </TableRow>
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell><Skeleton className="h-4 w-4" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-32" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-24" /></TableCell>
+                      <TableCell><Skeleton className="h-4 w-16" /></TableCell>
+                    </TableRow>
+                  ))
                 ) : cards?.length === 0 ? (
                   <TableRow>
                     <TableCell colSpan={5} className="text-center py-8">
@@ -136,11 +145,11 @@ export default function AllocateCardsSearch() {
                       <TableCell>{card.tracking_number}</TableCell>
                       <TableCell>
                         <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                          card.status === 'ACTIVE' 
+                          card.status === 'active' 
                             ? 'bg-pcard-status-green-light text-pcard-status-green-dark'
-                            : card.status === 'EXPIRED'
-                            ? 'bg-pcard-status-red-light text-pcard-status-red-dark'
-                            : 'bg-pcard-status-orange-light text-pcard-status-orange-dark'
+                            : card.status === 'inactive'
+                            ? 'bg-pcard-status-orange-light text-pcard-status-orange-dark'
+                            : 'bg-pcard-status-red-light text-pcard-status-red-dark'
                         }`}>
                           {card.status}
                         </span>
@@ -154,7 +163,7 @@ export default function AllocateCardsSearch() {
 
           <div className="mt-4 flex items-center justify-between px-2">
             <div className="text-sm text-gray-500">
-              Page {currentPage} of {Math.ceil((cards?.length || 0) / itemsPerPage)}
+              Showing {cards?.length || 0} unallocated cards
             </div>
             <div className="flex items-center space-x-2">
               <Button
@@ -169,8 +178,8 @@ export default function AllocateCardsSearch() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage(prev => Math.min(prev + 1, Math.ceil((cards?.length || 0) / itemsPerPage)))}
-                disabled={currentPage === Math.ceil((cards?.length || 0) / itemsPerPage)}
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                disabled={!cards || cards.length < itemsPerPage}
               >
                 Next
                 <ChevronRight className="h-4 w-4" />
