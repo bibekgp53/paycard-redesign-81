@@ -1,14 +1,15 @@
-
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { StepIndicator } from "@/components/ui/step-indicator";
-import { ArrowLeft } from "lucide-react";
 
 export default function AllocateCardsDetails() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const { cardNumber, sequenceNumber, trackingNumber } = location.state || {};
+  
   const [formData, setFormData] = useState({
     firstName: "",
     surname: "",
@@ -26,19 +27,22 @@ export default function AllocateCardsDetails() {
     }));
   };
 
-  const handleBack = () => {
-    navigate(-1);
-  };
-
   const handleContinue = () => {
-    navigate("/cards/allocate/confirm", { state: { formData } });
+    navigate("/cards/allocate/confirm", { 
+      state: { 
+        formData,
+        cardNumber,
+        sequenceNumber,
+        trackingNumber
+      } 
+    });
   };
 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
         <h1 className="text-3xl font-bold text-paycard-navy">Allocate Card</h1>
-        <StepIndicator currentStep={3} totalSteps={3} />
+        <StepIndicator currentStep={3} totalSteps={4} />
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
@@ -64,14 +68,6 @@ export default function AllocateCardsDetails() {
 
       <Card className="mb-8">
         <CardContent className="p-6">
-          <button 
-            onClick={handleBack}
-            className="mb-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
-            aria-label="Go back"
-          >
-            <ArrowLeft size={24} className="text-paycard-navy" />
-          </button>
-
           <h2 className="text-2xl font-bold text-paycard-navy mb-6">Card holder details</h2>
 
           <form className="space-y-4">
@@ -129,10 +125,10 @@ export default function AllocateCardsDetails() {
               />
             </div>
 
-            <div className="mt-6 text-sm text-gray-600">
-              <p>Card Number: 53*****5311</p>
-              <p>Sequence Number: 101991</p>
-              <p>Tracking Number:</p>
+            <div className="mt-6 text-sm text-gray-600 space-y-1">
+              <p>Card Number: {cardNumber || '-'}</p>
+              <p>Sequence Number: {sequenceNumber || '-'}</p>
+              <p>Tracking Number: {trackingNumber || '-'}</p>
             </div>
           </form>
         </CardContent>
@@ -141,7 +137,7 @@ export default function AllocateCardsDetails() {
       <div className="flex justify-between">
         <Button
           variant="outline"
-          onClick={handleBack}
+          onClick={() => navigate(-1)}
         >
           Back
         </Button>

@@ -9,26 +9,41 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
 
-const mockData = [
-  { id: "1", cardNumber: "161******631", cardholder: "Michael Parker", expirationDate: "2030-03-17", status: "EXPIRED" },
-  { id: "2", cardNumber: "941******708", cardholder: "Susan Bryant", expirationDate: "2029-10-04", status: "INACTIVE" },
-  { id: "3", cardNumber: "844******000", cardholder: "Maria Harris", expirationDate: "2029-02-17", status: "INACTIVE" },
-  { id: "4", cardNumber: "189******092", cardholder: "Michele Glass", expirationDate: "2026-11-30", status: "INACTIVE" },
-  { id: "5", cardNumber: "998******380", cardholder: "Brent Warren", expirationDate: "2028-03-20", status: "EXPIRED" },
-  { id: "6", cardNumber: "615******370", cardholder: "Lisa Martinez", expirationDate: "2029-03-30", status: "ACTIVE" },
-  { id: "7", cardNumber: "671******984", cardholder: "Tyler Murphy", expirationDate: "2028-06-03", status: "INACTIVE" },
-];
+const mockData = Array.from({ length: 20 }, (_, i) => ({
+  id: (i + 1).toString(),
+  cardNumber: Math.random().toString().slice(2, 14),
+  sequenceNumber: Math.floor(Math.random() * 900000) + 100000,
+  trackingNumber: Math.random() > 0.5 ? Math.floor(Math.random() * 900000) + 100000 : null,
+  status: ["INACTIVE", "EXPIRED"][Math.floor(Math.random() * 2)]
+}));
 
 export default function AllocateCardsSearch() {
   const navigate = useNavigate();
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
   const handleContinue = () => {
     if (selectedCard) {
-      navigate("/cards/allocate/details");
+      const card = mockData.find(c => c.id === selectedCard);
+      navigate("/cards/allocate/details", { 
+        state: { 
+          cardNumber: card?.cardNumber,
+          sequenceNumber: card?.sequenceNumber,
+          trackingNumber: card?.trackingNumber
+        } 
+      });
     }
   };
+
+  const paginatedData = mockData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(mockData.length / itemsPerPage);
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -89,15 +104,13 @@ export default function AllocateCardsSearch() {
                 <TableRow>
                   <TableHead className="w-[50px]"></TableHead>
                   <TableHead>Card Number</TableHead>
-                  <TableHead>Card Holder Name</TableHead>
-                  <TableHead>Expiration Date</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockData.map((card) => (
+                {paginatedData.map((card) => (
                   <TableRow 
-                    key={card.id} 
+                    key={card.id}
                     className={selectedCard === card.id ? 'bg-blue-50' : undefined}
                   >
                     <TableCell>
@@ -107,15 +120,11 @@ export default function AllocateCardsSearch() {
                       />
                     </TableCell>
                     <TableCell>{card.cardNumber}</TableCell>
-                    <TableCell>{card.cardholder}</TableCell>
-                    <TableCell>{card.expirationDate}</TableCell>
                     <TableCell>
                       <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                         card.status === 'INACTIVE' 
                           ? 'bg-yellow-100 text-yellow-800'
-                          : card.status === 'EXPIRED'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-green-100 text-green-800'
+                          : 'bg-red-100 text-red-800'
                       }`}>
                         {card.status}
                       </span>
@@ -124,6 +133,23 @@ export default function AllocateCardsSearch() {
                 ))}
               </TableBody>
             </Table>
+          </div>
+
+          <div className="mt-4">
+            <Pagination>
+              <PaginationContent>
+                {Array.from({ length: totalPages }).map((_, index) => (
+                  <PaginationItem key={index}>
+                    <PaginationLink
+                      onClick={() => setCurrentPage(index + 1)}
+                      isActive={currentPage === index + 1}
+                    >
+                      {index + 1}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+              </PaginationContent>
+            </Pagination>
           </div>
         </CardContent>
       </Card>

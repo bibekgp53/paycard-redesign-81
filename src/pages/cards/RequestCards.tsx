@@ -16,7 +16,7 @@ export default function RequestCards() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      numberOfCards: "0",
+      numberOfCards: "0", // This matches the string type before transform
       reference: "",
     },
   });
