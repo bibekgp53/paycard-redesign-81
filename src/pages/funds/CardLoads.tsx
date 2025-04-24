@@ -22,7 +22,14 @@ export function CardLoads() {
     selectedDate,
   } = useCardLoadsStore();
 
-  const { selectedCardIds, isFromSearch } = useSelectedCardsStore();
+  const { selectedCardIds, isFromSearch, setIsFromSearch } = useSelectedCardsStore();
+
+  // When this page loads, we're now in card loads view regardless of where we came from
+  React.useEffect(() => {
+    if (isFromSearch) {
+      setIsFromSearch(false);
+    }
+  }, [isFromSearch, setIsFromSearch]);
 
   const pageSize = 10;
   const { data: userHeader, isLoading: userHeaderLoading } = useUserHeaderQuery();
@@ -53,12 +60,11 @@ export function CardLoads() {
     return { amount: totalAmount, fee: totalFee, smsFee: totalSMS };
   }, [selectedLoads, cards, clientSettings]);
 
-  // Fix duplicate "Card Loads" in breadcrumb by removing one instance
+  // Updated breadcrumb to always show Card Loads as current page
   const breadcrumbItems = [
     { label: "Load Funds From", path: "/load-funds-from" },
     { label: "To", path: "/load-funds-from/to" },
-    // Only one "Card Loads" entry is needed
-    { label: isFromSearch ? "Search Card" : "Card Loads", isCurrentPage: true }
+    { label: "Card Loads", isCurrentPage: true }
   ];
 
   return (
