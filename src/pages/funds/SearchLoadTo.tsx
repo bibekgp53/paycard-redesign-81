@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -79,11 +80,12 @@ export default function SearchLoadTo() {
       const selectedCard = results.find(card => card.account_card_id === selectedCards[0]);
       
       if (selectedCard) {
-        // Call search_load_allocated with the selected card's account_card_id
+        // Call search_load_allocated with the selected card's account_card_id and cards to load
         const { data, error } = await supabase
           .rpc('search_load_allocated', {
             p_account_from: false,
-            p_transfer_from_account_id: selectedCard.account_card_id,
+            p_transfer_from_account_id: 0, // Default to 0 since we're using p_cards_to_load
+            p_cards_to_load: [selectedCard.account_card_id],
             p_limit: 100,
             p_offset: 0
           });
