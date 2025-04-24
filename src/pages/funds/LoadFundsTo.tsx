@@ -1,5 +1,4 @@
-
-import React, { useEffect } from "react";
+import React from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Users, Search } from "lucide-react";
@@ -18,28 +17,17 @@ export default function LoadFundsTo() {
   const [searchParams] = useSearchParams();
   const accountFrom = searchParams.get("accountFrom");
 
-  // Zustand store for global selected option state
   const { selectedLoadFundsToCard } = useLoadFundsToOptionStore();
 
-  useEffect(() => {
-    console.log("LoadFundsTo mounted");
-    console.log("accountFrom param:", accountFrom);
-    console.log("selectedLoadFundsToCard:", selectedLoadFundsToCard);
-  }, [accountFrom, selectedLoadFundsToCard]);
-
-  // For highlight, just read value from store.
   const handleLoadFundsClick = () => {
-    console.log("Navigate back to LoadFundsFrom");
     navigate(`/load-funds-from`);
   };
 
   const handleCardLoadsClick = () => {
-    console.log("Navigate to card loads with accountFrom:", accountFrom);
     navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom || 'false'}`);
   };
 
   const handleSearchClick = () => {
-    console.log("Navigate to search with accountFrom:", accountFrom);
     navigate(`/load-funds-from/search?accountFrom=${accountFrom || 'false'}`);
   };
 

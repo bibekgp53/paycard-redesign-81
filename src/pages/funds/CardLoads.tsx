@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
@@ -27,22 +26,13 @@ export function CardLoads() {
   const { data: clientSettings, isLoading: clientLoading } = useLoadClientQuery();
   const { data: cards, isLoading: cardsLoading } = useLoadAllocatedCards();
 
-  React.useEffect(() => {
-    console.log("CardLoads Page Loaded");
-    console.log("User Header Loading:", userHeaderLoading);
-    console.log("Client Settings Loading:", clientLoading);
-    console.log("Cards Loading:", cardsLoading);
-  }, [userHeaderLoading, clientLoading, cardsLoading]);
-
   const isLoading = userHeaderLoading || clientLoading || cardsLoading;
   const totalPages = cards ? Math.ceil(cards.length / pageSize) : 1;
 
-  // Load Funds From navigation
   const handleLoadFundsClick = () => {
     navigate("/load-funds-from");
   };
 
-  // Totals
   const totals = React.useMemo(() => {
     if (!cards || !clientSettings) return { amount: 0, fee: 0, smsFee: 0 };
     let totalAmount = 0;
