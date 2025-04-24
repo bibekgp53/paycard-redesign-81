@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -26,7 +25,6 @@ export default function AllocateCards() {
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
         <h1 className="text-3xl font-bold text-paycard-navy">Allocate Card</h1>
-        <StepIndicator currentStep={1} totalSteps={allocationType === "all" ? 3 : 4} />
       </div>
       
       <p className="text-lg text-gray-600 mb-8">

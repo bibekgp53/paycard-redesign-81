@@ -1,4 +1,3 @@
-
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -22,7 +21,6 @@ export default function AllocateCardsConfirm() {
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
         <h1 className="text-3xl font-bold text-paycard-navy">Allocate Card</h1>
-        <StepIndicator currentStep={4} totalSteps={5} />
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
