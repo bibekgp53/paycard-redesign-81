@@ -1,72 +1,82 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
-import { Users, Search } from "lucide-react";
-import { 
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { Users, Search, AlertTriangle } from "lucide-react";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import { FundsPageHeader } from "./components/FundsPageHeader";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 
 export default function LoadFundsTo() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const location = useLocation();
+  const [error, setError] = useState<string | null>(null);
   const accountFrom = searchParams.get("accountFrom");
 
-  // Zustand store for global selected option state
   const { selectedLoadFundsToCard } = useLoadFundsToOptionStore();
 
-  // For highlight, just read value from store.
   const handleLoadFundsClick = () => {
-    navigate(`/load-funds-from`);
+    try {
+      navigate(`/load-funds-from`);
+    } catch (error) {
+      setError("Could not navigate to the previous page");
+    }
   };
+
+  const handleCardLoadsClick = () => {
+    try {
+      navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom || 'false'}`);
+    } catch (error) {
+      setError("Could not navigate to card loads");
+    }
+  };
+
+  const handleSearchClick = () => {
+    try {
+      navigate(`/load-funds-from/to/search-card?accountFrom=${accountFrom || 'false'}`);
+    } catch (error) {
+      setError("Could not navigate to search");
+    }
+  };
+
+  const breadcrumbItems = [
+    { label: "Load Funds From", path: "/load-funds-from" },
+    { label: "To", isCurrentPage: true }
+  ];
 
   return (
     <div className="space-y-6">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={handleLoadFundsClick}>Load Funds From</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>To</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Breadcrumb items={breadcrumbItems} />
+      
+      {error && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Navigation Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
 
-      <Card className="bg-white p-6">
-        <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
-        <p className="text-gray-600">
-          Load funds into cards from your Profile or transfer funds from a stopped card.
-        </p>
-      </Card>
+      <FundsPageHeader />
 
       <div className="flex flex-col gap-6">
         <button
-          onClick={() => navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom}`)}
-          className="text-left transition-all hover:scale-[1.02] focus:outline-none"
+          onClick={handleCardLoadsClick}
+          className="text-left transition-all hover:scale-[1.01] focus:outline-none"
         >
-          <Card className={`p-6 h-full border-2 ${
+          <Card className={`p-8 h-full border-2 ${
             selectedLoadFundsToCard === "card-loads"
               ? "border-paycard-salmon"
-              : "hover:border-paycard-salmon border-transparent"
+              : "border-paycard-navy-200 hover:border-paycard-salmon"
           }`}>
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-full bg-paycard-navy-100">
-                <Users className="h-6 w-6 text-paycard-navy" />
+            <div className="flex items-start gap-6">
+              <div className="p-4 rounded-full bg-paycard-navy-100">
+                <Users className="h-8 w-8 text-paycard-navy" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-paycard-navy mb-2">
+                <h3 className="text-2xl font-semibold text-paycard-navy mb-3">
                   Load to multiple cards
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-lg">
                   Load funds to multiple cards at once
                 </p>
               </div>
@@ -75,23 +85,23 @@ export default function LoadFundsTo() {
         </button>
 
         <button
-          onClick={() => navigate(`/load-funds-from/search?accountFrom=${accountFrom}`)}
-          className="text-left transition-all hover:scale-[1.02] focus:outline-none"
+          onClick={handleSearchClick}
+          className="text-left transition-all hover:scale-[1.01] focus:outline-none"
         >
-          <Card className={`p-6 h-full border-2 ${
+          <Card className={`p-8 h-full border-2 ${
             selectedLoadFundsToCard === "search"
               ? "border-paycard-salmon"
-              : "hover:border-paycard-salmon border-transparent"
+              : "border-paycard-navy-200 hover:border-paycard-salmon"
           }`}>
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-full bg-paycard-navy-100">
-                <Search className="h-6 w-6 text-paycard-navy" />
+            <div className="flex items-start gap-6">
+              <div className="p-4 rounded-full bg-paycard-navy-100">
+                <Search className="h-8 w-8 text-paycard-navy" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-paycard-navy mb-2">
+                <h3 className="text-2xl font-semibold text-paycard-navy mb-3">
                   Search for a card
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-lg">
                   Search and select a specific card to load funds
                 </p>
               </div>
