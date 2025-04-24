@@ -1,3 +1,4 @@
+
 import { CreditCard, WalletCards, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -52,6 +53,11 @@ export function Sidebar() {
         </div>
 
         <SidebarContent>
+          <div className="pt-0 p-0">
+            <div className="text-sm text-gray-300 pb-0 pl-4">
+              Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
+            </div>
+          </div>
           <div className="flex flex-col gap-1 flex-1 min-h-0">
             {menuItems.map((item) => (
               <div key={item.path} className="mb-0">
