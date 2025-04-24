@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +8,7 @@ import { InvoiceDisplay } from "./components/InvoiceDisplay";
 import { ConfirmLoadForm } from "./components/ConfirmLoadForm";
 import { AlertType } from "./components/LoadAlert";
 import { format } from "date-fns";
+import { useSelectedCardsStore } from "@/store/useSelectedCardsStore";
 
 export default function ConfirmLoad() {
   const navigate = useNavigate();
@@ -23,6 +23,12 @@ export default function ConfirmLoad() {
   const [alertState, setAlertState] = useState<AlertType>(null);
   const [showInvoice, setShowInvoice] = useState(false);
   const [invoiceMeta, setInvoiceMeta] = useState<any>(null);
+  
+  const { isFromSearch } = useSelectedCardsStore();
+  
+  const handleBack = () => {
+    navigate("/load-funds-from/card-loads");
+  };
 
   const handleConfirmAndLoad = async () => {
     if (!clientSettings || !selectedLoads.length) {
@@ -126,14 +132,14 @@ export default function ConfirmLoad() {
     }
   };
 
-  const handleBack = () => navigate("/load-funds-from/card-loads");
-
   if (showInvoice && invoiceMeta) {
     return <InvoiceDisplay {...invoiceMeta} />;
   }
 
   const breadcrumbItems = [
     { label: "Load Funds From", path: "/load-funds-from" },
+    { label: "To", path: "/load-funds-from/to" },
+    { label: isFromSearch ? "Search Card" : "Card Loads", path: isFromSearch ? "/load-funds-from/to/search-card" : "/load-funds-from/to" },
     { label: "Card Loads", path: "/load-funds-from/card-loads" },
     { label: "Confirm Load", isCurrentPage: true }
   ];

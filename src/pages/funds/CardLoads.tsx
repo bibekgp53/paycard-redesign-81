@@ -1,20 +1,18 @@
-
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
 import { useCardLoadsStore } from "@/store/useCardLoadsStore";
+import { useSelectedCardsStore } from "@/store/useSelectedCardsStore";
 import { CardLoadsTable } from "./components/CardLoadsTable";
 import { CardLoadsActionPanel } from "./components/CardLoadsActionPanel";
-import React, { useEffect } from "react";
+import React from "react";
 import { CardsPagination } from "./components/CardsPagination";
 import { Loader2 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
-import { Card } from "@/components/ui/card";
 
 export function CardLoads() {
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
   const {
     page,
     setPage,
@@ -23,21 +21,15 @@ export function CardLoads() {
     selectedDate,
   } = useCardLoadsStore();
 
-  // Parse URL parameters
-  const accountFrom = searchParams.get("accountFrom") === 'true';
-  const selectedCardsParam = searchParams.get("selectedCards");
-  const cardsToLoad = selectedCardsParam ? 
-    selectedCardsParam.split(',').map(id => parseInt(id, 10)) : 
-    [];
+  const { selectedCardIds, isFromSearch } = useSelectedCardsStore();
 
   const pageSize = 10;
   const { data: userHeader, isLoading: userHeaderLoading } = useUserHeaderQuery();
   const { data: clientSettings, isLoading: clientLoading } = useLoadClientQuery();
   
-  // Only pass cardsToLoad if we have any
   const { data: cards, isLoading: cardsLoading } = useLoadAllocatedCards({ 
-    accountFrom,
-    ...(cardsToLoad.length > 0 && { cardsToLoad })
+    accountFrom: !isFromSearch,
+    cardsToLoad: selectedCardIds
   });
 
   const isLoading = userHeaderLoading || clientLoading || cardsLoading;
@@ -62,6 +54,8 @@ export function CardLoads() {
 
   const breadcrumbItems = [
     { label: "Load Funds From", path: "/load-funds-from" },
+    { label: "To", path: "/load-funds-from/to" },
+    { label: isFromSearch ? "Search Card" : "Card Loads", path: isFromSearch ? "/load-funds-from/to/search-card" : "/load-funds-from/to" },
     { label: "Card Loads", isCurrentPage: true }
   ];
 

@@ -6,12 +6,14 @@ import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { FundsPageHeader } from "./components/FundsPageHeader";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { useSelectedCardsStore } from "@/store/useSelectedCardsStore";
 
 export default function LoadFundsTo() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const accountFrom = searchParams.get("accountFrom");
+  const { setIsFromSearch } = useSelectedCardsStore();
 
   const { selectedLoadFundsToCard } = useLoadFundsToOptionStore();
 
@@ -25,7 +27,8 @@ export default function LoadFundsTo() {
 
   const handleCardLoadsClick = () => {
     try {
-      navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom || 'false'}`);
+      setIsFromSearch(false);
+      navigate(`/load-funds-from/card-loads`);
     } catch (error) {
       setError("Could not navigate to card loads");
     }
@@ -33,7 +36,8 @@ export default function LoadFundsTo() {
 
   const handleSearchClick = () => {
     try {
-      navigate(`/load-funds-from/to/search-card?accountFrom=${accountFrom || 'false'}`);
+      setIsFromSearch(true);
+      navigate(`/load-funds-from/to/search-card`);
     } catch (error) {
       setError("Could not navigate to search");
     }

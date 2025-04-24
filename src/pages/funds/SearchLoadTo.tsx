@@ -1,7 +1,6 @@
-
 import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { SearchField, useSearchLoadTo } from "@/hooks/useSearchLoadTo";
@@ -13,6 +12,7 @@ import { SearchResultsTable } from "./components/SearchResultsTable";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSelectedCardsStore } from "@/store/useSelectedCardsStore";
 
 export default function SearchLoadTo() {
   const navigate = useNavigate();
@@ -24,6 +24,7 @@ export default function SearchLoadTo() {
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [processingContinue, setProcessingContinue] = useState(false);
+  const { setSelectedCardIds, setIsFromSearch } = useSelectedCardsStore();
   const pageSize = 10;
 
   const handleSearch = () => {
@@ -76,15 +77,9 @@ export default function SearchLoadTo() {
     if (selectedCards.length > 0) {
       try {
         setProcessingContinue(true);
-        
-        // Instead of invalidating query, we'll pass the selected cards as URL params
-        const searchParams = new URLSearchParams();
-        searchParams.append('accountFrom', String(accountFrom));
-        // Add selected cards as a comma-separated string
-        searchParams.append('selectedCards', selectedCards.join(','));
-        
-        // Navigate to the card loads page with selected cards
-        navigate(`/load-funds-from/card-loads?${searchParams.toString()}`);
+        setSelectedCardIds(selectedCards);
+        setIsFromSearch(true);
+        navigate('/load-funds-from/card-loads');
       } catch (err) {
         console.error("Error in continue process:", err);
       } finally {
