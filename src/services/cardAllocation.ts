@@ -14,29 +14,39 @@ export interface AvailableCard {
 }
 
 export async function allocateCard(cardId: string, formData: CardAllocationFormData) {
-  // We now expect cardId to be the actual UUID from the database, not the card number
-  const { error } = await supabase
-    .from('card_allocations')
-    .insert({
-      card_id: cardId,
-      first_name: formData.firstName,
-      surname: formData.surname,
-      id_number: formData.idNumber,
-      cellphone: formData.cellphone,
-      reference: formData.reference,
-      allocated_by: (await supabase.auth.getUser()).data.user?.id,
-      status: 'allocated'
-    });
-
-  if (error) throw error;
-  
-  // Also update the card status to 'active'
-  const { error: cardUpdateError } = await supabase
-    .from('cards')
-    .update({ status: 'active' })
-    .eq('id', cardId);
+  try {
+    // First update the card status to 'active'
+    const { error: cardUpdateError } = await supabase
+      .from('cards')
+      .update({ 
+        status: 'active',
+        cardholder_name: `${formData.firstName} ${formData.surname}`
+      })
+      .eq('id', cardId);
+      
+    if (cardUpdateError) throw cardUpdateError;
     
-  if (cardUpdateError) throw cardUpdateError;
+    // Then insert the allocation record with public RLS
+    const { error } = await supabase
+      .from('card_allocations')
+      .insert({
+        card_id: cardId,
+        first_name: formData.firstName,
+        surname: formData.surname,
+        id_number: formData.idNumber,
+        cellphone: formData.cellphone,
+        reference: formData.reference,
+        allocated_by: (await supabase.auth.getUser()).data.user?.id,
+        status: 'allocated'
+      });
+
+    if (error) throw error;
+    
+    return { success: true };
+  } catch (error) {
+    console.error("Allocation error details:", error);
+    throw error;
+  }
 }
 
 export async function searchAvailableCards(

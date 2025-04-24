@@ -4,21 +4,41 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
+import { allocateCard } from "@/services/cardAllocation";
+import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
 
 export default function AllocateCardsConfirm() {
   const location = useLocation();
   const navigate = useNavigate();
   const { formData, id, cardNumber, allocationType } = location.state || {};
+  const [isAllocating, setIsAllocating] = useState(false);
 
   const currentStep = allocationType === "search" ? 3 : 2;
   const totalSteps = allocationType === "search" ? 4 : 3;
+
+  const { mutate: submitAllocation, isPending } = useMutation({
+    mutationFn: () => allocateCard(id, formData),
+    onSuccess: () => {
+      toast.success("Card allocated successfully!");
+      navigate("/cards/allocate/complete");
+    },
+    onError: (error) => {
+      setIsAllocating(false);
+      toast.error("Failed to allocate card. Please try again.");
+      console.error("Allocation error:", error);
+    }
+  });
 
   const handleBack = () => {
     navigate(-1);
   };
 
   const handleConfirm = () => {
-    navigate("/cards/allocate/complete");
+    setIsAllocating(true);
+    submitAllocation();
   };
 
   return (
@@ -82,13 +102,22 @@ export default function AllocateCardsConfirm() {
             <Button
               variant="outline"
               onClick={handleBack}
+              disabled={isPending}
             >
               Back
             </Button>
             <Button
               onClick={handleConfirm}
+              disabled={isPending || isAllocating}
             >
-              CONFIRM
+              {isPending || isAllocating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Allocating...
+                </>
+              ) : (
+                "CONFIRM"
+              )}
             </Button>
           </div>
         </div>

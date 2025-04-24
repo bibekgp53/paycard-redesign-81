@@ -4,9 +4,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { StepIndicator } from "@/components/ui/step-indicator";
-import { allocateCard } from "@/services/cardAllocation";
-import { useMutation } from "@tanstack/react-query";
-import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { cardAllocationSchema, type CardAllocationFormData } from "@/lib/validations/card-allocation";
@@ -32,28 +29,17 @@ export default function AllocateCardsDetails() {
     },
   });
 
-  const { mutate: submitAllocation, isPending } = useMutation({
-    mutationFn: () => allocateCard(id, form.getValues()),
-    onSuccess: () => {
-      navigate("/cards/allocate/confirm", { 
-        state: { 
-          formData: form.getValues(),
-          id,
-          cardNumber,
-          sequenceNumber,
-          trackingNumber,
-          allocationType
-        } 
-      });
-    },
-    onError: (error) => {
-      toast.error("Failed to allocate card. Please try again.");
-      console.error("Allocation error:", error);
-    }
-  });
-
   const onSubmit = (data: CardAllocationFormData) => {
-    submitAllocation();
+    navigate("/cards/allocate/confirm", { 
+      state: { 
+        formData: data,
+        id,
+        cardNumber,
+        sequenceNumber,
+        trackingNumber,
+        allocationType
+      }
+    });
   };
 
   return (
@@ -177,7 +163,7 @@ export default function AllocateCardsDetails() {
                 >
                   Back
                 </Button>
-                <Button type="submit" disabled={isPending}>
+                <Button type="submit">
                   Continue
                 </Button>
               </div>
