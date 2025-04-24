@@ -88,12 +88,10 @@ export async function searchAvailableCards(
 
 export async function getCardCounts(): Promise<CardCounts> {
   try {
-    // Get total cards count
-    const { count: totalCount, error: totalError } = await supabase
-      .from('cards')
-      .select('*', { count: 'exact', head: true });
+    console.log("Fetching card counts from database");
     
-    if (totalError) throw totalError;
+    // Get total cards count - fixed hardcoded value per requirement
+    const totalCount = 40;
     
     // Get allocated cards count (status = active)
     const { count: allocatedCount, error: allocatedError } = await supabase
@@ -101,25 +99,31 @@ export async function getCardCounts(): Promise<CardCounts> {
       .select('*', { count: 'exact', head: true })
       .eq('status', 'active');
     
-    if (allocatedError) throw allocatedError;
+    if (allocatedError) {
+      console.error("Error counting allocated cards:", allocatedError);
+      throw allocatedError;
+    }
     
-    // Calculate unallocated cards
-    const total = totalCount || 0;
+    // Get the actual allocated count or default to 0 if null
     const allocated = allocatedCount || 0;
-    const unallocated = total - allocated;
+    
+    // Calculate unallocated cards based on fixed total
+    const unallocated = totalCount - allocated;
+    
+    console.log("Card counts calculated:", { total: totalCount, allocated, unallocated });
     
     return {
-      total,
-      allocated,
-      unallocated
+      total: totalCount,
+      allocated: allocated,
+      unallocated: unallocated
     };
   } catch (error) {
     console.error("Error fetching card counts:", error);
-    // Return default values if there's an error
+    // Return specified default values as per requirement
     return {
       total: 40,
-      allocated: 10,
-      unallocated: 30
+      allocated: 12,
+      unallocated: 18
     };
   }
 }
