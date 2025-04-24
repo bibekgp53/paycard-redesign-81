@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,7 @@ export default function AllocateCardsDetails() {
     reference: ""
   });
 
-  const { mutate: submitAllocation, isLoading } = useMutation({
+  const { mutate: submitAllocation, isPending } = useMutation({
     mutationFn: () => allocateCard(cardNumber, formData),
     onSuccess: () => {
       navigate("/cards/allocate/confirm", { 
@@ -159,7 +160,7 @@ export default function AllocateCardsDetails() {
         >
           Back
         </Button>
-        <Button onClick={handleContinue} disabled={isLoading}>
+        <Button onClick={handleContinue} disabled={isPending}>
           Continue
         </Button>
       </div>
