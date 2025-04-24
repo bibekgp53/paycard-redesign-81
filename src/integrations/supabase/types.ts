@@ -193,6 +193,7 @@ export type Database = {
       cards: {
         Row: {
           card_number: string
+          cardholder_name: string | null
           created_at: string
           id: string
           processed_by: string | null
@@ -203,6 +204,7 @@ export type Database = {
         }
         Insert: {
           card_number: string
+          cardholder_name?: string | null
           created_at?: string
           id?: string
           processed_by?: string | null
@@ -213,6 +215,7 @@ export type Database = {
         }
         Update: {
           card_number?: string
+          cardholder_name?: string | null
           created_at?: string
           id?: string
           processed_by?: string | null
@@ -378,6 +381,7 @@ export type Database = {
           sequence_number: string
           tracking_number: string
           status: string
+          cardholder_name: string
           total_count: number
         }[]
       }

@@ -1,9 +1,11 @@
+
 import { useCardLoadsStore, SelectedLoad } from "@/store/useCardLoadsStore";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Input } from "@/components/ui/input";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AccountCard, ClientSettings } from "@/graphql/types";
 import React from "react";
-import { Input } from "@/components/ui/input"; // Add import for Input
 
 interface CardLoadsTableProps {
   cards: AccountCard[];
@@ -117,76 +119,74 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full table-auto border mt-2 mb-4">
-        <thead>
-          <tr>
-            <th className="py-2 px-4 border-b uppercase text-left">Cardholder</th>
-            <th className="py-2 px-4 border-b uppercase text-left">Card Number</th>
-            <th className="py-2 px-4 border-b uppercase text-left">Amount</th>
-            <th className="py-2 px-4 border-b uppercase text-left">Fee</th>
-            <th className="py-2 px-4 border-b uppercase text-left">Notify via SMS</th>
-          </tr>
-        </thead>
-        <tbody>
-        {paginatedCards.map((card) => {
-          const selectedLoadObj = getSelectedLoadObj(card.accountCardId);
-          const amountValue = selectedLoadObj
-            ? selectedLoadObj.transferAmount
-            : amountInputs[card.id] ?? "";
-          const smsChecked =
-            (selectedLoadObj
-              ? selectedLoadObj.transferSMSNotification === 1 && selectedLoadObj.transferAmount > 0
-              : (smsInputs[card.id] && amountInputs[card.id] && amountInputs[card.id]! > 0) || false
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Cardholder</TableHead>
+            <TableHead>Card Number</TableHead>
+            <TableHead>Amount</TableHead>
+            <TableHead>Fee</TableHead>
+            <TableHead>Notify via SMS</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {paginatedCards.map((card) => {
+            const selectedLoadObj = getSelectedLoadObj(card.accountCardId);
+            const amountValue = selectedLoadObj
+              ? selectedLoadObj.transferAmount
+              : amountInputs[card.id] ?? "";
+            const smsChecked =
+              (selectedLoadObj
+                ? selectedLoadObj.transferSMSNotification === 1 && selectedLoadObj.transferAmount > 0
+                : (smsInputs[card.id] && amountInputs[card.id] && amountInputs[card.id]! > 0) || false
+              );
+            const showAmountError =
+              !isAmountValid(card.id, card.balance) &&
+              amountInputs[card.id] !== undefined &&
+              amountInputs[card.id] !== null;
+
+            return (
+              <TableRow key={card.id ?? card.cardNumber}>
+                <TableCell>{card.cardholder}</TableCell>
+                <TableCell>{card.cardNumber}</TableCell>
+                <TableCell>
+                  <div className="flex items-center">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Input
+                            type="number"
+                            min="0"
+                            className="w-24"
+                            value={amountValue}
+                            onChange={(e) => handleAmountChange(card.id, e.target.value)}
+                            placeholder="R 0.00"
+                            error={showAmountError}
+                          />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <span>{getTooltipMessage(card.balance)}</span>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </TableCell>
+                <TableCell>{getFeeForCard(card.id)}</TableCell>
+                <TableCell>
+                  <div className="flex items-center justify-center h-6">
+                    <Checkbox
+                      checked={smsChecked}
+                      onCheckedChange={(checked: boolean) => handleSMSChange(card.id, checked)}
+                      id={`sms-checkbox-${card.id}`}
+                      disabled={!(amountInputs[card.id] && amountInputs[card.id]! > 0)}
+                    />
+                  </div>
+                </TableCell>
+              </TableRow>
             );
-          // Fix: Only check for undefined/null, not for "" (which can't happen for number | null)
-          const showAmountError =
-            !isAmountValid(card.id, card.balance) &&
-            amountInputs[card.id] !== undefined &&
-            amountInputs[card.id] !== null;
-          return (
-            <tr key={card.id ?? card.cardNumber}>
-              <td className="py-2 px-4 border-b">{card.cardholder}</td>
-              <td className="py-2 px-4 border-b">{card.cardNumber}</td>
-              <td className="py-2 px-4 border-b">
-                <div className="flex items-center">
-                  <TooltipProvider>
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <Input
-                          type="number"
-                          min="0"
-                          className="w-24"
-                          value={amountValue}
-                          onChange={(e) => handleAmountChange(card.id, e.target.value)}
-                          placeholder="R 0.00"
-                          error={showAmountError}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <span>
-                          {getTooltipMessage(card.balance)}
-                        </span>
-                      </TooltipContent>
-                    </Tooltip>
-                  </TooltipProvider>
-                </div>
-              </td>
-              <td className="py-2 px-4 border-b">{getFeeForCard(card.id)}</td>
-              <td className="py-2 px-4 border-b">
-                <div className="flex items-center justify-center h-6">
-                  <Checkbox
-                    checked={smsChecked}
-                    onCheckedChange={(checked: boolean) => handleSMSChange(card.id, checked)}
-                    id={`sms-checkbox-${card.id}`}
-                    disabled={!(amountInputs[card.id] && amountInputs[card.id]! > 0)}
-                  />
-                </div>
-              </td>
-            </tr>
-          );
-        })}
-        </tbody>
-      </table>
+          })}
+        </TableBody>
+      </Table>
     </div>
   );
 }
