@@ -1,6 +1,4 @@
-
 import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
@@ -11,6 +9,7 @@ import React from "react";
 import { CardsPagination } from "./components/CardsPagination";
 import { Loader2 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { Card } from "@/components/ui/card";
 
 export function CardLoads() {
   const navigate = useNavigate();
@@ -56,7 +55,7 @@ export function CardLoads() {
     <div className="space-y-6">
       <Breadcrumb items={breadcrumbItems} />
       
-      <Card className="bg-white p-6">
+      <div className="bg-white p-6">
         <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
         <p className="text-gray-600">
           Load funds into cards from your profile or transfer funds from a stopped card.
@@ -64,7 +63,7 @@ export function CardLoads() {
             The balance available on your profile is R {clientSettings?.profile?.fromBalance?.toFixed(2) || '0.00'}
           </span>
         </p>
-      </Card>
+      </div>
 
       <div className="bg-white p-6 rounded-lg border border-border">
         {isLoading ? (
