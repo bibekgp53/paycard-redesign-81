@@ -13,12 +13,12 @@ export default function LoadFundsFrom() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-white p-6">
-        <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold text-paycard-navy">Load funds into card</h1>
         <p className="text-gray-600">
           Load funds into cards from your profile or transfer funds from a stopped card.
         </p>
-      </Card>
+      </div>
 
       <div className="flex flex-col gap-6">
         <button
@@ -28,20 +28,20 @@ export default function LoadFundsFrom() {
           }}
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
-          <Card className={`p-6 h-full border-2 ${
+          <Card className={`p-8 h-full border-2 shadow-lg hover:shadow-xl transition-all ${
             selectedLoadFundsToCard === "card-loads"
-              ? "border-paycard-salmon"
+              ? "border-paycard-salmon bg-paycard-salmon/5"
               : "hover:border-paycard-salmon border-transparent"
           }`}>
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-full bg-paycard-navy-100">
-                <Wallet className="h-6 w-6 text-paycard-navy" />
+            <div className="flex items-start gap-6">
+              <div className="p-4 rounded-full bg-paycard-navy-100">
+                <Wallet className="h-8 w-8 text-paycard-navy" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-paycard-navy mb-2">
+                <h3 className="text-2xl font-semibold text-paycard-navy mb-3">
                   Load funds from your profile
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-lg">
                   Transfer funds directly from your profile balance to cards
                 </p>
               </div>
@@ -56,20 +56,20 @@ export default function LoadFundsFrom() {
           }}
           className="text-left transition-all hover:scale-[1.02] focus:outline-none"
         >
-          <Card className={`p-6 h-full border-2 ${
+          <Card className={`p-8 h-full border-2 shadow-lg hover:shadow-xl transition-all ${
             selectedLoadFundsToCard === "search"
-              ? "border-paycard-salmon"
+              ? "border-paycard-salmon bg-paycard-salmon/5"
               : "hover:border-paycard-salmon border-transparent"
           }`}>
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-full bg-paycard-navy-100">
-                <CreditCard className="h-6 w-6 text-paycard-navy" />
+            <div className="flex items-start gap-6">
+              <div className="p-4 rounded-full bg-paycard-navy-100">
+                <CreditCard className="h-8 w-8 text-paycard-navy" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-paycard-navy mb-2">
+                <h3 className="text-2xl font-semibold text-paycard-navy mb-3">
                   Load funds from another card
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-lg">
                   Transfer remaining balance from a stopped card
                 </p>
               </div>
