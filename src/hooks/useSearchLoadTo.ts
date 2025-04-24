@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
+import { Json } from '@/integrations/supabase/types';
 
 export type SearchField = 'cardNumber' | 'cardholder' | 'idPassportNumber' | 'expiryDate' | 'referenceNumber';
 
@@ -14,6 +15,12 @@ export interface SearchResult {
 }
 
 export interface SearchMetadata {
+  total_count: number;
+  filtered_count: number;
+}
+
+interface SearchLoadToResponse {
+  records: SearchResult[];
   total_count: number;
   filtered_count: number;
 }
@@ -46,11 +53,14 @@ export const useSearchLoadTo = () => {
 
       if (rpcError) throw rpcError;
       
-      if (data) {
-        setResults(data.records || []);
+      // Cast the response to our expected type
+      const responseData = data as unknown as SearchLoadToResponse;
+      
+      if (responseData) {
+        setResults(responseData.records || []);
         setMetadata({
-          total_count: data.total_count,
-          filtered_count: data.filtered_count
+          total_count: responseData.total_count,
+          filtered_count: responseData.filtered_count
         });
       } else {
         setResults([]);
