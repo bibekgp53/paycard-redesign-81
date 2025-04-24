@@ -30,6 +30,7 @@ export default function AllocateCardsSearch() {
       const card = cards?.find(c => c.id === selectedCard);
       navigate("/cards/allocate/details", { 
         state: { 
+          id: card?.id,
           cardNumber: card?.card_number,
           sequenceNumber: card?.sequence_number,
           trackingNumber: card?.tracking_number,

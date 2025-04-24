@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,12 +14,6 @@ export default function AllocateCardsDetails() {
   const location = useLocation();
   const { id, cardNumber, sequenceNumber, trackingNumber, allocationType } = location.state || {};
   
-  // Add logging to debug the card ID issue
-  console.log("Card details page - card data:", { id, cardNumber });
-  
-  const currentStep = allocationType === "search" ? 2 : 1;
-  const totalSteps = allocationType === "search" ? 4 : 3;
-
   const form = useForm<CardAllocationFormData>({
     resolver: zodResolver(cardAllocationSchema),
     defaultValues: {
@@ -33,9 +26,6 @@ export default function AllocateCardsDetails() {
   });
 
   const onSubmit = (data: CardAllocationFormData) => {
-    console.log("Form submitted with data:", data);
-    console.log("Card ID to be allocated:", id);
-    
     navigate("/cards/allocate/confirm", { 
       state: { 
         formData: data,
@@ -80,11 +70,6 @@ export default function AllocateCardsDetails() {
         <CardContent className="p-6">
           <h2 className="text-2xl font-bold text-paycard-navy mb-6">Card holder details</h2>
           
-          {/* Debug information to verify card ID */}
-          <div className="bg-gray-100 p-2 mb-4 text-xs rounded">
-            <p>Card ID: {id || 'Missing'}</p>
-          </div>
-
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -160,7 +145,6 @@ export default function AllocateCardsDetails() {
               />
 
               <div className="mt-6 text-sm text-gray-600 space-y-1">
-                <p>Card ID: {id || '-'}</p>
                 <p>Card Number: {cardNumber || '-'}</p>
                 <p>Sequence Number: {sequenceNumber || '-'}</p>
                 <p>Tracking Number: {trackingNumber || '-'}</p>
