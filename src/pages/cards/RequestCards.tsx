@@ -29,8 +29,11 @@ const formSchema = z.object({
   postalCode: z.string().min(1, "Postal code is required"),
 })
 
+// Define the form values type from the schema
+type FormValues = z.infer<typeof formSchema>;
+
 export default function RequestCards() {
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       numberOfCards: "",
@@ -43,7 +46,7 @@ export default function RequestCards() {
     },
   })
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSubmit(values: FormValues) {
     toast({
       title: "Card Stack Request Submitted",
       description: `Requested ${values.numberOfCards} cards for ${values.recipientName}`,
