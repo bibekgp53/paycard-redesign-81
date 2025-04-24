@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -13,7 +14,7 @@ export default function LoadFundsTo() {
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const accountFrom = searchParams.get("accountFrom");
-  const { setIsFromSearch } = useSelectedCardsStore();
+  const { setIsFromSearch, clearSelectedCards } = useSelectedCardsStore();
 
   const { selectedLoadFundsToCard } = useLoadFundsToOptionStore();
 
@@ -27,6 +28,8 @@ export default function LoadFundsTo() {
 
   const handleCardLoadsClick = () => {
     try {
+      // Reset selected cards when changing option
+      clearSelectedCards();
       setIsFromSearch(false);
       navigate(`/load-funds-from/card-loads`);
     } catch (error) {
@@ -36,6 +39,8 @@ export default function LoadFundsTo() {
 
   const handleSearchClick = () => {
     try {
+      // Reset selected cards when changing option
+      clearSelectedCards();
       setIsFromSearch(true);
       navigate(`/load-funds-from/to/search-card`);
     } catch (error) {

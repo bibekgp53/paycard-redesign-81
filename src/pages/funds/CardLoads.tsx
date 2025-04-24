@@ -53,11 +53,12 @@ export function CardLoads() {
     return { amount: totalAmount, fee: totalFee, smsFee: totalSMS };
   }, [selectedLoads, cards, clientSettings]);
 
+  // Fix duplicate "Card Loads" in breadcrumb by removing one instance
   const breadcrumbItems = [
     { label: "Load Funds From", path: "/load-funds-from" },
     { label: "To", path: "/load-funds-from/to" },
-    { label: isFromSearch ? "Search Card" : "Card Loads", path: isFromSearch ? "/load-funds-from/to/search-card" : "/load-funds-from/to" },
-    { label: "Card Loads", isCurrentPage: true }
+    // Only one "Card Loads" entry is needed
+    { label: isFromSearch ? "Search Card" : "Card Loads", isCurrentPage: true }
   ];
 
   return (
