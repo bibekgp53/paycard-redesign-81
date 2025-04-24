@@ -46,11 +46,16 @@ export const useSearchLoadTo = () => {
 
       if (rpcError) throw rpcError;
       
-      if (data && Array.isArray(data.records)) {
-        setResults(data.records);
+      if (data && Array.isArray(data)) {
+        setResults(data);
+        
+        // Let's estimate total records based on the returned data
+        // Note: This is a temporary solution until the backend function is updated
+        // to return metadata alongside results
+        const estimatedTotal = Math.max(data.length + params.offset, params.offset + params.limit);
         setMetadata({
-          total_count: data.total_count,
-          filtered_count: data.filtered_count
+          total_count: estimatedTotal,
+          filtered_count: estimatedTotal
         });
       } else {
         setResults([]);

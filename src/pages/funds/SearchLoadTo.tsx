@@ -72,6 +72,7 @@ export default function SearchLoadTo() {
     setSelectedCards(checked ? results.map(card => card.account_card_id) : []);
   };
 
+  // Show all results if we have them, otherwise show 1 page
   const totalPages = metadata ? Math.ceil(metadata.filtered_count / pageSize) : 1;
 
   return (
