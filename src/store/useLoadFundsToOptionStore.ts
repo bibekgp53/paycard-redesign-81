@@ -1,5 +1,6 @@
 
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 type LoadFundsToCardOption = "card-loads" | "search";
 
@@ -8,8 +9,15 @@ interface LoadFundsToCardState {
   setSelectedLoadFundsToCard: (option: LoadFundsToCardOption) => void;
 }
 
-export const useLoadFundsToOptionStore = create<LoadFundsToCardState>((set) => ({
-  selectedLoadFundsToCard: null,
-  setSelectedLoadFundsToCard: (option) =>
-    set({ selectedLoadFundsToCard: option }),
-}));
+export const useLoadFundsToOptionStore = create<LoadFundsToCardState>()(
+  persist(
+    (set) => ({
+      selectedLoadFundsToCard: null,
+      setSelectedLoadFundsToCard: (option) =>
+        set({ selectedLoadFundsToCard: option }),
+    }),
+    {
+      name: "load-funds-options",
+    }
+  )
+);

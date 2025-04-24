@@ -1,7 +1,7 @@
 
-import React from "react";
+import React, { useEffect } from "react";
 import { Card } from "@/components/ui/card";
-import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Users, Search } from "lucide-react";
 import { 
   Breadcrumb,
@@ -16,15 +16,31 @@ import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 export default function LoadFundsTo() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const location = useLocation();
   const accountFrom = searchParams.get("accountFrom");
 
   // Zustand store for global selected option state
   const { selectedLoadFundsToCard } = useLoadFundsToOptionStore();
 
+  useEffect(() => {
+    console.log("LoadFundsTo mounted");
+    console.log("accountFrom param:", accountFrom);
+    console.log("selectedLoadFundsToCard:", selectedLoadFundsToCard);
+  }, [accountFrom, selectedLoadFundsToCard]);
+
   // For highlight, just read value from store.
   const handleLoadFundsClick = () => {
+    console.log("Navigate back to LoadFundsFrom");
     navigate(`/load-funds-from`);
+  };
+
+  const handleCardLoadsClick = () => {
+    console.log("Navigate to card loads with accountFrom:", accountFrom);
+    navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom || 'false'}`);
+  };
+
+  const handleSearchClick = () => {
+    console.log("Navigate to search with accountFrom:", accountFrom);
+    navigate(`/load-funds-from/search?accountFrom=${accountFrom || 'false'}`);
   };
 
   return (
@@ -50,13 +66,13 @@ export default function LoadFundsTo() {
 
       <div className="flex flex-col gap-6">
         <button
-          onClick={() => navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom}`)}
-          className="text-left transition-all hover:scale-[1.02] focus:outline-none"
+          onClick={handleCardLoadsClick}
+          className="text-left transition-all hover:scale-[1.01] focus:outline-none"
         >
           <Card className={`p-6 h-full border-2 ${
             selectedLoadFundsToCard === "card-loads"
               ? "border-paycard-salmon"
-              : "hover:border-paycard-salmon border-transparent"
+              : "border-paycard-navy-200 hover:border-paycard-salmon"
           }`}>
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-full bg-paycard-navy-100">
@@ -75,13 +91,13 @@ export default function LoadFundsTo() {
         </button>
 
         <button
-          onClick={() => navigate(`/load-funds-from/search?accountFrom=${accountFrom}`)}
-          className="text-left transition-all hover:scale-[1.02] focus:outline-none"
+          onClick={handleSearchClick}
+          className="text-left transition-all hover:scale-[1.01] focus:outline-none"
         >
           <Card className={`p-6 h-full border-2 ${
             selectedLoadFundsToCard === "search"
               ? "border-paycard-salmon"
-              : "hover:border-paycard-salmon border-transparent"
+              : "border-paycard-navy-200 hover:border-paycard-salmon"
           }`}>
             <div className="flex items-start gap-4">
               <div className="p-3 rounded-full bg-paycard-navy-100">

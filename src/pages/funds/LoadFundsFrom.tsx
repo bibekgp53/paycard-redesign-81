@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Wallet, CreditCard } from "lucide-react";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
+import { useEffect } from "react";
 
 export default function LoadFundsFrom() {
   const navigate = useNavigate();
@@ -10,6 +11,23 @@ export default function LoadFundsFrom() {
     selectedLoadFundsToCard,
     setSelectedLoadFundsToCard,
   } = useLoadFundsToOptionStore();
+
+  useEffect(() => {
+    console.log("LoadFundsFrom component mounted");
+    console.log("Initial selected option:", selectedLoadFundsToCard);
+  }, [selectedLoadFundsToCard]);
+
+  const handleCardLoadsClick = () => {
+    console.log("Card loads option clicked");
+    setSelectedLoadFundsToCard("card-loads");
+    navigate("/load-funds-from/to?accountFrom=false");
+  };
+
+  const handleSearchClick = () => {
+    console.log("Search option clicked");
+    setSelectedLoadFundsToCard("search");
+    navigate("/load-funds-from/to?accountFrom=true");
+  };
 
   return (
     <div className="space-y-6">
@@ -22,10 +40,7 @@ export default function LoadFundsFrom() {
 
       <div className="flex flex-col gap-6">
         <button
-          onClick={() => {
-            setSelectedLoadFundsToCard("card-loads");
-            navigate("/load-funds-from/to?accountFrom=false");
-          }}
+          onClick={handleCardLoadsClick}
           className="text-left transition-all hover:scale-[1.01] focus:outline-none"
         >
           <Card className={`p-8 h-full border-2 ${
@@ -50,10 +65,7 @@ export default function LoadFundsFrom() {
         </button>
 
         <button
-          onClick={() => {
-            setSelectedLoadFundsToCard("search");
-            navigate("/load-funds-from/to?accountFrom=true");
-          }}
+          onClick={handleSearchClick}
           className="text-left transition-all hover:scale-[1.01] focus:outline-none"
         >
           <Card className={`p-8 h-full border-2 ${
