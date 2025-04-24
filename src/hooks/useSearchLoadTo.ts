@@ -9,7 +9,7 @@ export interface SearchResult {
   cardholder: string;
   cardnumber: string;
   id_passport_number: string | null;
-  expiry_date: string | null;
+  expiry_date: string | null;  // This will handle the ISO date string returned by Supabase
   reference_number: string | null;
 }
 
