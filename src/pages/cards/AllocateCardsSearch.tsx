@@ -8,17 +8,28 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
-import { Pagination, PaginationContent, PaginationEllipsis, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from "@/components/ui/pagination";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const mockData = [
-  { cardNumber: "**** **** **** 1234", cardholder: "John Doe", expirationDate: "12/25", status: "not_allocated" },
-  { cardNumber: "**** **** **** 5678", cardholder: "Jane Smith", expirationDate: "03/24", status: "expired" },
-  // Add more mock data as needed
+  { id: "1", cardNumber: "161******631", cardholder: "Michael Parker", expirationDate: "2030-03-17", status: "EXPIRED" },
+  { id: "2", cardNumber: "941******708", cardholder: "Susan Bryant", expirationDate: "2029-10-04", status: "INACTIVE" },
+  { id: "3", cardNumber: "844******000", cardholder: "Maria Harris", expirationDate: "2029-02-17", status: "INACTIVE" },
+  { id: "4", cardNumber: "189******092", cardholder: "Michele Glass", expirationDate: "2026-11-30", status: "INACTIVE" },
+  { id: "5", cardNumber: "998******380", cardholder: "Brent Warren", expirationDate: "2028-03-20", status: "EXPIRED" },
+  { id: "6", cardNumber: "615******370", cardholder: "Lisa Martinez", expirationDate: "2029-03-30", status: "ACTIVE" },
+  { id: "7", cardNumber: "671******984", cardholder: "Tyler Murphy", expirationDate: "2028-06-03", status: "INACTIVE" },
 ];
 
 export default function AllocateCardsSearch() {
   const navigate = useNavigate();
-  
+  const [selectedCard, setSelectedCard] = useState<string | null>(null);
+
+  const handleContinue = () => {
+    if (selectedCard) {
+      navigate("/cards/allocate/details");
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
@@ -65,66 +76,54 @@ export default function AllocateCardsSearch() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="not_allocated">Not Allocated</SelectItem>
+                <SelectItem value="active">Active</SelectItem>
+                <SelectItem value="inactive">Inactive</SelectItem>
                 <SelectItem value="expired">Expired</SelectItem>
               </SelectContent>
             </Select>
           </div>
 
-          <div className="rounded-lg border">
+          <div className="rounded-lg border overflow-hidden">
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[50px]"></TableHead>
                   <TableHead>Card Number</TableHead>
-                  <TableHead>Cardholder</TableHead>
+                  <TableHead>Card Holder Name</TableHead>
                   <TableHead>Expiration Date</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {mockData.map((row, index) => (
-                  <TableRow key={row.cardNumber} className={index % 2 === 0 ? 'bg-white' : 'bg-[#F9FAFB]'}>
-                    <TableCell>{row.cardNumber}</TableCell>
-                    <TableCell>{row.cardholder}</TableCell>
-                    <TableCell>{row.expirationDate}</TableCell>
+                {mockData.map((card) => (
+                  <TableRow 
+                    key={card.id} 
+                    className={selectedCard === card.id ? 'bg-blue-50' : undefined}
+                  >
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedCard === card.id}
+                        onCheckedChange={() => setSelectedCard(card.id)}
+                      />
+                    </TableCell>
+                    <TableCell>{card.cardNumber}</TableCell>
+                    <TableCell>{card.cardholder}</TableCell>
+                    <TableCell>{card.expirationDate}</TableCell>
                     <TableCell>
                       <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                        row.status === 'not_allocated' 
-                          ? 'bg-yellow-100 text-yellow-800' 
-                          : 'bg-red-100 text-red-800'
+                        card.status === 'INACTIVE' 
+                          ? 'bg-yellow-100 text-yellow-800'
+                          : card.status === 'EXPIRED'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-green-100 text-green-800'
                       }`}>
-                        {row.status === 'not_allocated' ? 'Not Allocated' : 'Expired'}
+                        {card.status}
                       </span>
                     </TableCell>
                   </TableRow>
                 ))}
               </TableBody>
             </Table>
-          </div>
-
-          <div className="mt-6">
-            <Pagination>
-              <PaginationContent>
-                <PaginationItem>
-                  <PaginationPrevious href="#" />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#" isActive>1</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">2</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationLink href="#">3</PaginationLink>
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationEllipsis />
-                </PaginationItem>
-                <PaginationItem>
-                  <PaginationNext href="#" />
-                </PaginationItem>
-              </PaginationContent>
-            </Pagination>
           </div>
         </CardContent>
       </Card>
@@ -137,7 +136,8 @@ export default function AllocateCardsSearch() {
           Back
         </Button>
         <Button
-          onClick={() => navigate("/cards/allocate/details")}
+          onClick={handleContinue}
+          disabled={!selectedCard}
         >
           Continue
         </Button>
