@@ -50,7 +50,6 @@ export const useSearchLoadTo = () => {
 
       if (rpcError) throw rpcError;
       
-      // Cast the response to our expected type
       const responseData = data as unknown as SearchLoadToResponse;
       
       if (responseData) {
