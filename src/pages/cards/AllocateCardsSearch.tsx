@@ -33,7 +33,8 @@ export default function AllocateCardsSearch() {
         state: { 
           cardNumber: card?.cardNumber,
           sequenceNumber: card?.sequenceNumber,
-          trackingNumber: card?.trackingNumber
+          trackingNumber: card?.trackingNumber,
+          allocationType: "search"
         } 
       });
     }
@@ -58,7 +59,7 @@ export default function AllocateCardsSearch() {
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
         <h1 className="text-3xl font-bold text-paycard-navy">Allocate Card</h1>
-        <StepIndicator currentStep={2} totalSteps={5} />
+        <StepIndicator currentStep={2} totalSteps={4} />
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-8">

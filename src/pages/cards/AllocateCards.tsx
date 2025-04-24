@@ -1,10 +1,8 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { StepIndicator } from "@/components/ui/step-indicator";
 
 export default function AllocateCards() {
   const navigate = useNavigate();
@@ -18,7 +16,7 @@ export default function AllocateCards() {
     if (allocationType === "search") {
       navigate("/cards/allocate/search");
     } else {
-      navigate("/cards/allocate/details");
+      navigate("/cards/allocate/details", { state: { allocationType: "all" } });
     }
   };
 
@@ -26,7 +24,6 @@ export default function AllocateCards() {
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
         <h1 className="text-3xl font-bold text-paycard-navy">Allocate Card</h1>
-        <StepIndicator currentStep={1} totalSteps={3} />
       </div>
       
       <p className="text-lg text-gray-600 mb-8">
