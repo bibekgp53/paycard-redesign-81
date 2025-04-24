@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
@@ -28,8 +29,8 @@ export function CardLoads() {
   const { data: clientSettings, isLoading: clientLoading } = useLoadClientQuery();
   
   const { data: cards, isLoading: cardsLoading } = useLoadAllocatedCards({ 
-    accountFrom: !isFromSearch,
-    cardsToLoad: selectedCardIds
+    cardsToLoad: selectedCardIds,
+    transferFromAccountId: 0
   });
 
   const isLoading = userHeaderLoading || clientLoading || cardsLoading;
