@@ -1,4 +1,3 @@
-
 import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -61,7 +60,7 @@ export function Sidebar() {
             </div>
           </div>
           
-          <div className="flex flex-col gap-3 flex-1 min-h-0">
+          <div className="flex flex-col gap-1 flex-1 min-h-0"> {/* Reduced gap from gap-3 to gap-1 */}
             {/* Cards Group */}
             <SidebarGroup title="Cards" collapsible defaultCollapsed={false}>
               {cardMenuItems.map((item) => (
@@ -126,4 +125,3 @@ export function Sidebar() {
     </UISidebar>
   );
 }
-
