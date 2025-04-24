@@ -15,7 +15,11 @@ export default function AllocateCards() {
     if (!agreedToTerms) {
       return;
     }
-    navigate("/cards/allocate/details");
+    if (allocationType === "search") {
+      navigate("/cards/allocate/search");
+    } else {
+      navigate("/cards/allocate/details");
+    }
   };
 
   return (
@@ -32,19 +36,19 @@ export default function AllocateCards() {
       <div className="grid grid-cols-3 gap-4 mb-8">
         <Card className="bg-paycard-navy text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">30</div>
+            <div className="text-4xl font-bold mb-2">40</div>
             <div className="text-sm">Total Cards</div>
           </CardContent>
         </Card>
         <Card className="bg-paycard-salmon text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">18</div>
+            <div className="text-4xl font-bold mb-2">20</div>
             <div className="text-sm">Unallocated Cards</div>
           </CardContent>
         </Card>
         <Card className="border border-gray-200">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2 text-paycard-navy">12</div>
+            <div className="text-4xl font-bold mb-2 text-paycard-navy">10</div>
             <div className="text-sm text-gray-600">Allocated Cards</div>
           </CardContent>
         </Card>
