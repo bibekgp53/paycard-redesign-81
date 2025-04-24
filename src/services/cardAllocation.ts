@@ -113,7 +113,7 @@ export async function getCardCounts(): Promise<CardCounts> {
       return {
         total: 40,
         allocated: 12,
-        unallocated: 28
+        unallocated: 18
       };
     }
     
@@ -133,7 +133,7 @@ export async function getCardCounts(): Promise<CardCounts> {
     return {
       total: 40,
       allocated: 12, 
-      unallocated: 28
+      unallocated: 18
     };
   }
 }
