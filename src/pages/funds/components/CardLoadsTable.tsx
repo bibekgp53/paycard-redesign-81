@@ -125,7 +125,7 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
             <TableHead>Card Number</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Fee</TableHead>
-            <TableHead>Notify via SMS</TableHead>
+            <TableHead className="text-left">Notify via SMS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -171,8 +171,8 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
                   </div>
                 </TableCell>
                 <TableCell>{getFeeForCard(card.id)}</TableCell>
-                <TableCell>
-                  <div className="flex items-center justify-center h-6">
+                <TableCell className="text-left">
+                  <div className="flex items-center justify-start h-6">
                     <Checkbox
                       checked={smsChecked}
                       onCheckedChange={(checked: boolean) => handleSMSChange(card.id, checked)}
@@ -189,3 +189,5 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
     </div>
   );
 }
+
+export default CardLoadsTable;
