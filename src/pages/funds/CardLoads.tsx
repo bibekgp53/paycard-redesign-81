@@ -1,4 +1,3 @@
-
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
@@ -30,8 +29,7 @@ export function CardLoads() {
   // Get accountFrom parameter from URL and pass it to the hook
   const accountFrom = searchParams.get("accountFrom") === 'true';
   const { data: cards, isLoading: cardsLoading } = useLoadAllocatedCards({ 
-    accountFrom,
-    cardsToLoad: selectedLoads.map(load => load.accountCardId)
+    accountFrom
   });
 
   const isLoading = userHeaderLoading || clientLoading || cardsLoading;
