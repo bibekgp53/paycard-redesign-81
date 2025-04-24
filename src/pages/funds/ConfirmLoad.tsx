@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -136,6 +137,7 @@ export default function ConfirmLoad() {
     return <InvoiceDisplay {...invoiceMeta} />;
   }
 
+  // Updated breadcrumb to avoid duplicate "To" entries
   const breadcrumbItems = [
     { label: "Load Funds From", path: "/load-funds-from" },
     { label: "To", path: "/load-funds-from/to" },

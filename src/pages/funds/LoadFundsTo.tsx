@@ -8,15 +8,17 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { FundsPageHeader } from "./components/FundsPageHeader";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { useSelectedCardsStore } from "@/store/useSelectedCardsStore";
+import { useCardLoadsStore } from "@/store/useCardLoadsStore";
 
 export default function LoadFundsTo() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const accountFrom = searchParams.get("accountFrom");
+  
   const { setIsFromSearch, clearSelectedCards } = useSelectedCardsStore();
-
-  const { selectedLoadFundsToCard } = useLoadFundsToOptionStore();
+  const { resetCardLoadsState } = useCardLoadsStore();
+  const { selectedLoadFundsToCard, setSelectedLoadFundsToCard } = useLoadFundsToOptionStore();
 
   const handleLoadFundsClick = () => {
     try {
@@ -28,9 +30,11 @@ export default function LoadFundsTo() {
 
   const handleCardLoadsClick = () => {
     try {
-      // Reset selected cards when changing option
+      // Reset all state when changing option
       clearSelectedCards();
+      resetCardLoadsState();
       setIsFromSearch(false);
+      setSelectedLoadFundsToCard("card-loads");
       navigate(`/load-funds-from/card-loads`);
     } catch (error) {
       setError("Could not navigate to card loads");
@@ -39,9 +43,11 @@ export default function LoadFundsTo() {
 
   const handleSearchClick = () => {
     try {
-      // Reset selected cards when changing option
+      // Reset all state when changing option
       clearSelectedCards();
+      resetCardLoadsState();
       setIsFromSearch(true);
+      setSelectedLoadFundsToCard("search");
       navigate(`/load-funds-from/to/search-card`);
     } catch (error) {
       setError("Could not navigate to search");
