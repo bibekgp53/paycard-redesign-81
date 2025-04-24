@@ -1,24 +1,16 @@
+
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Search } from "lucide-react";
+import { AlertTriangle } from "lucide-react";
 import { SearchField, useSearchLoadTo } from "@/hooks/useSearchLoadTo";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { CardsPagination } from "./components/CardsPagination";
-import { FundsPageHeader } from "./components/FundsPageHeader"; // Import the new component
-
-const searchFields = [
-  { value: 'cardNumber', label: 'Card Number' },
-  { value: 'cardholder', label: 'Cardholder' },
-  { value: 'idPassportNumber', label: 'ID/Passport Number' },
-  { value: 'expiryDate', label: 'Card Expiry Date' },
-  { value: 'referenceNumber', label: 'Reference Number' },
-];
+import { FundsPageHeader } from "./components/FundsPageHeader";
+import { SearchCardForm } from "./components/SearchCardForm";
+import { SearchResultsTable } from "./components/SearchResultsTable";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export default function SearchLoadTo() {
   const navigate = useNavigate();
@@ -93,42 +85,18 @@ export default function SearchLoadTo() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <FundsPageHeader /> {/* Use the new reusable component */}
+      <FundsPageHeader />
 
       <Card className="mb-8 p-6">
         <h2 className="text-xl font-semibold text-paycard-navy mb-6">Search Card</h2>
         
-        <div className="flex gap-4 mb-6">
-          <Select value={searchField} onValueChange={(value) => setSearchField(value as SearchField)}>
-            <SelectTrigger className="w-[200px]">
-              <SelectValue placeholder="Select field" />
-            </SelectTrigger>
-            <SelectContent>
-              {searchFields.map((field) => (
-                <SelectItem key={field.value} value={field.value}>
-                  {field.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-            <Input
-              placeholder="Search..."
-              className="pl-10"
-              value={searchString}
-              onChange={(e) => setSearchString(e.target.value)}
-            />
-          </div>
-          <Button 
-            onClick={handleSearch} 
-            variant="secondary"  // Changed from default to accent variant
-          >
-            <Search className="h-4 w-4 mr-2" />
-            Search
-          </Button>
-        </div>
+        <SearchCardForm
+          searchField={searchField}
+          searchString={searchString}
+          onSearchFieldChange={setSearchField}
+          onSearchStringChange={setSearchString}
+          onSearch={handleSearch}
+        />
 
         {metadata && (
           <div className="text-sm text-gray-600 mb-4">
@@ -136,46 +104,12 @@ export default function SearchLoadTo() {
           </div>
         )}
 
-        <div className="rounded-lg overflow-hidden mb-6">  {/* Added mb-6 to create gap */}
-          <Table borderless>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="w-12">
-                  <div className="flex items-center justify-center h-4">
-                    <Checkbox
-                      checked={selectedCards.length === results.length && results.length > 0}
-                      onCheckedChange={handleSelectAll}
-                    />
-                  </div>
-                </TableHead>
-                <TableHead>Card Number</TableHead>
-                <TableHead>Card Holder</TableHead>
-                <TableHead>ID/Passport Number</TableHead>
-                <TableHead>Expiry Date</TableHead>
-                <TableHead>Reference Number</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {results.map((card) => (
-                <TableRow key={card.account_card_id}>
-                  <TableCell>
-                    <div className="flex items-center justify-center h-4">
-                      <Checkbox
-                        checked={selectedCards.includes(card.account_card_id)}
-                        onCheckedChange={() => toggleCardSelection(card.account_card_id)}
-                      />
-                    </div>
-                  </TableCell>
-                  <TableCell>{card.cardnumber}</TableCell>
-                  <TableCell>{card.cardholder}</TableCell>
-                  <TableCell>{card.id_passport_number}</TableCell>
-                  <TableCell>{card.expiry_date}</TableCell>
-                  <TableCell>{card.reference_number}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <SearchResultsTable
+          results={results}
+          selectedCards={selectedCards}
+          onToggleCard={toggleCardSelection}
+          onSelectAll={handleSelectAll}
+        />
 
         {metadata && metadata.filtered_count > pageSize && (
           <div className="mt-6">
@@ -187,7 +121,7 @@ export default function SearchLoadTo() {
           </div>
         )}
 
-        <div className="flex justify-between mt-6">  {/* Added mt-6 to create gap */}
+        <div className="flex justify-between mt-6">
           <Button 
             variant="outline" 
             onClick={handleLoadFundsClick}
@@ -197,7 +131,7 @@ export default function SearchLoadTo() {
           <Button 
             disabled={selectedCards.length === 0}
           >
-            Continue  {/* Changed from "Load Funds" to "Continue" */}
+            Continue
           </Button>
         </div>
       </Card>
