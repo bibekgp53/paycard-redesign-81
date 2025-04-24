@@ -1,3 +1,4 @@
+
 import { CreditCard, Wallet, Bell, LogOut, WalletCards } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -41,14 +42,17 @@ export function Sidebar() {
     <UISidebar 
       variant="full" 
       collapsible="none"
-      logoText={
-        <div className="flex items-center gap-2">
-          <CreditCard className="h-5 w-5 text-paycard-salmon" />
-          <span>Standard Bank PayCard</span>
-        </div>
-      }
+      // Instead of passing the JSX directly to logoText, we'll use the logoText prop correctly
+      // by passing a string, and adding the icon elsewhere or modifying the UISidebar component usage
     >
       <div className="flex flex-col h-full min-h-0">
+        {/* Add logo+text at the top of sidebar content */}
+        <div className="pt-6 pb-2 px-4">
+          <div className="flex items-center gap-2">
+            <CreditCard className="h-5 w-5 text-paycard-salmon" />
+            <span className="text-white font-semibold">Standard Bank PayCard</span>
+          </div>
+        </div>
         <SidebarContent>
           <div className="pt-0 p-0">
             <div className="text-sm text-gray-300 pb-0 pl-4">
