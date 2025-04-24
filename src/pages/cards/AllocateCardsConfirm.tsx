@@ -4,47 +4,99 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
+import { allocateCard, getCardCounts } from "@/services/cardAllocation";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
+import { useState } from "react";
+import { Loader2 } from "lucide-react";
+import { FlashMessage } from "@/components/ui/flash-message";
 
 export default function AllocateCardsConfirm() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { formData, cardNumber } = location.state || {};
+  const { formData, id, cardNumber, allocationType } = location.state || {};
+  const [isAllocating, setIsAllocating] = useState(false);
+  const [allocationError, setAllocationError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+
+  const currentStep = allocationType === "search" ? 3 : 2;
+  const totalSteps = allocationType === "search" ? 4 : 3;
+
+  const { data: cardCounts, isLoading: countsLoading } = useQuery({
+    queryKey: ['cardCounts'],
+    queryFn: getCardCounts
+  });
+
+  const { mutate: submitAllocation, isPending } = useMutation({
+    mutationFn: () => {
+      if (!id) {
+        throw new Error("Card ID is missing or invalid");
+      }
+      setAllocationError(null);
+      return allocateCard(id, formData);
+    },
+    onSuccess: () => {
+      toast.success("Card allocated successfully!");
+      // Invalidate queries to refresh data
+      queryClient.invalidateQueries({ queryKey: ['cardCounts'] });
+      queryClient.invalidateQueries({ queryKey: ['availableCards'] });
+      navigate("/cards/allocate/complete");
+    },
+    onError: (error) => {
+      setIsAllocating(false);
+      setAllocationError(error instanceof Error ? error.message : "Failed to allocate card. Please try again.");
+      toast.error("Failed to allocate card. Please try again.");
+      console.error("Allocation error:", error);
+    }
+  });
 
   const handleBack = () => {
     navigate(-1);
   };
 
   const handleConfirm = () => {
-    navigate("/cards/allocate/complete");
+    setIsAllocating(true);
+    submitAllocation();
   };
 
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
         <h1 className="text-3xl font-bold text-paycard-navy">Allocate Card</h1>
-        <StepIndicator currentStep={4} totalSteps={5} />
+        <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
         <Card className="bg-paycard-navy text-white">
           <div className="p-6">
-            <div className="text-4xl font-bold mb-2">40</div>
+            <div className="text-4xl font-bold mb-2">{countsLoading ? "..." : cardCounts?.total}</div>
             <div className="text-sm">Total Cards</div>
           </div>
         </Card>
         <Card className="bg-paycard-salmon text-white">
           <div className="p-6">
-            <div className="text-4xl font-bold mb-2">20</div>
+            <div className="text-4xl font-bold mb-2">{countsLoading ? "..." : cardCounts?.unallocated}</div>
             <div className="text-sm">Unallocated Cards</div>
           </div>
         </Card>
         <Card className="border border-gray-200">
           <div className="p-6">
-            <div className="text-4xl font-bold mb-2 text-paycard-navy">10</div>
+            <div className="text-4xl font-bold mb-2 text-paycard-navy">{countsLoading ? "..." : cardCounts?.allocated}</div>
             <div className="text-sm text-gray-600">Allocated Cards</div>
           </div>
         </Card>
       </div>
+
+      {allocationError && (
+        <div className="mb-4">
+          <FlashMessage 
+            type="error"
+            title="Allocation Error"
+            message={allocationError}
+            onClose={() => setAllocationError(null)}
+          />
+        </div>
+      )}
 
       <Card>
         <div className="p-6">
@@ -79,13 +131,22 @@ export default function AllocateCardsConfirm() {
             <Button
               variant="outline"
               onClick={handleBack}
+              disabled={isPending}
             >
               Back
             </Button>
             <Button
               onClick={handleConfirm}
+              disabled={isPending || isAllocating}
             >
-              CONFIRM
+              {isPending || isAllocating ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Allocating...
+                </>
+              ) : (
+                "CONFIRM"
+              )}
             </Button>
           </div>
         </div>
