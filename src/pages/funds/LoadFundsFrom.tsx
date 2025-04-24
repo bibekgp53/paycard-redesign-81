@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Wallet, CreditCard, AlertTriangle } from "lucide-react";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { FundsPageHeader } from "./components/FundsPageHeader"; // Import the new component
+import { FundsPageHeader } from "./components/FundsPageHeader";
 
 export default function LoadFundsFrom() {
   const navigate = useNavigate();
@@ -12,11 +12,13 @@ export default function LoadFundsFrom() {
   const {
     selectedLoadFundsToCard,
     setSelectedLoadFundsToCard,
+    setSelectedLoadFundsFrom
   } = useLoadFundsToOptionStore();
 
   const handleCardLoadsClick = () => {
     try {
       setSelectedLoadFundsToCard("card-loads");
+      setSelectedLoadFundsFrom("profile");
       navigate("/load-funds-from/to?accountFrom=false");
     } catch (error) {
       setError("Could not navigate to the selected page");
@@ -26,6 +28,7 @@ export default function LoadFundsFrom() {
   const handleSearchClick = () => {
     try {
       setSelectedLoadFundsToCard("search");
+      setSelectedLoadFundsFrom("card");
       navigate("/load-funds-from/to?accountFrom=true");
     } catch (error) {
       setError("Could not navigate to the selected page");

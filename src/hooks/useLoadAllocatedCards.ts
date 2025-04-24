@@ -2,18 +2,20 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AccountCard } from "@/graphql/types";
+import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 
 interface LoadAllocatedCardsParams {
-  accountFrom: boolean;
   transferFromAccountId?: number;
   cardsToLoad?: number[];
 }
 
 export const useLoadAllocatedCards = ({ 
-  accountFrom, 
   transferFromAccountId = 0, 
   cardsToLoad = [] 
 }: LoadAllocatedCardsParams) => {
+  const { selectedLoadFundsFrom } = useLoadFundsToOptionStore();
+  const accountFrom = selectedLoadFundsFrom === "card";
+  
   return useQuery({
     queryKey: ["loadAllocatedCards", accountFrom, transferFromAccountId, cardsToLoad],
     queryFn: async () => {
@@ -62,4 +64,3 @@ export const useLoadAllocatedCards = ({
     refetchOnWindowFocus: false
   });
 };
-
