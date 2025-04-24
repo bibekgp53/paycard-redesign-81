@@ -7,10 +7,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/
 import { Input } from "@/components/ui/input";
 
 const formSchema = z.object({
-  numberOfCards: z.string().transform((val) => {
-    const parsed = parseInt(val, 10);
-    return isNaN(parsed) ? 0 : parsed;
-  }),
+  numberOfCards: z.number().min(0).max(100),
   reference: z.string().optional(),
 });
 
@@ -20,7 +17,7 @@ export default function RequestCards() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      numberOfCards: "0", // This matches the string type before transform
+      numberOfCards: 0,
       reference: "",
     },
   });
@@ -39,7 +36,12 @@ export default function RequestCards() {
             <FormItem>
               <FormLabel>Number of Cards</FormLabel>
               <FormControl>
-                <Input placeholder="Number of Cards" {...field} />
+                <Input 
+                  type="number" 
+                  placeholder="Number of Cards" 
+                  {...field}
+                  onChange={(e) => field.onChange(Number(e.target.value))}
+                />
               </FormControl>
             </FormItem>
           )}
@@ -61,3 +63,4 @@ export default function RequestCards() {
     </Form>
   );
 }
+
