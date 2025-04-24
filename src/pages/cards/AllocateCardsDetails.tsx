@@ -14,6 +14,10 @@ export default function AllocateCardsDetails() {
   const location = useLocation();
   const { id, cardNumber, sequenceNumber, trackingNumber, allocationType } = location.state || {};
   
+  // Reintroduce currentStep and totalSteps
+  const currentStep = allocationType === "search" ? 2 : 1;
+  const totalSteps = allocationType === "search" ? 4 : 3;
+
   const form = useForm<CardAllocationFormData>({
     resolver: zodResolver(cardAllocationSchema),
     defaultValues: {
