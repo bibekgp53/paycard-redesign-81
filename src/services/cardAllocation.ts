@@ -15,6 +15,13 @@ export interface AvailableCard {
 
 export async function allocateCard(cardId: string, formData: CardAllocationFormData) {
   try {
+    console.log("Allocating card with ID:", cardId);
+    console.log("Form data:", formData);
+    
+    if (!cardId) {
+      throw new Error("Card ID is required for allocation");
+    }
+    
     // First update the card status to 'active'
     const { error: cardUpdateError } = await supabase
       .from('cards')
@@ -24,9 +31,19 @@ export async function allocateCard(cardId: string, formData: CardAllocationFormD
       })
       .eq('id', cardId);
       
-    if (cardUpdateError) throw cardUpdateError;
+    if (cardUpdateError) {
+      console.error("Card update error:", cardUpdateError);
+      throw cardUpdateError;
+    }
+    
+    console.log("Card updated successfully, now creating allocation record");
     
     // Then insert the allocation record with public RLS
+    const { data: userData } = await supabase.auth.getUser();
+    const userId = userData.user?.id;
+    
+    console.log("Current user ID:", userId);
+    
     const { error } = await supabase
       .from('card_allocations')
       .insert({
@@ -36,12 +53,16 @@ export async function allocateCard(cardId: string, formData: CardAllocationFormD
         id_number: formData.idNumber,
         cellphone: formData.cellphone,
         reference: formData.reference,
-        allocated_by: (await supabase.auth.getUser()).data.user?.id,
+        allocated_by: userId,
         status: 'allocated'
       });
 
-    if (error) throw error;
+    if (error) {
+      console.error("Allocation record insertion error:", error);
+      throw error;
+    }
     
+    console.log("Allocation completed successfully");
     return { success: true };
   } catch (error) {
     console.error("Allocation error details:", error);

@@ -15,6 +15,9 @@ export default function AllocateCardsDetails() {
   const location = useLocation();
   const { id, cardNumber, sequenceNumber, trackingNumber, allocationType } = location.state || {};
   
+  // Add logging to debug the card ID issue
+  console.log("Card details page - card data:", { id, cardNumber });
+  
   const currentStep = allocationType === "search" ? 2 : 1;
   const totalSteps = allocationType === "search" ? 4 : 3;
 
@@ -30,6 +33,9 @@ export default function AllocateCardsDetails() {
   });
 
   const onSubmit = (data: CardAllocationFormData) => {
+    console.log("Form submitted with data:", data);
+    console.log("Card ID to be allocated:", id);
+    
     navigate("/cards/allocate/confirm", { 
       state: { 
         formData: data,
@@ -73,6 +79,11 @@ export default function AllocateCardsDetails() {
       <Card className="mb-8">
         <CardContent className="p-6">
           <h2 className="text-2xl font-bold text-paycard-navy mb-6">Card holder details</h2>
+          
+          {/* Debug information to verify card ID */}
+          <div className="bg-gray-100 p-2 mb-4 text-xs rounded">
+            <p>Card ID: {id || 'Missing'}</p>
+          </div>
 
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
@@ -84,7 +95,7 @@ export default function AllocateCardsDetails() {
                     <FormItem>
                       <FormLabel className="text-paycard-navy">FIRST NAME *</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} required />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -97,7 +108,7 @@ export default function AllocateCardsDetails() {
                     <FormItem>
                       <FormLabel className="text-paycard-navy">SURNAME *</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} required />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -113,7 +124,7 @@ export default function AllocateCardsDetails() {
                     <FormItem>
                       <FormLabel className="text-paycard-navy">ID/PASSPORT NUMBER *</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} required />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -126,7 +137,7 @@ export default function AllocateCardsDetails() {
                     <FormItem>
                       <FormLabel className="text-paycard-navy">CELLPHONE NUMBER *</FormLabel>
                       <FormControl>
-                        <Input {...field} />
+                        <Input {...field} required />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

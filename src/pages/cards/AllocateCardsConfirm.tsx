@@ -19,8 +19,19 @@ export default function AllocateCardsConfirm() {
   const currentStep = allocationType === "search" ? 3 : 2;
   const totalSteps = allocationType === "search" ? 4 : 3;
 
+  // Add logging to help debug the card ID issue
+  console.log("Card allocation data:", { formData, id, cardNumber });
+
   const { mutate: submitAllocation, isPending } = useMutation({
-    mutationFn: () => allocateCard(id, formData),
+    mutationFn: () => {
+      // Make sure we have a valid ID before proceeding
+      if (!id) {
+        console.error("Missing card ID");
+        throw new Error("Card ID is missing or invalid");
+      }
+      
+      return allocateCard(id, formData);
+    },
     onSuccess: () => {
       toast.success("Card allocated successfully!");
       navigate("/cards/allocate/complete");
@@ -74,6 +85,11 @@ export default function AllocateCardsConfirm() {
           <h2 className="text-2xl font-bold text-paycard-navy mb-6">
             Confirm allocation
           </h2>
+
+          {/* Debug information to verify card ID */}
+          <div className="bg-gray-100 p-2 mb-4 text-xs rounded">
+            <p>Card ID: {id || 'Missing'}</p>
+          </div>
 
           <Table>
             <TableHeader>
