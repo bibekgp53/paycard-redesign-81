@@ -1,3 +1,4 @@
+
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -65,7 +66,7 @@ export function CardLoads() {
         </p>
       </Card>
 
-      <Card className="bg-white p-6">
+      <div className="bg-white p-6 rounded-lg border border-border">
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <Loader2 className="h-8 w-8 text-paycard-navy animate-spin" />
@@ -97,7 +98,7 @@ export function CardLoads() {
             />
           </>
         )}
-      </Card>
+      </div>
     </div>
   );
 }
