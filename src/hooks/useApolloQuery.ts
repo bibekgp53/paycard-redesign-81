@@ -18,3 +18,4 @@ export function useApolloQuery<TData = any, TVariables = any>(
     isError: !!error,
   };
 }
+

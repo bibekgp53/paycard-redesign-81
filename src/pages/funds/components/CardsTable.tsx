@@ -1,4 +1,3 @@
-
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell, TableFooter } from "@/components/ui/table";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -64,7 +63,7 @@ export const CardsTable = ({
                           className={`w-32 ${!isAmountValid(card.id, card.balance) ? 'border-paycard-red ring-1 ring-paycard-red' : ''}`}
                           value={amountInputs[card.id] || ""}
                           onChange={(e) => onAmountChange(card.id, e.target.value)}
-                          min={clientSettings?.details.clientMinCardLoad || 0}
+                          min={clientSettings?.details.clientMinimumCardLoad || 0}
                           step="0.01"
                         />
                       </TooltipTrigger>

@@ -1,6 +1,7 @@
 
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { CheckCircle2 } from "lucide-react";
 
 export default function AllocateCardsComplete() {
   const navigate = useNavigate();
@@ -9,64 +10,28 @@ export default function AllocateCardsComplete() {
     navigate("/dashboard");
   };
 
-  const handleAllocateMore = () => {
-    navigate("/cards/allocate");
-  };
-
-  const handleDepositFunds = () => {
-    // Navigate to deposit funds page when implemented
-    navigate("/dashboard");
-  };
-
-  const handleLoadFunds = () => {
-    // Navigate to load funds page when implemented
-    navigate("/dashboard");
-  };
-
   return (
     <div className="max-w-3xl mx-auto text-center">
       <div className="bg-white shadow-md rounded-lg p-8">
+        <div className="flex justify-center mb-6">
+          <CheckCircle2 className="w-16 h-16 text-green-500" />
+        </div>
+        
         <h1 className="text-3xl font-bold text-paycard-navy mb-4">
           Complete
         </h1>
         
         <p className="text-gray-600 mb-8">
-          1 cards where successfully allocated. You have 8 cards that can still be allocated.
+          1 card was successfully allocated.
         </p>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Button
-            variant="primary"
-            onClick={handleFinished}
-            fullWidth
-          >
-            I'M FINISHED
-          </Button>
-          
-          <Button
-            variant="secondary"
-            onClick={handleAllocateMore}
-            fullWidth
-          >
-            ALLOCATE MORE CARDS
-          </Button>
-          
-          <Button
-            variant="secondary"
-            onClick={handleDepositFunds}
-            fullWidth
-          >
-            DEPOSIT FUNDS
-          </Button>
-          
-          <Button
-            variant="secondary"
-            onClick={handleLoadFunds}
-            fullWidth
-          >
-            LOAD FUNDS
-          </Button>
-        </div>
+        <Button
+          variant="default"
+          className="w-48"
+          onClick={handleFinished}
+        >
+          I'M FINISHED
+        </Button>
       </div>
     </div>
   );

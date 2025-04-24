@@ -1,10 +1,11 @@
-import * as React from "react"
-import * as RadioGroupPrimitive from "@radix-ui/react-radio-group"
-import { Circle } from "lucide-react"
 
-import { cn } from "@/lib/utils"
+import React from "react";
+import * as RadioGroupPrimitive from "@radix-ui/react-radio-group";
+import { Circle } from "lucide-react";
+import { cn } from "@/lib/utils";
 
-const RadioGroup = React.forwardRef<
+// Shadcn components
+const RadioGroupBase = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Root>,
   React.ComponentPropsWithoutRef<typeof RadioGroupPrimitive.Root>
 >(({ className, ...props }, ref) => {
@@ -15,8 +16,8 @@ const RadioGroup = React.forwardRef<
       ref={ref}
     />
   )
-})
-RadioGroup.displayName = RadioGroupPrimitive.Root.displayName
+});
+RadioGroupBase.displayName = RadioGroupPrimitive.Root.displayName;
 
 const RadioGroupItem = React.forwardRef<
   React.ElementRef<typeof RadioGroupPrimitive.Item>,
@@ -36,7 +37,67 @@ const RadioGroupItem = React.forwardRef<
       </RadioGroupPrimitive.Indicator>
     </RadioGroupPrimitive.Item>
   )
-})
-RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName
+});
+RadioGroupItem.displayName = RadioGroupPrimitive.Item.displayName;
 
-export { RadioGroup, RadioGroupItem }
+// Custom RadioGroup component
+interface RadioOption {
+  value: string;
+  label: string;
+}
+
+interface RadioGroupProps {
+  name: string;
+  options: RadioOption[];
+  value?: string;
+  onChange?: (value: string) => void;
+  label?: string;
+  error?: string;
+  helpText?: string;
+  className?: string;
+  inline?: boolean;
+}
+
+function RadioGroup({
+  name,
+  options,
+  value,
+  onChange,
+  label,
+  error,
+  helpText,
+  className,
+  inline = false,
+}: RadioGroupProps) {
+  const handleChange = (value: string) => {
+    if (onChange) {
+      onChange(value);
+    }
+  };
+
+  return (
+    <div className={cn("mb-4", className)}>
+      {label && (
+        <p className="block text-sm font-medium font-poppins text-paycard-navy mb-2">{label}</p>
+      )}
+      <RadioGroupBase value={value} onValueChange={handleChange} className={cn("space-y-2", inline && "flex space-y-0 space-x-6")}>
+        {options.map((option) => (
+          <div key={option.value} className="flex items-center space-x-2">
+            <RadioGroupItem value={option.value} id={`${name}-${option.value}`} />
+            <label
+              htmlFor={`${name}-${option.value}`}
+              className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+            >
+              {option.label}
+            </label>
+          </div>
+        ))}
+      </RadioGroupBase>
+      {error && <p className="mt-1 text-sm font-poppins text-paycard-red body-small">{error}</p>}
+      {helpText && !error && <p className="mt-1 text-sm font-poppins text-gray-500 body-small">{helpText}</p>}
+    </div>
+  );
+}
+
+// Export both versions
+export { RadioGroupBase, RadioGroupItem, RadioGroup };

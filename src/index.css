@@ -1,42 +1,33 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Removed Gilroy font-face, only Poppins is used */
 
-@import url('https://fonts.googleapis.com/css2?family=Gilroy:wght@400;500;600;700&display=swap');
+/* Removed the following as it's already included in index.html:
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+*/
 
+/* Layer base configuration */
 @layer base {
   :root {
     /* PayCard colors applied to Shadcn variables */
     --background: 0 0% 100%;
     --foreground: 215 62% 15%;
-
     --card: 0 0% 100%;
     --card-foreground: 215 62% 15%;
-
     --popover: 0 0% 100%;
     --popover-foreground: 215 62% 15%;
-
     --primary: 215 62% 15%;
     --primary-foreground: 0 0% 100%;
-
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 215 62% 15%;
-
     --muted: 0 0% 96.1%;
     --muted-foreground: 215 25% 46.9%;
-
     --accent: 5 89% 70%;
     --accent-foreground: 0 0% 100%;
-
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-
     --border: 215 14% 84%;
     --input: 215 14% 84%;
     --ring: 215 62% 15%;
-
     --radius: 0.375rem;
-
     --sidebar-background: 215 62% 15%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 5 89% 70%;
@@ -52,37 +43,20 @@
   * {
     @apply border-border;
   }
-
   html, body {
-    @apply font-gilroy bg-background text-foreground antialiased;
+    @apply font-poppins bg-background text-foreground antialiased;
   }
-  
-  h1 {
-    @apply text-5xl font-bold leading-[64px];
-  }
-  
-  h2 {
-    @apply text-4xl font-bold leading-[52px];
-  }
-  
-  h3 {
-    @apply text-3xl font-bold leading-[44px];
-  }
-  
-  h4 {
-    @apply text-2xl font-bold leading-[40px];
-  }
-  
-  h5 {
-    @apply text-xl font-bold leading-[32px];
-  }
-  
-  h6 {
-    @apply text-lg font-bold leading-[28px];
-  }
-  
-  p {
-    @apply text-base leading-[24px];
+  h1 { @apply text-5xl font-bold leading-[64px]; }
+  h2 { @apply text-4xl font-bold leading-[52px]; }
+  h3 { @apply text-3xl font-bold leading-[44px]; }
+  h4 { @apply text-2xl font-bold leading-[40px]; }
+  h5 { @apply text-xl font-bold leading-[32px]; }
+  h6 { @apply text-lg font-bold leading-[28px]; }
+  p  { @apply text-base leading-[24px]; }
+  input,
+  select,
+  .input-field {
+    @apply rounded-md;
   }
 }
 
@@ -90,40 +64,52 @@
   .btn-primary {
     @apply bg-paycard-navy text-white rounded px-4 py-2 hover:bg-paycard-navy-800 transition-colors;
   }
-  
   .btn-secondary {
     @apply bg-white text-paycard-navy border border-paycard-navy rounded px-4 py-2 hover:bg-paycard-navy-100 transition-colors;
   }
-  
   .btn-accent {
     @apply bg-paycard-salmon text-white rounded px-4 py-2 hover:bg-opacity-90 transition-colors;
   }
-  
   .input-field {
     @apply border border-paycard-navy-200 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-paycard-navy-500;
   }
-  
-  .status-blue {
-    @apply bg-paycard-blue text-white;
-  }
-  
-  .status-green {
-    @apply bg-paycard-green text-white;
-  }
-  
-  .status-orange {
-    @apply bg-paycard-orange text-white;
-  }
-  
-  .status-red {
-    @apply bg-paycard-red text-white;
-  }
-  
-  .paycard-container {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
-  }
-  
-  .paycard-card {
-    @apply bg-white rounded-lg shadow-md p-6;
-  }
+  .status-blue { @apply bg-paycard-blue text-white; }
+  .status-green { @apply bg-paycard-green text-white; }
+  .status-orange { @apply bg-paycard-orange text-white; }
+  .status-red { @apply bg-paycard-red text-white; }
+  .paycard-container { @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8; }
+  .paycard-card { @apply bg-white rounded-lg shadow-md p-6; }
+  .pcard-status-badge { @apply text-xs font-semibold px-2.5 py-0.5 rounded-full; }
+  .pcard-status-badge-blue { @apply pcard-status-badge bg-pcard-status-blue text-white; }
+  .pcard-status-badge-green { @apply pcard-status-badge bg-pcard-status-green text-white; }
+  .pcard-status-badge-orange { @apply pcard-status-badge bg-pcard-status-orange text-white; }
+  .pcard-status-badge-red { @apply pcard-status-badge bg-pcard-status-red text-white; }
+  .pcard-color-card { @apply rounded-card shadow-sm flex flex-col h-44 overflow-hidden; }
+  .pcard-color-card-body { @apply flex-1 p-5 flex flex-col justify-between; }
+  .pcard-color-card-footer { @apply h-[50px] flex; }
+  .pcard-color-card-footer-half { @apply w-1/2 flex items-center justify-center; }
 }
+
+@layer utilities {
+  .headline-1   { @apply font-bold text-[56px] leading-[64px]; }
+  .headline-2   { @apply font-bold text-[44px] leading-[52px]; }
+  .headline-3   { @apply font-bold text-[36px] leading-[44px]; }
+  .headline-4   { @apply font-bold text-[32px] leading-[40px]; }
+  .headline-5   { @apply font-bold text-[24px] leading-[32px]; }
+  .headline-6   { @apply font-bold text-[20px] leading-[24px]; }
+  .perex        { @apply font-medium text-[16px] leading-[24px]; }
+  .body-text    { @apply font-medium text-[14px] leading-[20px]; }
+  .body-small   { @apply font-medium text-[12px] leading-[16px]; }
+  .link-1       { @apply font-bold text-[14px] leading-[20px]; }
+  .link-2       { @apply font-bold text-[12px] leading-[16px]; }
+  .link-3       { @apply font-bold text-[18px] leading-[24px]; }
+  .button-1     { @apply font-semibold text-[18px] leading-[28px]; }
+  .button-2     { @apply font-semibold text-[16px] leading-[24px]; }
+  .button-3     { @apply font-semibold text-[14px] leading-[20px]; }
+  .input-1      { @apply font-medium text-[14px] leading-[20px]; }
+  .input-2      { @apply font-medium text-[12px] leading-[16px]; }
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

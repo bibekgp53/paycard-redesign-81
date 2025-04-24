@@ -1,26 +1,132 @@
-import * as React from "react"
-import * as SliderPrimitive from "@radix-ui/react-slider"
 
-import { cn } from "@/lib/utils"
+import React from 'react';
+import { Slider as ShadcnSlider } from '@radix-ui/react-slider';
+import { cn } from '@/lib/utils';
 
-const Slider = React.forwardRef<
-  React.ElementRef<typeof SliderPrimitive.Root>,
-  React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root>
->(({ className, ...props }, ref) => (
-  <SliderPrimitive.Root
-    ref={ref}
-    className={cn(
-      "relative flex w-full touch-none select-none items-center",
-      className
-    )}
-    {...props}
-  >
-    <SliderPrimitive.Track className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary">
-      <SliderPrimitive.Range className="absolute h-full bg-primary" />
-    </SliderPrimitive.Track>
-    <SliderPrimitive.Thumb className="block h-5 w-5 rounded-full border-2 border-primary bg-background ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50" />
-  </SliderPrimitive.Root>
-))
-Slider.displayName = SliderPrimitive.Root.displayName
+interface SliderProps {
+  value: number[];
+  onValueChange: (values: number[]) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  label?: string;
+  showValue?: boolean;
+  className?: string;
+  disabled?: boolean;
+  showTooltip?: boolean;
+  showLabels?: boolean;
+  // For range slider functionality
+  range?: boolean;
+  rangeValues?: [number, number];
+  onRangeChange?: (values: [number, number]) => void;
+}
 
-export { Slider }
+export function Slider({
+  value,
+  onValueChange,
+  min = 0,
+  max = 100,
+  step = 1,
+  label,
+  showValue = false,
+  className,
+  disabled = false,
+  showTooltip = false,
+  showLabels = false,
+  range = false,
+  rangeValues,
+  onRangeChange,
+}: SliderProps) {
+  // Handle rendering value display
+  const displayValue = React.useMemo(() => {
+    if (range && rangeValues) {
+      return `${rangeValues[0]} - ${rangeValues[1]}`;
+    }
+    return Array.isArray(value) ? value[0] : value;
+  }, [value, range, rangeValues]);
+
+  return (
+    <div className={cn("space-y-2", className)}>
+      <div className="flex justify-between items-center">
+        {label && (
+          <label className="text-sm font-medium font-poppins text-paycard-navy">{label}</label>
+        )}
+        {showValue && (
+          <span className="text-sm font-poppins text-paycard-navy">
+            {displayValue}
+          </span>
+        )}
+      </div>
+
+      {/* If using range slider functionality */}
+      {range && rangeValues && onRangeChange ? (
+        <div className="relative w-full py-4">
+          {showLabels && (
+            <div className="flex justify-between text-xs text-pcard-blue-700 mb-2">
+              <span className="text-paycard-navy-400">{min}</span>
+              <span className="text-paycard-navy-400">{max}</span>
+            </div>
+          )}
+
+          <ShadcnSlider
+            value={rangeValues}
+            max={max}
+            min={min}
+            step={step}
+            onValueChange={(values) => {
+              if (values.length >= 2) {
+                onRangeChange([values[0], values[1]]);
+              }
+            }}
+            disabled={disabled}
+            className="w-full h-2"
+            style={{}}
+          >
+            <div slot="track" className="h-2 w-full bg-paycard-navy-150 rounded-full" />
+            <div slot="range" className="h-2 bg-paycard-salmon rounded-full" />
+            <div slot="thumb" className="bg-paycard-salmon border-2 border-white w-5 h-5 rounded-full shadow" />
+          </ShadcnSlider>
+
+          {showTooltip && (
+            <div className="flex justify-between mt-2 text-xs text-pcard-blue-700">
+              <span>{rangeValues[0]}</span>
+              <span>{rangeValues[1]}</span>
+            </div>
+          )}
+        </div>
+      ) : (
+        <>
+          <ShadcnSlider
+            value={value}
+            max={max}
+            min={min}
+            step={step}
+            onValueChange={onValueChange}
+            disabled={disabled}
+            className="w-full h-2"
+            style={{}}
+          >
+            <div slot="track" className="h-2 w-full bg-paycard-navy-150 rounded-full" />
+            <div slot="range" className="h-2 bg-paycard-salmon rounded-full" />
+            <div slot="thumb" className="bg-paycard-salmon border-2 border-white w-5 h-5 rounded-full shadow" />
+          </ShadcnSlider>
+
+          {showTooltip && (
+            <div className="absolute mt-1 left-1/2 -translate-x-1/2 px-2 py-1 bg-pcard-blue-600 text-white rounded text-xs whitespace-nowrap">
+              {Array.isArray(value) ? value[0] : value}
+            </div>
+          )}
+
+          {min !== undefined && max !== undefined && showLabels && (
+            <div className="flex justify-between">
+              <span className="text-xs text-paycard-navy-400">{min}</span>
+              <span className="text-xs text-paycard-navy-400">{max}</span>
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
+}
+
+export default Slider;

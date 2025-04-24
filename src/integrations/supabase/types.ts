@@ -13,34 +13,40 @@ export type Database = {
         Row: {
           account_card_id: number
           account_card_mtd: number
+          account_from: boolean | null
           balance: number
           card_number: string
           cardholder: string
           created_at: string
           fica_validation: string
           id: string
+          transfer_from_account_id: number | null
           updated_at: string
         }
         Insert: {
           account_card_id: number
           account_card_mtd: number
+          account_from?: boolean | null
           balance: number
           card_number: string
           cardholder: string
           created_at?: string
           fica_validation: string
           id?: string
+          transfer_from_account_id?: number | null
           updated_at?: string
         }
         Update: {
           account_card_id?: number
           account_card_mtd?: number
+          account_from?: boolean | null
           balance?: number
           card_number?: string
           cardholder?: string
           created_at?: string
           fica_validation?: string
           id?: string
+          transfer_from_account_id?: number | null
           updated_at?: string
         }
         Relationships: []
@@ -118,31 +124,100 @@ export type Database = {
       }
       client_settings: {
         Row: {
+          client_allows_sms_notifications: boolean | null
           client_max_balance: number
+          client_maximum_mtd: number | null
+          client_merchant_number: string | null
+          client_merchant_transfers: string | null
           client_min_card_load: number
+          client_previous_transfers: number | null
           client_sms_cost: number
+          client_terminal_id: string | null
           client_transfer_fee: number
           created_at: string
+          effective_date: string | null
+          effective_stop_date: string | null
           id: string
+          transfer_uuid: string | null
           updated_at: string
         }
         Insert: {
+          client_allows_sms_notifications?: boolean | null
           client_max_balance: number
+          client_maximum_mtd?: number | null
+          client_merchant_number?: string | null
+          client_merchant_transfers?: string | null
           client_min_card_load: number
+          client_previous_transfers?: number | null
           client_sms_cost?: number
+          client_terminal_id?: string | null
           client_transfer_fee: number
           created_at?: string
+          effective_date?: string | null
+          effective_stop_date?: string | null
           id?: string
+          transfer_uuid?: string | null
           updated_at?: string
         }
         Update: {
+          client_allows_sms_notifications?: boolean | null
           client_max_balance?: number
+          client_maximum_mtd?: number | null
+          client_merchant_number?: string | null
+          client_merchant_transfers?: string | null
           client_min_card_load?: number
+          client_previous_transfers?: number | null
           client_sms_cost?: number
+          client_terminal_id?: string | null
           client_transfer_fee?: number
           created_at?: string
+          effective_date?: string | null
+          effective_stop_date?: string | null
           id?: string
+          transfer_uuid?: string | null
           updated_at?: string
+        }
+        Relationships: []
+      }
+      load_funds: {
+        Row: {
+          account_from: boolean
+          cards: Json
+          cards_to_load: number[]
+          created_at: string
+          end_date: string
+          id: string
+          process_delay: number
+          process_type: number
+          start_date: string
+          transfer_from_account_id: number
+          transfer_uuid: string
+        }
+        Insert: {
+          account_from: boolean
+          cards: Json
+          cards_to_load: number[]
+          created_at?: string
+          end_date: string
+          id?: string
+          process_delay: number
+          process_type: number
+          start_date: string
+          transfer_from_account_id: number
+          transfer_uuid: string
+        }
+        Update: {
+          account_from?: boolean
+          cards?: Json
+          cards_to_load?: number[]
+          created_at?: string
+          end_date?: string
+          id?: string
+          process_delay?: number
+          process_type?: number
+          start_date?: string
+          transfer_from_account_id?: number
+          transfer_uuid?: string
         }
         Relationships: []
       }
@@ -151,6 +226,8 @@ export type Database = {
           business_name: string | null
           created_at: string
           email: string | null
+          from_account: string | null
+          from_balance: number | null
           id: string
           name: string | null
           phone: string | null
@@ -161,6 +238,8 @@ export type Database = {
           business_name?: string | null
           created_at?: string
           email?: string | null
+          from_account?: string | null
+          from_balance?: number | null
           id?: string
           name?: string | null
           phone?: string | null
@@ -171,6 +250,8 @@ export type Database = {
           business_name?: string | null
           created_at?: string
           email?: string | null
+          from_account?: string | null
+          from_balance?: number | null
           id?: string
           name?: string | null
           phone?: string | null
@@ -185,7 +266,7 @@ export type Database = {
     }
     Functions: {
       get_load_client: {
-        Args: { account_from?: boolean; transfer_from_account_id?: number }
+        Args: { account_from: boolean; transfer_from_account_id: number }
         Returns: Json
       }
       get_user_header: {
@@ -198,21 +279,21 @@ export type Database = {
       }
       search_load_allocated: {
         Args: {
-          account_from?: boolean
-          transfer_from_account_id?: number
-          limit?: number
-          offset?: number
+          p_account_from: boolean
+          p_transfer_from_account_id: number
+          p_limit: number
+          p_offset: number
         }
         Returns: {
           id: string
-          accountcardid: number
-          accountcardmtd: number
+          account_card_id: number
+          account_card_mtd: string
           balance: number
           cardholder: string
           cardnumber: string
-          ficavalidation: string
-          createdat: string
-          updatedat: string
+          fica_validation: string
+          created_at: string
+          updated_at: string
         }[]
       }
     }

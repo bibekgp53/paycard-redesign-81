@@ -1,7 +1,8 @@
 import * as React from "react"
+import { ReactNode } from "react"
 import { Slot } from "@radix-ui/react-slot"
 import { VariantProps, cva } from "class-variance-authority"
-import { PanelLeft } from "lucide-react"
+import { PanelLeft, ChevronRight } from "lucide-react"
 
 import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
@@ -158,8 +159,11 @@ const Sidebar = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
     side?: "left" | "right"
-    variant?: "sidebar" | "floating" | "inset"
+    variant?: "sidebar" | "floating" | "inset" | "full" | "collapsed" | "mobile"
     collapsible?: "offcanvas" | "icon" | "none"
+    username?: string
+    logoText?: string
+    logoTagline?: string
   }
 >(
   (
@@ -169,11 +173,50 @@ const Sidebar = React.forwardRef<
       collapsible = "offcanvas",
       className,
       children,
+      username,
+      logoText = 'PayCard',
+      logoTagline,
       ...props
     },
     ref
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar()
+    
+    // Custom sidebar styling
+    if (variant === "full" || variant === "collapsed" || variant === "mobile") {
+      const width = variant === 'collapsed' ? 'w-[86px]' : variant === 'mobile' ? 'w-full' : 'w-[244px]';
+      
+      return (
+        <div 
+          ref={ref}
+          className={cn(
+            `${width} h-full bg-paycard-navy flex flex-col`,
+            className
+          )}
+          {...props}
+        >
+          {/* Logo Section */}
+          <div className="p-6 flex items-center">
+            <div className="bg-paycard-salmon h-8 w-8 rounded"></div>
+            {variant !== 'collapsed' && (
+              <div className="ml-2">
+                <h1 className="text-sidebar-foreground font-black text-xl">{logoText}</h1>
+                {!!logoTagline && (
+                  <p className="text-paycard-salmon text-xs font-semibold">{logoTagline}</p>
+                )}
+              </div>
+            )}
+          </div>
+          
+          {/* Navigation Section */}
+          <div className="flex-1 overflow-y-auto">
+            {children}
+          </div>
+          
+          {/* Removed the unnecessary footer section that caused the empty space */}
+        </div>
+      );
+    }
 
     if (collapsible === "none") {
       return (
@@ -226,8 +269,7 @@ const Sidebar = React.forwardRef<
             "group-data-[collapsible=offcanvas]:w-0",
             "group-data-[side=right]:rotate-180",
             variant === "floating" || variant === "inset"
-              ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]"
-              : "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
+              ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]": "group-data-[collapsible=icon]:w-[--sidebar-width-icon]"
           )}
         />
         <div
@@ -411,18 +453,65 @@ const SidebarContent = React.forwardRef<
 })
 SidebarContent.displayName = "SidebarContent"
 
+// Unified SidebarGroup component that supports both standard and custom functionality
 const SidebarGroup = React.forwardRef<
   HTMLDivElement,
-  React.ComponentProps<"div">
->(({ className, ...props }, ref) => {
+  React.ComponentProps<"div"> & {
+    title?: string;
+    children?: ReactNode;
+    collapsible?: boolean;
+    defaultCollapsed?: boolean;
+  }
+>(({ className, title, children, collapsible = false, defaultCollapsed = false, ...props }, ref) => {
+  const [collapsed, setCollapsed] = React.useState(defaultCollapsed);
+
+  const toggleCollapsed = () => {
+    if (collapsible) {
+      setCollapsed(!collapsed);
+    }
+  };
+
+  // If title exists, render as a custom collapsible group
+  if (title !== undefined) {
+    return (
+      <div ref={ref} className={cn("mb-4", className)} {...props}>
+        {title && (
+          <div 
+            className={cn(
+              "flex items-center px-4 py-2 text-xs font-semibold uppercase text-sidebar-foreground/70",
+              collapsible && "cursor-pointer hover:text-sidebar-foreground"
+            )}
+            onClick={toggleCollapsed}
+          >
+            {title}
+            {collapsible && (
+              <ChevronRight 
+                className={cn(
+                  "ml-auto h-4 w-4 transition-transform",
+                  !collapsed && "transform rotate-90"
+                )} 
+              />
+            )}
+          </div>
+        )}
+        <div className={cn(collapsed ? "hidden" : "block")}>
+          {children}
+        </div>
+      </div>
+    );
+  }
+
+  // Standard group for shadcn/ui sidebar
   return (
     <div
       ref={ref}
       data-sidebar="group"
       className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
       {...props}
-    />
-  )
+    >
+      {children}
+    </div>
+  );
 })
 SidebarGroup.displayName = "SidebarGroup"
 
@@ -733,7 +822,38 @@ const SidebarMenuSubButton = React.forwardRef<
 })
 SidebarMenuSubButton.displayName = "SidebarMenuSubButton"
 
-export {
+// SidebarItem component for the custom sidebar style
+const SidebarItem = React.forwardRef<
+  HTMLDivElement,
+  React.ComponentProps<"div"> & {
+    label: string;
+    active?: boolean;
+    icon?: ReactNode;
+    onClick?: () => void;
+  }
+>(
+  ({ label, active = false, icon, onClick, className, ...props }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "flex items-center px-4 py-2 cursor-pointer text-sidebar-foreground hover:bg-paycard-navy-600 transition-colors",
+          active && "bg-paycard-navy-600 text-paycard-salmon border-l-4 border-l-paycard-salmon pl-3",
+          className
+        )}
+        onClick={onClick}
+        {...props}
+      >
+        {icon && <span className="mr-3">{icon}</span>}
+        <span className="font-medium text-sm">{label}</span>
+      </div>
+    );
+  }
+);
+SidebarItem.displayName = "SidebarItem";
+
+// Export all sidebar components from one file
+export { 
   Sidebar,
   SidebarContent,
   SidebarFooter,
@@ -758,4 +878,5 @@ export {
   SidebarSeparator,
   SidebarTrigger,
   useSidebar,
+  SidebarItem
 }

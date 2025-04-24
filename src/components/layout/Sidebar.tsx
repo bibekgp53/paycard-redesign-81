@@ -1,8 +1,14 @@
 
-import { CreditCard, Users, FileText, Settings, Wallet, UserCircle, Bell, LogOut } from "lucide-react";
+import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
-import { ScrollArea } from "@/components/ui/scroll-area";
+import { 
+  Sidebar as UISidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarItem
+} from "@/components/ui/sidebar";
+import { cn } from "@/lib/utils";
 
 export function Sidebar() {
   const location = useLocation();
@@ -16,106 +22,79 @@ export function Sidebar() {
     );
   };
 
-  const isActive = (path: string, submenuItems?: { path: string }[]) => {
-    // If there are submenus, parent is only active if *not* on submenu
-    if (submenuItems && submenuItems.length > 0 && isSubmenuActive(submenuItems)) {
-      return false;
-    }
+  const isActive = (path: string) => {
     if (path === "/") {
       return location.pathname === "/";
     }
-    if (path === "/cards") {
-      return location.pathname === "/cards";
-    }
     if (path === "/load-funds-from") {
-      return location.pathname === "/load-funds-from";
+      return location.pathname === "/load-funds-from" || location.pathname.startsWith("/load-funds-from");
     }
     return location.pathname === path;
   };
 
   const menuItems = [
-    { icon: CreditCard, label: "Cards", path: "/cards", submenuItems: [
-      { label: "Link Cards", path: "/cards/link" },
-      { label: "Allocate Cards", path: "/cards/allocate" }
-    ]},
-    { icon: Wallet, label: "Funds", path: "/load-funds-from", submenuItems: [
-      { label: "Load Funds to Cards", path: "/load-funds-from" }
-    ]},
-    { icon: Users, label: "Profiles", path: "/profiles" },
-    { icon: FileText, label: "Reports", path: "/reports" },
-    { icon: Settings, label: "Settings", path: "/settings" },
+    { icon: CreditCard, label: "Link Cards", path: "/cards/link" },
+    { icon: LinkIcon, label: "Allocate Cards", path: "/cards/allocate" }, // Changed icon to LinkIcon
+    { icon: WalletCards, label: "Load Funds to Cards", path: "/load-funds-from" },
+    { icon: Package, label: "Request Cards", path: "/cards/request" },
   ];
 
   return (
-    <aside className="bg-paycard-navy text-white w-64 h-screen hidden md:flex md:flex-col">
-      {/* Logo and Balance Section */}
-      <div className="p-4">
-        <Link to="/" className="mb-4 block">
-          <span className="text-xl font-bold">Standard Bank PayCard</span>
-        </Link>
-        <div className="text-sm text-gray-300 p-3">
-          Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
+    <UISidebar 
+      variant="full" 
+      collapsible="none"
+    >
+      <div className="flex flex-col h-full min-h-0">
+        {/* Header section */}
+        <div className="p-2 flex items-center gap-2">
+          <span className="text-paycard-navy font-semibold text-xl">PayCard</span>
         </div>
-      </div>
 
-      {/* Scrollable Navigation Menu */}
-      <ScrollArea className="flex-1 px-4">
-        <ul className="space-y-2">
-          {menuItems.map((item) => (
-            <li key={item.path}>
-              <Link
-                to={item.path}
-                className={`flex items-center p-3 rounded-md transition-colors ${
-                  isActive(item.path, item.submenuItems)
-                    ? "bg-paycard-salmon text-white"
-                    : "hover:bg-paycard-navy-800"
-                }`}
-              >
-                <item.icon size={18} className="mr-3" />
-                {item.label}
-              </Link>
-              {item.submenuItems && (
-                <ul className="ml-7 mt-2 space-y-2">
-                  {item.submenuItems.map((subItem) => (
-                    <li key={subItem.path}>
-                      <Link
-                        to={subItem.path}
-                        className={`flex items-center p-2 rounded-md transition-colors ${
-                          (location.pathname === subItem.path ||
-                            (subItem.path === "/load-funds-from" &&
-                              location.pathname.startsWith("/load-funds-from")))
-                            ? "bg-paycard-salmon text-white"
-                            : "hover:bg-paycard-navy-800"
-                        }`}
-                      >
-                        <item.icon size={16} className="mr-3" />
-                        {subItem.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          ))}
-        </ul>
-      </ScrollArea>
-
-      {/* User Section at Bottom */}
-      <div className="border-t border-paycard-navy-800 p-4">
-        <div className="flex items-center justify-between">
-          <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
-            <Bell size={20} />
-          </button>
-          <div className="flex items-center">
-            <UserCircle size={24} className="mr-2" />
-            <span className="text-sm">{userHeader?.fullName || 'Admin User'}</span>
+        <SidebarContent>
+          <div className="pt-0 p-0 -mt-1"> {/* Reduced top margin */}
+            <div className="text-sm text-gray-300 pb-2 pl-4">
+              Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
+            </div>
           </div>
-          <button className="hover:text-paycard-salmon p-2 rounded-md transition-colors">
-            <LogOut size={20} />
-          </button>
+          <div className="flex flex-col gap-3 flex-1 min-h-0"> {/* Increased gap between menu items */}
+            {menuItems.map((item) => (
+              <div key={item.path} className="mb-0">
+                <Link to={item.path}>
+                  <SidebarItem
+                    label={item.label}
+                    icon={<item.icon size={18} />}
+                    active={isActive(item.path)}
+                    className={cn(
+                      "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
+                      isActive(item.path)
+                        ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
+                        : "text-gray-300"
+                    )}
+                    style={{ minHeight: 32, paddingTop: 4, paddingBottom: 4 }}
+                  />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </SidebarContent>
+
+        {/* Footer section */}
+        <div className="mt-auto border-t border-paycard-navy-800">
+          <div className="p-0">
+            <div className="flex items-center justify-between gap-2 min-h-[40px] pl-4 pr-2">
+              <span className="text-gray-300 text-sm leading-none">Test User</span>
+              <div className="flex items-center gap-1">
+                <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
+                  <Bell size={18} />
+                </button>
+                <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
+                  <LogOut size={18} />
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-    </aside>
+    </UISidebar>
   );
 }
-

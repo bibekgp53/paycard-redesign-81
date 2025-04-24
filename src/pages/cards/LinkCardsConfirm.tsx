@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/custom/Button";
+import { Button } from "@/components/ui/button";
 import { CheckCircle2 } from "lucide-react";
 import { useApolloMutation } from "@/hooks/useApolloMutation";
 import { LINK_CARD_LINKS } from "@/graphql/cards";
@@ -128,7 +128,7 @@ const LinkCardsConfirm = () => {
             <p className="text-gray-600 mb-8">
               {cards.length} cards have been linked to profile {formData.profileNumber}.
             </p>
-            <Button variant="primary" onClick={handleDone}>
+            <Button variant="default" onClick={handleDone}>
               Return to Dashboard
             </Button>
           </div>
@@ -182,7 +182,7 @@ const LinkCardsConfirm = () => {
                 Back
               </Button>
               <Button
-                variant="primary"
+                variant="default"
                 onClick={handleConfirm}
                 disabled={isSubmitting}
               >

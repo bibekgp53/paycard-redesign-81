@@ -19,6 +19,9 @@ import LoadFundsFrom from "./pages/funds/LoadFundsFrom";
 import LoadFundsTo from "./pages/funds/LoadFundsTo";
 import CardLoads from "./pages/funds/CardLoads";
 import ConfirmLoad from "./pages/funds/ConfirmLoad";
+import DesignSystem from "./pages/DesignSystem";
+import RequestCards from "./pages/cards/RequestCards"
+import AllocateCardsSearch from "./pages/cards/AllocateCardsSearch";
 
 const queryClient = new QueryClient();
 
@@ -37,15 +40,20 @@ const App = () => (
             <Route path="/cards/link" element={<MainLayout><LinkCardsForm /></MainLayout>} />
             <Route path="/cards/link/confirm" element={<MainLayout><LinkCardsConfirm /></MainLayout>} />
             <Route path="/cards/allocate" element={<MainLayout><AllocateCards /></MainLayout>} />
+            <Route path="/cards/allocate/search" element={<MainLayout><AllocateCardsSearch /></MainLayout>} />
             <Route path="/cards/allocate/details" element={<MainLayout><AllocateCardsDetails /></MainLayout>} />
             <Route path="/cards/allocate/confirm" element={<MainLayout><AllocateCardsConfirm /></MainLayout>} />
             <Route path="/cards/allocate/complete" element={<MainLayout><AllocateCardsComplete /></MainLayout>} />
+            <Route path="/cards/request" element={<MainLayout><RequestCards /></MainLayout>} />
             
             {/* Funds Management */}
             <Route path="/load-funds-from" element={<MainLayout><LoadFundsFrom /></MainLayout>} />
             <Route path="/load-funds-from/to" element={<MainLayout><LoadFundsTo /></MainLayout>} />
             <Route path="/load-funds-from/card-loads" element={<MainLayout><CardLoads /></MainLayout>} />
             <Route path="/load-funds-from/card-loads/confirm-load" element={<MainLayout><ConfirmLoad /></MainLayout>} />
+            
+            {/* Design System */}
+            <Route path="/design-system" element={<DesignSystem />} />
             
             {/* Default page for unimplemented sections */}
             <Route path="/cards" element={<MainLayout><Dashboard /></MainLayout>} />
