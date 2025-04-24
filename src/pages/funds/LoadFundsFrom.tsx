@@ -1,8 +1,10 @@
+
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Wallet, CreditCard } from "lucide-react";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
+import { toast } from "@/components/ui/use-toast";
 
 export default function LoadFundsFrom() {
   const navigate = useNavigate();
@@ -12,13 +14,29 @@ export default function LoadFundsFrom() {
   } = useLoadFundsToOptionStore();
 
   const handleCardLoadsClick = () => {
-    setSelectedLoadFundsToCard("card-loads");
-    navigate("/load-funds-from/to?accountFrom=false");
+    try {
+      setSelectedLoadFundsToCard("card-loads");
+      navigate("/load-funds-from/to?accountFrom=false");
+    } catch (error) {
+      toast({
+        title: "Navigation error",
+        description: "Could not navigate to the selected page",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSearchClick = () => {
-    setSelectedLoadFundsToCard("search");
-    navigate("/load-funds-from/to?accountFrom=true");
+    try {
+      setSelectedLoadFundsToCard("search");
+      navigate("/load-funds-from/to?accountFrom=true");
+    } catch (error) {
+      toast({
+        title: "Navigation error",
+        description: "Could not navigate to the selected page",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

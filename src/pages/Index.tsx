@@ -1,12 +1,23 @@
+
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 
 const Index = () => {
   const navigate = useNavigate();
   
   useEffect(() => {
-    // Redirect to the dashboard page
-    navigate("/dashboard", { replace: true });
+    try {
+      // Redirect to the dashboard page with error handling
+      navigate("/dashboard", { replace: true });
+    } catch (error) {
+      console.error("Navigation error:", error);
+      toast({
+        title: "Navigation error",
+        description: "Could not navigate to dashboard. Please try refreshing the page.",
+        variant: "destructive",
+      });
+    }
   }, [navigate]);
   
   return (

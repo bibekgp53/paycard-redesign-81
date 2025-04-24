@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -11,6 +12,7 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
+import { toast } from "@/components/ui/use-toast";
 
 export default function LoadFundsTo() {
   const navigate = useNavigate();
@@ -20,15 +22,39 @@ export default function LoadFundsTo() {
   const { selectedLoadFundsToCard } = useLoadFundsToOptionStore();
 
   const handleLoadFundsClick = () => {
-    navigate(`/load-funds-from`);
+    try {
+      navigate(`/load-funds-from`);
+    } catch (error) {
+      toast({
+        title: "Navigation error",
+        description: "Could not navigate to the previous page",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleCardLoadsClick = () => {
-    navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom || 'false'}`);
+    try {
+      navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom || 'false'}`);
+    } catch (error) {
+      toast({
+        title: "Navigation error",
+        description: "Could not navigate to card loads",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleSearchClick = () => {
-    navigate(`/load-funds-from/search?accountFrom=${accountFrom || 'false'}`);
+    try {
+      navigate(`/load-funds-from/search?accountFrom=${accountFrom || 'false'}`);
+    } catch (error) {
+      toast({
+        title: "Navigation error",
+        description: "Could not navigate to search",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
