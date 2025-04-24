@@ -4,14 +4,6 @@ import { supabase } from '@/integrations/supabase/client';
 
 export type SearchField = 'cardNumber' | 'cardholder' | 'idPassportNumber' | 'expiryDate' | 'referenceNumber';
 
-interface SearchParams {
-  searchField: SearchField;
-  searchString: string;
-  orderByField: SearchField;
-  offset: number;
-  limit: number;
-}
-
 export interface SearchResult {
   account_card_id: number;
   cardholder: string;
@@ -26,7 +18,13 @@ export const useSearchLoadTo = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const searchCards = async (params: SearchParams) => {
+  const searchCards = async (params: {
+    searchField: SearchField;
+    searchString: string;
+    orderByField: SearchField;
+    offset: number;
+    limit: number;
+  }) => {
     try {
       setLoading(true);
       setError(null);

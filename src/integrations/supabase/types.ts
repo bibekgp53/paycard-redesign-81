@@ -431,18 +431,12 @@ export type Database = {
           p_limit: number
         }
         Returns: {
-          id: string
           account_card_id: number
-          account_card_mtd: string
-          balance: number
           cardholder: string
           cardnumber: string
           id_passport_number: string
           expiry_date: string
           reference_number: string
-          fica_validation: string
-          created_at: string
-          updated_at: string
         }[]
       }
     }
