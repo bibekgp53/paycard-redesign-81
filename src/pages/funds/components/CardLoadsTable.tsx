@@ -1,3 +1,4 @@
+
 import { useCardLoadsStore, SelectedLoad } from "@/store/useCardLoadsStore";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -125,7 +126,7 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
             <TableHead>Card Number</TableHead>
             <TableHead>Amount</TableHead>
             <TableHead>Fee</TableHead>
-            <TableHead className="text-left">Notify via SMS</TableHead>
+            <TableHead className="text-center w-24">Notify via SMS</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -171,8 +172,8 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
                   </div>
                 </TableCell>
                 <TableCell>{getFeeForCard(card.id)}</TableCell>
-                <TableCell className="text-left">
-                  <div className="flex items-center justify-start h-6">
+                <TableCell className="text-center w-24">
+                  <div className="flex items-center justify-center h-6">
                     <Checkbox
                       checked={smsChecked}
                       onCheckedChange={(checked: boolean) => handleSMSChange(card.id, checked)}
