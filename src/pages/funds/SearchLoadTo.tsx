@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -73,19 +74,15 @@ export default function SearchLoadTo() {
   });
 
   const handleContinue = async () => {
-    if (selectedCards.length === 1) {
+    if (selectedCards.length > 0) {
       try {
         setProcessingContinue(true);
-        // Get the selected card's account_card_id
-        const selectedCard = results.find(card => card.account_card_id === selectedCards[0]);
         
-        if (selectedCard) {
-          // Invalidate the loadAllocatedCards query to force a refetch with new parameters
-          await queryClient.invalidateQueries({ queryKey: ["loadAllocatedCards"] });
-          
-          // Navigate to the card loads page
-          navigate("/load-funds-from/card-loads?accountFrom=false");
-        }
+        // Invalidate the loadAllocatedCards query to force a refetch with new parameters
+        await queryClient.invalidateQueries({ queryKey: ["loadAllocatedCards"] });
+        
+        // Navigate to the card loads page with selected cards
+        navigate("/load-funds-from/card-loads?accountFrom=false");
       } catch (err) {
         console.error("Error in continue process:", err);
       } finally {
@@ -149,7 +146,7 @@ export default function SearchLoadTo() {
           </Button>
           <Button 
             onClick={handleContinue}
-            disabled={selectedCards.length !== 1 || processingContinue}
+            disabled={selectedCards.length === 0 || processingContinue}
           >
             {processingContinue ? 'Processing...' : 'Continue'}
           </Button>
