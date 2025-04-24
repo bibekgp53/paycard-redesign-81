@@ -434,14 +434,7 @@ export type Database = {
           p_offset: number
           p_limit: number
         }
-        Returns: {
-          account_card_id: number
-          cardholder: string
-          cardnumber: string
-          id_passport_number: string
-          expiry_date: string
-          reference_number: string
-        }[]
+        Returns: Json
       }
     }
     Enums: {
