@@ -1,3 +1,4 @@
+
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
@@ -5,7 +6,7 @@ import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
 import { useCardLoadsStore } from "@/store/useCardLoadsStore";
 import { CardLoadsTable } from "./components/CardLoadsTable";
 import { CardLoadsActionPanel } from "./components/CardLoadsActionPanel";
-import React from "react";
+import React, { useEffect } from "react";
 import { CardsPagination } from "./components/CardsPagination";
 import { Loader2 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
@@ -22,14 +23,21 @@ export function CardLoads() {
     selectedDate,
   } = useCardLoadsStore();
 
+  // Parse URL parameters
+  const accountFrom = searchParams.get("accountFrom") === 'true';
+  const selectedCardsParam = searchParams.get("selectedCards");
+  const cardsToLoad = selectedCardsParam ? 
+    selectedCardsParam.split(',').map(id => parseInt(id, 10)) : 
+    [];
+
   const pageSize = 10;
   const { data: userHeader, isLoading: userHeaderLoading } = useUserHeaderQuery();
   const { data: clientSettings, isLoading: clientLoading } = useLoadClientQuery();
   
-  // Get accountFrom parameter from URL and pass it to the hook
-  const accountFrom = searchParams.get("accountFrom") === 'true';
+  // Only pass cardsToLoad if we have any
   const { data: cards, isLoading: cardsLoading } = useLoadAllocatedCards({ 
-    accountFrom
+    accountFrom,
+    ...(cardsToLoad.length > 0 && { cardsToLoad })
   });
 
   const isLoading = userHeaderLoading || clientLoading || cardsLoading;

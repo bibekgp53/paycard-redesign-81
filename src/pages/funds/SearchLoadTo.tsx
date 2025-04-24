@@ -68,21 +68,23 @@ export default function SearchLoadTo() {
   const totalPages = metadata ? Math.ceil(metadata.filtered_count / pageSize) : 1;
 
   const accountFrom = searchParams.get('accountFrom') === 'true';
-  const { data: allocatedCards } = useLoadAllocatedCards({ 
-    accountFrom,
-    cardsToLoad: selectedCards
-  });
+  
+  // We won't fetch allocated cards data here anymore to avoid duplicate API calls
+  // This data will be fetched directly in CardLoads.tsx
 
-  const handleContinue = async () => {
+  const handleContinue = () => {
     if (selectedCards.length > 0) {
       try {
         setProcessingContinue(true);
         
-        // Invalidate the loadAllocatedCards query to force a refetch with new parameters
-        await queryClient.invalidateQueries({ queryKey: ["loadAllocatedCards"] });
+        // Instead of invalidating query, we'll pass the selected cards as URL params
+        const searchParams = new URLSearchParams();
+        searchParams.append('accountFrom', String(accountFrom));
+        // Add selected cards as a comma-separated string
+        searchParams.append('selectedCards', selectedCards.join(','));
         
         // Navigate to the card loads page with selected cards
-        navigate("/load-funds-from/card-loads?accountFrom=false");
+        navigate(`/load-funds-from/card-loads?${searchParams.toString()}`);
       } catch (err) {
         console.error("Error in continue process:", err);
       } finally {
