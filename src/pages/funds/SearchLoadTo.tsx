@@ -126,6 +126,16 @@ export default function SearchLoadTo() {
             </Button>
           </div>
 
+          {metadata && (
+            <div className="text-sm text-gray-600 mb-4">
+              {metadata.filtered_count === metadata.total_count ? (
+                <p>Showing all {metadata.total_count} records</p>
+              ) : (
+                <p>Showing {metadata.filtered_count} results from {metadata.total_count} total records</p>
+              )}
+            </div>
+          )}
+
           <div className="rounded-lg border overflow-hidden">
             <Table borderless>
               <TableHeader>
@@ -164,11 +174,13 @@ export default function SearchLoadTo() {
           </div>
 
           {metadata && metadata.filtered_count > pageSize && (
-            <CardsPagination
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            <div className="mt-6">
+              <CardsPagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+            </div>
           )}
         </div>
       </Card>
