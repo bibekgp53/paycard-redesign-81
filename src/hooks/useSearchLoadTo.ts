@@ -9,12 +9,18 @@ export interface SearchResult {
   cardholder: string;
   cardnumber: string;
   id_passport_number: string | null;
-  expiry_date: string | null;  // This will handle the ISO date string returned by Supabase
+  expiry_date: string | null;
   reference_number: string | null;
+}
+
+export interface SearchMetadata {
+  total_count: number;
+  filtered_count: number;
 }
 
 export const useSearchLoadTo = () => {
   const [results, setResults] = useState<SearchResult[]>([]);
+  const [metadata, setMetadata] = useState<SearchMetadata | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +45,17 @@ export const useSearchLoadTo = () => {
         });
 
       if (rpcError) throw rpcError;
-      setResults(data || []);
+      
+      if (data && Array.isArray(data.records)) {
+        setResults(data.records);
+        setMetadata({
+          total_count: data.total_count,
+          filtered_count: data.filtered_count
+        });
+      } else {
+        setResults([]);
+        setMetadata(null);
+      }
     } catch (err) {
       console.error('Error searching cards:', err);
       setError('Failed to search cards');
@@ -48,5 +64,5 @@ export const useSearchLoadTo = () => {
     }
   };
 
-  return { results, loading, error, searchCards };
+  return { results, metadata, loading, error, searchCards };
 };

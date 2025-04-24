@@ -9,6 +9,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Search } from "lucide-react";
 import { SearchField, useSearchLoadTo } from "@/hooks/useSearchLoadTo";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { CardsPagination } from "./components/CardsPagination";
 
 const searchFields = [
   { value: 'cardNumber', label: 'Card Number' },
@@ -21,18 +22,33 @@ const searchFields = [
 export default function SearchLoadTo() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { results, loading, error, searchCards } = useSearchLoadTo();
+  const { results, metadata, loading, error, searchCards } = useSearchLoadTo();
   const [searchField, setSearchField] = useState<SearchField>('cardNumber');
   const [searchString, setSearchString] = useState('');
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
 
   const handleSearch = () => {
+    const offset = (currentPage - 1) * pageSize;
     searchCards({
       searchField,
       searchString,
       orderByField: searchField,
-      offset: 0,
-      limit: 10
+      offset,
+      limit: pageSize
+    });
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    const offset = (page - 1) * pageSize;
+    searchCards({
+      searchField,
+      searchString,
+      orderByField: searchField,
+      offset,
+      limit: pageSize
     });
   };
 
@@ -55,6 +71,8 @@ export default function SearchLoadTo() {
   const handleSelectAll = (checked: boolean) => {
     setSelectedCards(checked ? results.map(card => card.account_card_id) : []);
   };
+
+  const totalPages = metadata ? Math.ceil(metadata.filtered_count / pageSize) : 1;
 
   return (
     <div className="space-y-6">
@@ -108,7 +126,7 @@ export default function SearchLoadTo() {
           </div>
 
           <div className="rounded-lg border overflow-hidden">
-            <Table>
+            <Table borderless>
               <TableHeader>
                 <TableRow>
                   <TableHead className="w-12">
@@ -143,6 +161,14 @@ export default function SearchLoadTo() {
               </TableBody>
             </Table>
           </div>
+
+          {metadata && metadata.filtered_count > pageSize && (
+            <CardsPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
       </Card>
 
