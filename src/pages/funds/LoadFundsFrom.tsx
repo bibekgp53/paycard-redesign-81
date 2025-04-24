@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Wallet, CreditCard } from "lucide-react";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
-import { RadioGroupItem, RadioGroup } from "@/components/ui/radio-group";
+import { RadioGroupBase as RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function LoadFundsFrom() {
   const navigate = useNavigate();
