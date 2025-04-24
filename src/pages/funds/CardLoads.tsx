@@ -1,4 +1,4 @@
-import React from "react";
+
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -7,6 +7,7 @@ import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
 import { useCardLoadsStore } from "@/store/useCardLoadsStore";
 import { CardLoadsTable } from "./components/CardLoadsTable";
 import { CardLoadsActionPanel } from "./components/CardLoadsActionPanel";
+import React from "react";
 import { CardsPagination } from "./components/CardsPagination";
 import { Loader2 } from "lucide-react";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
@@ -65,7 +66,7 @@ export function CardLoads() {
         </p>
       </Card>
 
-      <div className="bg-white p-6">
+      <div className="bg-white p-6 rounded-lg border border-border">
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <Loader2 className="h-8 w-8 text-paycard-navy animate-spin" />
