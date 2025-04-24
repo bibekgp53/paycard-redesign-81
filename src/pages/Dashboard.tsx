@@ -1,10 +1,13 @@
-
 import { CreditCard, Users, FileText } from "lucide-react";
+import { TestMenu } from "@/components/test-menu/TestMenu";
 
 const Dashboard = () => {
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold text-paycard-navy">Dashboard</h1>
+      <div className="flex justify-between items-center">
+        <h1 className="text-3xl font-bold text-paycard-navy">Dashboard</h1>
+        <TestMenu />
+      </div>
       
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <DashboardCard
