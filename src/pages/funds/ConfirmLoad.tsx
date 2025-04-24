@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -140,8 +139,10 @@ export default function ConfirmLoad() {
   const breadcrumbItems = [
     { label: "Load Funds From", path: "/load-funds-from" },
     { label: "To", path: "/load-funds-from/to" },
-    { label: isFromSearch ? "Search Card" : "To", path: isFromSearch ? "/load-funds-from/to/search-card" : "/load-funds-from/to" },
-    { label: "Card Loads", path: "/load-funds-from/card-loads" },
+    { 
+      label: isFromSearch ? "Search Card" : "Card Loads", 
+      path: isFromSearch ? "/load-funds-from/to/search-card" : "/load-funds-from/card-loads" 
+    },
     { label: "Confirm Load", isCurrentPage: true }
   ];
 
