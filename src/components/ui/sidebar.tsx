@@ -473,11 +473,6 @@ const SidebarGroup = React.forwardRef<
     }
   };
 
-  // Check if any child item is active
-  const hasActiveChild = React.Children.toArray(children).some((child: any) => 
-    child.props && child.props.active
-  );
-
   // If title exists, render as a custom collapsible group
   if (title !== undefined) {
     return (
@@ -495,11 +490,9 @@ const SidebarGroup = React.forwardRef<
               <ChevronRight 
                 className={cn(
                   "ml-auto h-4 w-4 transition-transform",
-                  collapsed 
-                    ? hasActiveChild 
-                      ? "text-paycard-salmon" // Active color when collapsed
-                      : "text-[#8E9196]" // Neutral gray when collapsed
-                    : "transform rotate-90 text-[#8E9196]" // Neutral gray when expanded
+                  collapsed
+                    ? "text-paycard-salmon" // Salmon when collapsed
+                    : "text-[#8E9196]" // Neutral gray when expanded
                 )} 
               />
             )}
