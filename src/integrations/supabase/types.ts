@@ -18,8 +18,11 @@ export type Database = {
           card_number: string
           cardholder: string
           created_at: string
+          expiry_date: string | null
           fica_validation: string
           id: string
+          id_passport_number: string | null
+          reference_number: string | null
           transfer_from_account_id: number | null
           updated_at: string
         }
@@ -31,8 +34,11 @@ export type Database = {
           card_number: string
           cardholder: string
           created_at?: string
+          expiry_date?: string | null
           fica_validation: string
           id?: string
+          id_passport_number?: string | null
+          reference_number?: string | null
           transfer_from_account_id?: number | null
           updated_at?: string
         }
@@ -44,12 +50,65 @@ export type Database = {
           card_number?: string
           cardholder?: string
           created_at?: string
+          expiry_date?: string | null
           fica_validation?: string
           id?: string
+          id_passport_number?: string | null
+          reference_number?: string | null
           transfer_from_account_id?: number | null
           updated_at?: string
         }
         Relationships: []
+      }
+      card_allocations: {
+        Row: {
+          allocated_by: string | null
+          card_id: string
+          cellphone: string
+          created_at: string | null
+          first_name: string
+          id: string
+          id_number: string
+          reference: string | null
+          status: Database["public"]["Enums"]["allocation_status"] | null
+          surname: string
+          updated_at: string | null
+        }
+        Insert: {
+          allocated_by?: string | null
+          card_id: string
+          cellphone: string
+          created_at?: string | null
+          first_name: string
+          id?: string
+          id_number: string
+          reference?: string | null
+          status?: Database["public"]["Enums"]["allocation_status"] | null
+          surname: string
+          updated_at?: string | null
+        }
+        Update: {
+          allocated_by?: string | null
+          card_id?: string
+          cellphone?: string
+          created_at?: string | null
+          first_name?: string
+          id?: string
+          id_number?: string
+          reference?: string | null
+          status?: Database["public"]["Enums"]["allocation_status"] | null
+          surname?: string
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "card_allocations_card_id_fkey"
+            columns: ["card_id"]
+            isOneToOne: false
+            referencedRelation: "cards"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       card_links: {
         Row: {
@@ -311,6 +370,17 @@ export type Database = {
         Args: { request_id: string; card_count: number }
         Returns: string[]
       }
+      get_available_cards: {
+        Args: { search_term?: string; page_size?: number; page_number?: number }
+        Returns: {
+          id: string
+          card_number: string
+          sequence_number: string
+          tracking_number: string
+          status: string
+          total_count: number
+        }[]
+      }
       get_load_client: {
         Args: { account_from: boolean; transfer_from_account_id: number }
         Returns: Json
@@ -318,6 +388,16 @@ export type Database = {
       get_user_header: {
         Args: Record<PropertyKey, never>
         Returns: Json
+      }
+      insert_card_requests: {
+        Args: { objects: Json }
+        Returns: {
+          id: string
+          number_of_cards: number
+          recipient_name: string
+          status: string
+          created_at: string
+        }[]
       }
       mask_card_number: {
         Args: { card_number: string }
@@ -342,8 +422,32 @@ export type Database = {
           updated_at: string
         }[]
       }
+      search_load_to: {
+        Args: {
+          p_search_field: string
+          p_search_string: string
+          p_order_by_field: string
+          p_offset: number
+          p_limit: number
+        }
+        Returns: {
+          id: string
+          account_card_id: number
+          account_card_mtd: string
+          balance: number
+          cardholder: string
+          cardnumber: string
+          id_passport_number: string
+          expiry_date: string
+          reference_number: string
+          fica_validation: string
+          created_at: string
+          updated_at: string
+        }[]
+      }
     }
     Enums: {
+      allocation_status: "pending" | "allocated" | "cancelled"
       card_status: "inactive" | "active" | "suspended" | "linked"
     }
     CompositeTypes: {
@@ -460,6 +564,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      allocation_status: ["pending", "allocated", "cancelled"],
       card_status: ["inactive", "active", "suspended", "linked"],
     },
   },

@@ -22,6 +22,7 @@ import ConfirmLoad from "./pages/funds/ConfirmLoad";
 import DesignSystem from "./pages/DesignSystem";
 import RequestCards from "./pages/cards/RequestCards"
 import AllocateCardsSearch from "./pages/cards/AllocateCardsSearch";
+import SearchLoadTo from "./pages/funds/SearchLoadTo";
 
 const queryClient = new QueryClient();
 
@@ -49,6 +50,7 @@ const App = () => (
             {/* Funds Management */}
             <Route path="/load-funds-from" element={<MainLayout><LoadFundsFrom /></MainLayout>} />
             <Route path="/load-funds-from/to" element={<MainLayout><LoadFundsTo /></MainLayout>} />
+            <Route path="/load-funds-from/to/search-card" element={<MainLayout><SearchLoadTo /></MainLayout>} />
             <Route path="/load-funds-from/card-loads" element={<MainLayout><CardLoads /></MainLayout>} />
             <Route path="/load-funds-from/card-loads/confirm-load" element={<MainLayout><ConfirmLoad /></MainLayout>} />
             

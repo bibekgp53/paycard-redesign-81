@@ -40,7 +40,7 @@ export default function LoadFundsTo() {
 
   const handleSearchClick = () => {
     try {
-      navigate(`/load-funds-from/search?accountFrom=${accountFrom || 'false'}`);
+      navigate(`/load-funds-from/to/search-card?accountFrom=${accountFrom || 'false'}`);
     } catch (error) {
       setError("Could not navigate to search");
     }
