@@ -1,6 +1,7 @@
+
 import React from "react";
 import { cn } from "@/lib/utils";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, Clock } from "lucide-react";
 
 // Regex for strict format: HH:mm:ss with 24-hour time
 const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/;
@@ -139,9 +140,9 @@ export const TimeInput: React.FC<TimeInputProps> = ({
     >
       <label
         htmlFor="delay-time"
-        className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left"
+        className="text-xs font-medium text-paycard-navy mr-2 min-w-[42px] text-left flex items-center"
       >
-        {label}
+        <Clock className="h-5 w-5 mr-2" /> {label}
       </label>
       <div className="relative flex items-center w-full">
         <input
@@ -169,7 +170,7 @@ export const TimeInput: React.FC<TimeInputProps> = ({
           disabled={disabled}
         />
         {inputError && (
-          // Position icon INSIDE the input, right-aligned, vertically centered
+          // Reposition icon INSIDE the input, right-aligned, vertically centered
           <span className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center h-full pointer-events-none">
             <AlertCircle size={18} strokeWidth={2} className="text-paycard-red" />
           </span>
