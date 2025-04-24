@@ -1,5 +1,5 @@
 
-import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon } from "lucide-react";
+import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, ChevronDown } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
@@ -14,7 +14,7 @@ export function Sidebar() {
   const location = useLocation();
   const { data: userHeader } = useUserHeaderQuery();
 
-  // Check if a given submenu path is active
+  // Check if a submenu path is active
   const isSubmenuActive = (submenuItems = []) => {
     return submenuItems.some((subItem) =>
       location.pathname === subItem.path ||
@@ -32,11 +32,15 @@ export function Sidebar() {
     return location.pathname === path;
   };
 
-  const menuItems = [
+  // Define menu structure
+  const cardMenuItems = [
     { icon: CreditCard, label: "Link Cards", path: "/cards/link" },
-    { icon: LinkIcon, label: "Allocate Cards", path: "/cards/allocate" }, // Changed icon to LinkIcon
-    { icon: WalletCards, label: "Load Funds to Cards", path: "/load-funds-from" },
+    { icon: LinkIcon, label: "Allocate Cards", path: "/cards/allocate" },
     { icon: Package, label: "Request Cards", path: "/cards/request" },
+  ];
+
+  const fundMenuItems = [
+    { icon: WalletCards, label: "Load Funds to Cards", path: "/load-funds-from" },
   ];
 
   return (
@@ -51,30 +55,54 @@ export function Sidebar() {
         </div>
 
         <SidebarContent>
-          <div className="pt-0 p-0 -mt-1"> {/* Reduced top margin */}
+          <div className="pt-0 p-0 -mt-1">
             <div className="text-sm text-gray-300 pb-2 pl-4">
               Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
             </div>
           </div>
-          <div className="flex flex-col gap-3 flex-1 min-h-0"> {/* Increased gap between menu items */}
-            {menuItems.map((item) => (
-              <div key={item.path} className="mb-0">
-                <Link to={item.path}>
-                  <SidebarItem
-                    label={item.label}
-                    icon={<item.icon size={18} />}
-                    active={isActive(item.path)}
-                    className={cn(
-                      "hover:bg-paycard-salmon/40 hover:text-white transition-colors",
-                      isActive(item.path)
-                        ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon pl-3"
-                        : "text-gray-300"
-                    )}
-                    style={{ minHeight: 32, paddingTop: 4, paddingBottom: 4 }}
-                  />
-                </Link>
-              </div>
-            ))}
+          
+          <div className="flex flex-col gap-3 flex-1 min-h-0">
+            {/* Cards Group */}
+            <SidebarGroup title="Cards" collapsible defaultCollapsed={false}>
+              {cardMenuItems.map((item) => (
+                <div key={item.path} className="mb-0">
+                  <Link to={item.path}>
+                    <SidebarItem
+                      label={item.label}
+                      icon={<item.icon size={18} />}
+                      active={isActive(item.path)}
+                      className={cn(
+                        "hover:bg-paycard-salmon/40 hover:text-white transition-colors pl-8",
+                        isActive(item.path)
+                          ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon"
+                          : "text-gray-300"
+                      )}
+                    />
+                  </Link>
+                </div>
+              ))}
+            </SidebarGroup>
+
+            {/* Funds Group */}
+            <SidebarGroup title="Funds" collapsible defaultCollapsed={false}>
+              {fundMenuItems.map((item) => (
+                <div key={item.path} className="mb-0">
+                  <Link to={item.path}>
+                    <SidebarItem
+                      label={item.label}
+                      icon={<item.icon size={18} />}
+                      active={isActive(item.path)}
+                      className={cn(
+                        "hover:bg-paycard-salmon/40 hover:text-white transition-colors pl-8",
+                        isActive(item.path)
+                          ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon"
+                          : "text-gray-300"
+                      )}
+                    />
+                  </Link>
+                </div>
+              ))}
+            </SidebarGroup>
           </div>
         </SidebarContent>
 
@@ -98,3 +126,4 @@ export function Sidebar() {
     </UISidebar>
   );
 }
+
