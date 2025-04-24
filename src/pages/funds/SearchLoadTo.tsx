@@ -4,12 +4,19 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { SearchField, useSearchLoadTo } from "@/hooks/useSearchLoadTo";
-import { FundsBreadcrumb } from "./components/FundsBreadcrumb";
 import { CardsPagination } from "./components/CardsPagination";
 import { FundsPageHeader } from "./components/FundsPageHeader";
 import { SearchCardForm } from "./components/SearchCardForm";
 import { SearchResultsTable } from "./components/SearchResultsTable";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
 
 export default function SearchLoadTo() {
   const navigate = useNavigate();
@@ -66,15 +73,28 @@ export default function SearchLoadTo() {
 
   const totalPages = metadata ? Math.ceil(metadata.filtered_count / pageSize) : 1;
 
-  const breadcrumbItems = [
-    { label: "Load Funds From", path: "/load-funds-from" },
-    { label: "To", path: "/load-funds-from/to" },
-    { label: "Search Card", isCurrentPage: true }
-  ];
-
   return (
     <div className="space-y-6">
-      <FundsBreadcrumb items={breadcrumbItems} />
+      <Breadcrumb>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink onClick={() => navigate("/load-funds-from")}>
+              Load Funds From
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbLink onClick={() => navigate("/load-funds-from/to")}>
+              To
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage>Search Card</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+
       <FundsPageHeader />
 
       <Card className="mb-8 p-6">
