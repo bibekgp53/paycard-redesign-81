@@ -1,11 +1,10 @@
-
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { SearchField, useSearchLoadTo } from "@/hooks/useSearchLoadTo";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { FundsBreadcrumb } from "./components/FundsBreadcrumb";
 import { CardsPagination } from "./components/CardsPagination";
 import { FundsPageHeader } from "./components/FundsPageHeader";
 import { SearchCardForm } from "./components/SearchCardForm";
@@ -67,24 +66,15 @@ export default function SearchLoadTo() {
 
   const totalPages = metadata ? Math.ceil(metadata.filtered_count / pageSize) : 1;
 
+  const breadcrumbItems = [
+    { label: "Load Funds From", path: "/load-funds-from" },
+    { label: "To", path: "/load-funds-from/to" },
+    { label: "Search Card", isCurrentPage: true }
+  ];
+
   return (
     <div className="space-y-6">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={handleLoadFundsClick}>Load Funds From</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={handleToClick}>To</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Search Card</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
+      <FundsBreadcrumb items={breadcrumbItems} />
       <FundsPageHeader />
 
       <Card className="mb-8 p-6">

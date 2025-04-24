@@ -2,17 +2,10 @@ import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Users, Search, AlertTriangle } from "lucide-react";
-import { 
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { FundsPageHeader } from "./components/FundsPageHeader"; // Import the new component
+import { FundsPageHeader } from "./components/FundsPageHeader";
+import { FundsBreadcrumb } from "./components/FundsBreadcrumb";
 
 export default function LoadFundsTo() {
   const navigate = useNavigate();
@@ -46,6 +39,11 @@ export default function LoadFundsTo() {
     }
   };
 
+  const breadcrumbItems = [
+    { label: "Load Funds From", path: "/load-funds-from" },
+    { label: "To", isCurrentPage: true }
+  ];
+
   return (
     <div className="space-y-6">
       {error && (
@@ -56,19 +54,8 @@ export default function LoadFundsTo() {
         </Alert>
       )}
 
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={handleLoadFundsClick}>Load Funds From</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>To</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
-
-      <FundsPageHeader /> {/* Use the new reusable component */}
+      <FundsBreadcrumb items={breadcrumbItems} />
+      <FundsPageHeader />
 
       <div className="flex flex-col gap-6">
         <button

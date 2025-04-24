@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
@@ -10,6 +9,7 @@ import { CardLoadsActionPanel } from "./components/CardLoadsActionPanel";
 import React from "react";
 import { CardsPagination } from "./components/CardsPagination";
 import { Loader2 } from "lucide-react";
+import { FundsBreadcrumb } from "./components/FundsBreadcrumb";
 
 export function CardLoads() {
   const navigate = useNavigate();
@@ -46,19 +46,14 @@ export function CardLoads() {
     return { amount: totalAmount, fee: totalFee, smsFee: totalSMS };
   }, [selectedLoads, cards, clientSettings]);
 
+  const breadcrumbItems = [
+    { label: "Load Funds From", path: "/load-funds-from" },
+    { label: "Card Loads", isCurrentPage: true }
+  ];
+
   return (
     <div className="space-y-6">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={handleLoadFundsClick}>Load Funds From</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Card Loads</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <FundsBreadcrumb items={breadcrumbItems} />
 
       <Card className="bg-white p-6">
         <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
