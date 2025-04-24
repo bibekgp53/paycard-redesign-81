@@ -1,17 +1,19 @@
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { AlertTriangle } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
   
   useEffect(() => {
     try {
       navigate("/dashboard", { replace: true });
-    } catch (error) {
-      console.error("Navigation error:", error);
+    } catch (err) {
+      console.error("Navigation error:", err);
+      setError("Could not navigate to dashboard");
     }
   }, [navigate]);
   
@@ -28,7 +30,7 @@ const Index = () => {
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>Navigation Error</AlertTitle>
             <AlertDescription>
-              Could not navigate to dashboard. Please try refreshing the page.
+              {error}
             </AlertDescription>
           </Alert>
         </div>
