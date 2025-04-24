@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -128,11 +129,7 @@ export default function SearchLoadTo() {
 
           {metadata && (
             <div className="text-sm text-gray-600 mb-4">
-              {metadata.filtered_count === metadata.total_count ? (
-                <p>Showing all {metadata.total_count} records</p>
-              ) : (
-                <p>Showing {metadata.filtered_count} results from {metadata.total_count} total records</p>
-              )}
+              <p>Showing {metadata.filtered_count} results</p>
             </div>
           )}
 
