@@ -1,4 +1,5 @@
-import { CreditCard, WalletCards, Bell, LogOut } from "lucide-react";
+
+import { CreditCard, WalletCards, Bell, LogOut, CreditCard as AllocateCardIcon } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
@@ -33,7 +34,7 @@ export function Sidebar() {
 
   const menuItems = [
     { icon: CreditCard, label: "Link Cards", path: "/cards/link" },
-    { icon: WalletCards, label: "Allocate Cards", path: "/cards/allocate" },
+    { icon: AllocateCardIcon, label: "Allocate Cards", path: "/cards/allocate" },
     { icon: WalletCards, label: "Load Funds to Cards", path: "/load-funds-from" },
   ];
 
@@ -44,17 +45,17 @@ export function Sidebar() {
     >
       <div className="flex flex-col h-full min-h-0">
         {/* Header section */}
-        <div className="p-4 flex items-center gap-2">
+        <div className="p-2 flex items-center gap-2">
           <span className="text-paycard-navy font-semibold text-xl">PayCard</span>
         </div>
 
         <SidebarContent>
           <div className="pt-0 p-0">
-            <div className="text-sm text-gray-300 pb-0 pl-4">
+            <div className="text-sm text-gray-300 pb-2 pl-4">
               Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
             </div>
           </div>
-          <div className="flex flex-col gap-1 flex-1 min-h-0">
+          <div className="flex flex-col gap-2 flex-1 min-h-0">
             {menuItems.map((item) => (
               <div key={item.path} className="mb-0">
                 <Link to={item.path}>
