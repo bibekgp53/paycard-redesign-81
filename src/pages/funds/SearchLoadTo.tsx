@@ -73,7 +73,6 @@ export default function SearchLoadTo() {
     setSelectedCards(checked ? results.map(card => card.account_card_id) : []);
   };
 
-  // Show all results if we have them, otherwise show 1 page
   const totalPages = metadata ? Math.ceil(metadata.filtered_count / pageSize) : 1;
 
   return (
@@ -94,92 +93,97 @@ export default function SearchLoadTo() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <Card className="mb-8">
-        <div className="p-6">
-          <h2 className="text-xl font-semibold text-paycard-navy mb-6">Search Card</h2>
+      <Card className="bg-white p-6">
+        <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
+        <p className="text-gray-600">
+          Load funds into cards from your profile or transfer funds from a stopped card.
+        </p>
+      </Card>
+
+      <Card className="mb-8 p-6">
+        <h2 className="text-xl font-semibold text-paycard-navy mb-6">Search Card</h2>
+        
+        <div className="flex gap-4 mb-6">
+          <Select value={searchField} onValueChange={(value) => setSearchField(value as SearchField)}>
+            <SelectTrigger className="w-[200px]">
+              <SelectValue placeholder="Select field" />
+            </SelectTrigger>
+            <SelectContent>
+              {searchFields.map((field) => (
+                <SelectItem key={field.value} value={field.value}>
+                  {field.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           
-          <div className="flex gap-4 mb-6">
-            <Select value={searchField} onValueChange={(value) => setSearchField(value as SearchField)}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue placeholder="Select field" />
-              </SelectTrigger>
-              <SelectContent>
-                {searchFields.map((field) => (
-                  <SelectItem key={field.value} value={field.value}>
-                    {field.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-              <Input
-                placeholder="Search..."
-                className="pl-10"
-                value={searchString}
-                onChange={(e) => setSearchString(e.target.value)}
-              />
-            </div>
-            <Button onClick={handleSearch}>
-              <Search className="h-4 w-4 mr-2" />
-              Search
-            </Button>
+          <div className="relative flex-1">
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+            <Input
+              placeholder="Search..."
+              className="pl-10"
+              value={searchString}
+              onChange={(e) => setSearchString(e.target.value)}
+            />
           </div>
-
-          {metadata && (
-            <div className="text-sm text-gray-600 mb-4">
-              <p>Showing {metadata.filtered_count} results</p>
-            </div>
-          )}
-
-          <div className="rounded-lg border overflow-hidden">
-            <Table borderless>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-12">
-                    <Checkbox
-                      checked={selectedCards.length === results.length && results.length > 0}
-                      onCheckedChange={handleSelectAll}
-                    />
-                  </TableHead>
-                  <TableHead>Card Number</TableHead>
-                  <TableHead>Card Holder</TableHead>
-                  <TableHead>ID/Passport Number</TableHead>
-                  <TableHead>Expiry Date</TableHead>
-                  <TableHead>Reference Number</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {results.map((card) => (
-                  <TableRow key={card.account_card_id}>
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedCards.includes(card.account_card_id)}
-                        onCheckedChange={() => toggleCardSelection(card.account_card_id)}
-                      />
-                    </TableCell>
-                    <TableCell>{card.cardnumber}</TableCell>
-                    <TableCell>{card.cardholder}</TableCell>
-                    <TableCell>{card.id_passport_number}</TableCell>
-                    <TableCell>{card.expiry_date}</TableCell>
-                    <TableCell>{card.reference_number}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-
-          {metadata && metadata.filtered_count > pageSize && (
-            <div className="mt-6">
-              <CardsPagination
-                currentPage={currentPage}
-                totalPages={totalPages}
-                onPageChange={handlePageChange}
-              />
-            </div>
-          )}
+          <Button onClick={handleSearch}>
+            <Search className="h-4 w-4 mr-2" />
+            Search
+          </Button>
         </div>
+
+        {metadata && (
+          <div className="text-sm text-gray-600 mb-4">
+            <p>Showing {metadata.filtered_count} results</p>
+          </div>
+        )}
+
+        <div className="rounded-lg overflow-hidden">
+          <Table borderless>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-12">
+                  <Checkbox
+                    checked={selectedCards.length === results.length && results.length > 0}
+                    onCheckedChange={handleSelectAll}
+                  />
+                </TableHead>
+                <TableHead>Card Number</TableHead>
+                <TableHead>Card Holder</TableHead>
+                <TableHead>ID/Passport Number</TableHead>
+                <TableHead>Expiry Date</TableHead>
+                <TableHead>Reference Number</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {results.map((card) => (
+                <TableRow key={card.account_card_id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedCards.includes(card.account_card_id)}
+                      onCheckedChange={() => toggleCardSelection(card.account_card_id)}
+                    />
+                  </TableCell>
+                  <TableCell>{card.cardnumber}</TableCell>
+                  <TableCell>{card.cardholder}</TableCell>
+                  <TableCell>{card.id_passport_number}</TableCell>
+                  <TableCell>{card.expiry_date}</TableCell>
+                  <TableCell>{card.reference_number}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+
+        {metadata && metadata.filtered_count > pageSize && (
+          <div className="mt-6">
+            <CardsPagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          </div>
+        )}
       </Card>
 
       <div className="flex justify-between">
