@@ -182,18 +182,8 @@ export default function SearchLoadTo() {
       </Card>
 
       <div className="flex justify-between">
-        <Button 
-          onClick={handleLoadFundsClick} 
-          variant="outline"
-        >
-          Back
-        </Button>
-        <Button 
-          disabled={selectedCards.length === 0} 
-          variant="secondary"
-        >
-          Load Funds
-        </Button>
+        <Button onClick={handleLoadFundsClick}>Back</Button>
+        <Button disabled={selectedCards.length === 0}>Load Funds</Button>
       </div>
     </div>
   );
