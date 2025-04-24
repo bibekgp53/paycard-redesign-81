@@ -21,6 +21,7 @@ export default function SearchLoadTo() {
   const [searchString, setSearchString] = useState('');
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [processingContinue, setProcessingContinue] = useState(false);
   const pageSize = 10;
 
   const handleSearch = () => {
@@ -50,10 +51,6 @@ export default function SearchLoadTo() {
     navigate("/load-funds-from");
   };
 
-  const handleToClick = () => {
-    navigate("/load-funds-from/to");
-  };
-
   const toggleCardSelection = (cardId: number) => {
     setSelectedCards(prev => 
       prev.includes(cardId) 
@@ -76,27 +73,34 @@ export default function SearchLoadTo() {
 
   const handleContinue = async () => {
     if (selectedCards.length === 1) {
-      // Get the selected card's account_card_id
-      const selectedCard = results.find(card => card.account_card_id === selectedCards[0]);
-      
-      if (selectedCard) {
-        // Call search_load_allocated with the selected card's account_card_id and cards to load
-        const { data, error } = await supabase
-          .rpc('search_load_allocated', {
-            p_account_from: false,
-            p_transfer_from_account_id: 0, // Set to 0 as per the new function signature
-            p_cards_to_load: [selectedCard.account_card_id],
-            p_limit: 100,
-            p_offset: 0
-          });
+      try {
+        setProcessingContinue(true);
+        // Get the selected card's account_card_id
+        const selectedCard = results.find(card => card.account_card_id === selectedCards[0]);
+        
+        if (selectedCard) {
+          // Call search_load_allocated with the selected card's account_card_id and cards to load
+          const { data, error } = await supabase
+            .rpc('search_load_allocated', {
+              p_account_from: false,
+              p_transfer_from_account_id: 0, // Set to 0 as per the new function signature
+              p_cards_to_load: [selectedCard.account_card_id],
+              p_limit: 100,
+              p_offset: 0
+            });
 
-        if (error) {
-          console.error("Error loading allocated cards:", error);
-          return;
+          if (error) {
+            console.error("Error loading allocated cards:", error);
+            return;
+          }
+
+          // Navigate to the card loads page with the accountFrom parameter
+          navigate("/load-funds-from/card-loads?accountFrom=false");
         }
-
-        // Navigate to the card loads page with the accountFrom parameter
-        navigate("/load-funds-from/card-loads?accountFrom=false");
+      } catch (err) {
+        console.error("Error in continue process:", err);
+      } finally {
+        setProcessingContinue(false);
       }
     }
   };
@@ -150,9 +154,9 @@ export default function SearchLoadTo() {
           </Button>
           <Button 
             onClick={handleContinue}
-            disabled={selectedCards.length !== 1}
+            disabled={selectedCards.length !== 1 || processingContinue}
           >
-            Continue
+            {processingContinue ? 'Processing...' : 'Continue'}
           </Button>
         </div>
       </Card>
