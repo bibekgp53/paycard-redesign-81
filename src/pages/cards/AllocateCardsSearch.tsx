@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
-import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroupBase, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Generate more complete mock data
 const mockData = Array.from({ length: 50 }, (_, i) => ({
@@ -119,33 +119,38 @@ export default function AllocateCardsSearch() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {paginatedData.map((card) => (
-                  <TableRow 
-                    key={card.id}
-                    className={selectedCard === card.id ? 'bg-blue-50' : undefined}
-                  >
-                    <TableCell>
-                      <Checkbox
-                        checked={selectedCard === card.id}
-                        onCheckedChange={() => setSelectedCard(card.id)}
-                      />
-                    </TableCell>
-                    <TableCell>{card.cardNumber}</TableCell>
-                    <TableCell>{card.cardHolderName}</TableCell>
-                    <TableCell>{card.expirationDate}</TableCell>
-                    <TableCell>
-                      <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                        card.status === 'ACTIVE' 
-                          ? 'bg-green-100 text-green-800'
-                          : card.status === 'EXPIRED'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {card.status}
-                      </span>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                <RadioGroupBase 
+                  value={selectedCard || undefined}
+                  onValueChange={setSelectedCard}
+                >
+                  {paginatedData.map((card) => (
+                    <TableRow 
+                      key={card.id}
+                      className={selectedCard === card.id ? 'bg-blue-50' : undefined}
+                    >
+                      <TableCell>
+                        <RadioGroupItem 
+                          value={card.id} 
+                          id={`card-${card.id}`} 
+                        />
+                      </TableCell>
+                      <TableCell>{card.cardNumber}</TableCell>
+                      <TableCell>{card.cardHolderName}</TableCell>
+                      <TableCell>{card.expirationDate}</TableCell>
+                      <TableCell>
+                        <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
+                          card.status === 'ACTIVE' 
+                            ? 'bg-green-100 text-green-800'
+                            : card.status === 'EXPIRED'
+                            ? 'bg-red-100 text-red-800'
+                            : 'bg-yellow-100 text-yellow-800'
+                        }`}>
+                          {card.status}
+                        </span>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </RadioGroupBase>
               </TableBody>
             </Table>
           </div>
