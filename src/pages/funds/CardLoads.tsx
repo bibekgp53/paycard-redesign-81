@@ -1,4 +1,5 @@
-import { useNavigate } from "react-router-dom";
+
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
@@ -13,6 +14,7 @@ import { Card } from "@/components/ui/card";
 
 export function CardLoads() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const {
     page,
     setPage,
@@ -24,7 +26,13 @@ export function CardLoads() {
   const pageSize = 10;
   const { data: userHeader, isLoading: userHeaderLoading } = useUserHeaderQuery();
   const { data: clientSettings, isLoading: clientLoading } = useLoadClientQuery();
-  const { data: cards, isLoading: cardsLoading } = useLoadAllocatedCards();
+  
+  // Get accountFrom parameter from URL and pass it to the hook
+  const accountFrom = searchParams.get("accountFrom") === 'true';
+  const { data: cards, isLoading: cardsLoading } = useLoadAllocatedCards({ 
+    accountFrom,
+    cardsToLoad: selectedLoads.map(load => load.accountCardId)
+  });
 
   const isLoading = userHeaderLoading || clientLoading || cardsLoading;
   const totalPages = cards ? Math.ceil(cards.length / pageSize) : 1;
