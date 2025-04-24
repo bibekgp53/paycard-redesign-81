@@ -89,6 +89,48 @@ export type Database = {
           },
         ]
       }
+      card_requests: {
+        Row: {
+          created_at: string
+          delivery_address: string
+          delivery_method: string
+          employee_id: string
+          id: string
+          number_of_cards: number
+          processed_by: string | null
+          recipient_name: string
+          status: string | null
+          total_cost: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          delivery_address: string
+          delivery_method: string
+          employee_id: string
+          id?: string
+          number_of_cards: number
+          processed_by?: string | null
+          recipient_name: string
+          status?: string | null
+          total_cost: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          delivery_address?: string
+          delivery_method?: string
+          employee_id?: string
+          id?: string
+          number_of_cards?: number
+          processed_by?: string | null
+          recipient_name?: string
+          status?: string | null
+          total_cost?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       cards: {
         Row: {
           card_number: string
@@ -265,6 +307,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      create_cards_from_request: {
+        Args: { request_id: string; card_count: number }
+        Returns: string[]
+      }
       get_load_client: {
         Args: { account_from: boolean; transfer_from_account_id: number }
         Returns: Json

@@ -1,8 +1,7 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Users, Search } from "lucide-react";
+import { Users, Search, AlertTriangle } from "lucide-react";
 import { 
   Breadcrumb,
   BreadcrumbItem,
@@ -12,11 +11,12 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
-import { toast } from "@/components/ui/use-toast";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export default function LoadFundsTo() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const [error, setError] = useState<string | null>(null);
   const accountFrom = searchParams.get("accountFrom");
 
   const { selectedLoadFundsToCard } = useLoadFundsToOptionStore();
@@ -25,11 +25,7 @@ export default function LoadFundsTo() {
     try {
       navigate(`/load-funds-from`);
     } catch (error) {
-      toast({
-        title: "Navigation error",
-        description: "Could not navigate to the previous page",
-        variant: "destructive",
-      });
+      setError("Could not navigate to the previous page");
     }
   };
 
@@ -37,11 +33,7 @@ export default function LoadFundsTo() {
     try {
       navigate(`/load-funds-from/card-loads?accountFrom=${accountFrom || 'false'}`);
     } catch (error) {
-      toast({
-        title: "Navigation error",
-        description: "Could not navigate to card loads",
-        variant: "destructive",
-      });
+      setError("Could not navigate to card loads");
     }
   };
 
@@ -49,16 +41,20 @@ export default function LoadFundsTo() {
     try {
       navigate(`/load-funds-from/search?accountFrom=${accountFrom || 'false'}`);
     } catch (error) {
-      toast({
-        title: "Navigation error",
-        description: "Could not navigate to search",
-        variant: "destructive",
-      });
+      setError("Could not navigate to search");
     }
   };
 
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Navigation Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       <Breadcrumb>
         <BreadcrumbList>
           <BreadcrumbItem>

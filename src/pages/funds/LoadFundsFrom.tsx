@@ -1,13 +1,13 @@
-
-import React from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
-import { Wallet, CreditCard } from "lucide-react";
+import { Wallet, CreditCard, AlertTriangle } from "lucide-react";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
-import { toast } from "@/components/ui/use-toast";
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
 export default function LoadFundsFrom() {
   const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
   const {
     selectedLoadFundsToCard,
     setSelectedLoadFundsToCard,
@@ -18,11 +18,7 @@ export default function LoadFundsFrom() {
       setSelectedLoadFundsToCard("card-loads");
       navigate("/load-funds-from/to?accountFrom=false");
     } catch (error) {
-      toast({
-        title: "Navigation error",
-        description: "Could not navigate to the selected page",
-        variant: "destructive",
-      });
+      setError("Could not navigate to the selected page");
     }
   };
 
@@ -31,16 +27,20 @@ export default function LoadFundsFrom() {
       setSelectedLoadFundsToCard("search");
       navigate("/load-funds-from/to?accountFrom=true");
     } catch (error) {
-      toast({
-        title: "Navigation error",
-        description: "Could not navigate to the selected page",
-        variant: "destructive",
-      });
+      setError("Could not navigate to the selected page");
     }
   };
 
   return (
     <div className="space-y-6">
+      {error && (
+        <Alert variant="destructive">
+          <AlertTriangle className="h-4 w-4" />
+          <AlertTitle>Navigation Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
+      )}
+
       <div className="space-y-2">
         <h1 className="text-2xl font-bold text-paycard-navy">Load funds into card</h1>
         <p className="text-gray-600">
