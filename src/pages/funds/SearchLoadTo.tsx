@@ -84,7 +84,7 @@ export default function SearchLoadTo() {
         const { data, error } = await supabase
           .rpc('search_load_allocated', {
             p_account_from: false,
-            p_transfer_from_account_id: 0, // Default to 0 since we're using p_cards_to_load
+            p_transfer_from_account_id: 0, // Set to 0 as per the new function signature
             p_cards_to_load: [selectedCard.account_card_id],
             p_limit: 100,
             p_offset: 0
