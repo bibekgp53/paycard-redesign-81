@@ -1,24 +1,30 @@
 import React, { useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { AlertTriangle } from "lucide-react";
 import { SearchField, useSearchLoadTo } from "@/hooks/useSearchLoadTo";
+import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
 import { CardsPagination } from "./components/CardsPagination";
 import { FundsPageHeader } from "./components/FundsPageHeader";
 import { SearchCardForm } from "./components/SearchCardForm";
 import { SearchResultsTable } from "./components/SearchResultsTable";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { useQueryClient } from "@tanstack/react-query";
+import { useSelectedCardsStore } from "@/store/useSelectedCardsStore";
 
 export default function SearchLoadTo() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const { results, metadata, loading, error, searchCards } = useSearchLoadTo();
   const [searchField, setSearchField] = useState<SearchField>('cardNumber');
   const [searchString, setSearchString] = useState('');
   const [selectedCards, setSelectedCards] = useState<number[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [processingContinue, setProcessingContinue] = useState(false);
+  const { setSelectedCardIds, setIsFromSearch } = useSelectedCardsStore();
   const pageSize = 10;
 
   const handleSearch = () => {
@@ -48,10 +54,6 @@ export default function SearchLoadTo() {
     navigate("/load-funds-from");
   };
 
-  const handleToClick = () => {
-    navigate("/load-funds-from/to");
-  };
-
   const toggleCardSelection = (cardId: number) => {
     setSelectedCards(prev => 
       prev.includes(cardId) 
@@ -65,6 +67,26 @@ export default function SearchLoadTo() {
   };
 
   const totalPages = metadata ? Math.ceil(metadata.filtered_count / pageSize) : 1;
+
+  const accountFrom = searchParams.get('accountFrom') === 'true';
+  
+  // We won't fetch allocated cards data here anymore to avoid duplicate API calls
+  // This data will be fetched directly in CardLoads.tsx
+
+  const handleContinue = () => {
+    if (selectedCards.length > 0) {
+      try {
+        setProcessingContinue(true);
+        setSelectedCardIds(selectedCards);
+        setIsFromSearch(true);
+        navigate('/load-funds-from/card-loads');
+      } catch (err) {
+        console.error("Error in continue process:", err);
+      } finally {
+        setProcessingContinue(false);
+      }
+    }
+  };
 
   const breadcrumbItems = [
     { label: "Load Funds From", path: "/load-funds-from" },
@@ -120,9 +142,10 @@ export default function SearchLoadTo() {
             Back
           </Button>
           <Button 
-            disabled={selectedCards.length === 0}
+            onClick={handleContinue}
+            disabled={selectedCards.length === 0 || processingContinue}
           >
-            Continue
+            {processingContinue ? 'Processing...' : 'Continue'}
           </Button>
         </div>
       </Card>

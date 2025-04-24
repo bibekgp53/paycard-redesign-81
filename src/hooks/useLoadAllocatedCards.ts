@@ -2,20 +2,32 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { AccountCard } from "@/graphql/types";
+import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 
-export const useLoadAllocatedCards = () => {
+interface LoadAllocatedCardsParams {
+  transferFromAccountId?: number;
+  cardsToLoad?: number[];
+}
+
+export const useLoadAllocatedCards = ({ 
+  transferFromAccountId = 0, 
+  cardsToLoad = [] 
+}: LoadAllocatedCardsParams) => {
+  const { selectedLoadFundsFrom } = useLoadFundsToOptionStore();
+  const accountFrom = selectedLoadFundsFrom === "card";
+  
   return useQuery({
-    queryKey: ["loadAllocatedCards"],
+    queryKey: ["loadAllocatedCards", accountFrom, transferFromAccountId, cardsToLoad],
     queryFn: async () => {
-      console.log("Fetching allocated cards");
-      const { data: session } = await supabase.auth.getSession();
+      console.log("Fetching allocated cards with params:", { accountFrom, transferFromAccountId, cardsToLoad });
       
       console.log("Making RPC request to search_load_allocated");
       const { data, error } = await supabase
         .rpc('search_load_allocated', {
-          p_account_from: false,
-          p_transfer_from_account_id: 0,
-          p_limit: 100,
+          p_account_from: accountFrom,
+          p_transfer_from_account_id: transferFromAccountId,
+          p_cards_to_load: cardsToLoad,
+          p_limit: 10, // Set limit to 10
           p_offset: 0
         });
       

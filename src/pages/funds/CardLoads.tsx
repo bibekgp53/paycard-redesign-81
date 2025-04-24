@@ -1,9 +1,10 @@
+
 import { useNavigate } from "react-router-dom";
-import { Card } from "@/components/ui/card";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { useLoadClientQuery } from "@/hooks/useLoadClientQuery";
 import { useLoadAllocatedCards } from "@/hooks/useLoadAllocatedCards";
 import { useCardLoadsStore } from "@/store/useCardLoadsStore";
+import { useSelectedCardsStore } from "@/store/useSelectedCardsStore";
 import { CardLoadsTable } from "./components/CardLoadsTable";
 import { CardLoadsActionPanel } from "./components/CardLoadsActionPanel";
 import React from "react";
@@ -21,10 +22,23 @@ export function CardLoads() {
     selectedDate,
   } = useCardLoadsStore();
 
+  const { selectedCardIds, isFromSearch, setIsFromSearch } = useSelectedCardsStore();
+
+  // When this page loads, we're now in card loads view regardless of where we came from
+  React.useEffect(() => {
+    if (isFromSearch) {
+      setIsFromSearch(false);
+    }
+  }, [isFromSearch, setIsFromSearch]);
+
   const pageSize = 10;
   const { data: userHeader, isLoading: userHeaderLoading } = useUserHeaderQuery();
   const { data: clientSettings, isLoading: clientLoading } = useLoadClientQuery();
-  const { data: cards, isLoading: cardsLoading } = useLoadAllocatedCards();
+  
+  const { data: cards, isLoading: cardsLoading } = useLoadAllocatedCards({ 
+    cardsToLoad: selectedCardIds,
+    transferFromAccountId: 0
+  });
 
   const isLoading = userHeaderLoading || clientLoading || cardsLoading;
   const totalPages = cards ? Math.ceil(cards.length / pageSize) : 1;
@@ -46,8 +60,10 @@ export function CardLoads() {
     return { amount: totalAmount, fee: totalFee, smsFee: totalSMS };
   }, [selectedLoads, cards, clientSettings]);
 
+  // Updated breadcrumb to always show Card Loads as current page
   const breadcrumbItems = [
     { label: "Load Funds From", path: "/load-funds-from" },
+    { label: "To", path: "/load-funds-from/to" },
     { label: "Card Loads", isCurrentPage: true }
   ];
 
@@ -55,7 +71,7 @@ export function CardLoads() {
     <div className="space-y-6">
       <Breadcrumb items={breadcrumbItems} />
       
-      <Card className="bg-white p-6">
+      <div className="bg-white p-6">
         <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
         <p className="text-gray-600">
           Load funds into cards from your profile or transfer funds from a stopped card.
@@ -63,9 +79,9 @@ export function CardLoads() {
             The balance available on your profile is R {clientSettings?.profile?.fromBalance?.toFixed(2) || '0.00'}
           </span>
         </p>
-      </Card>
+      </div>
 
-      <Card className="bg-white p-6">
+      <div className="bg-white p-6 rounded-lg border border-border">
         {isLoading ? (
           <div className="flex justify-center items-center py-12">
             <Loader2 className="h-8 w-8 text-paycard-navy animate-spin" />
@@ -97,7 +113,7 @@ export function CardLoads() {
             />
           </>
         )}
-      </Card>
+      </div>
     </div>
   );
 }
