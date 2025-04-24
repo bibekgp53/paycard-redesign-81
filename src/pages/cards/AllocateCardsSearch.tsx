@@ -107,15 +107,15 @@ export default function AllocateCardsSearch() {
             </Select>
           </div>
 
-          <div className="rounded-lg border overflow-hidden">
+          <div className="rounded-lg">
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]"></TableHead>
-                  <TableHead>Card Number</TableHead>
-                  <TableHead>Card Holder Name</TableHead>
-                  <TableHead>Expiration Date</TableHead>
-                  <TableHead>Status</TableHead>
+                <TableRow className="border-0 bg-paycard-navy-100">
+                  <TableHead className="w-[50px] border-0"></TableHead>
+                  <TableHead className="border-0 text-paycard-navy font-semibold">Card Number</TableHead>
+                  <TableHead className="border-0 text-paycard-navy font-semibold">Card Holder Name</TableHead>
+                  <TableHead className="border-0 text-paycard-navy font-semibold">Expiration Date</TableHead>
+                  <TableHead className="border-0 text-paycard-navy font-semibold">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -126,24 +126,26 @@ export default function AllocateCardsSearch() {
                   {paginatedData.map((card) => (
                     <TableRow 
                       key={card.id}
-                      className={selectedCard === card.id ? 'bg-blue-50' : undefined}
+                      className={`border-0 hover:bg-paycard-navy-100 transition-colors ${
+                        selectedCard === card.id ? 'bg-paycard-navy-150' : ''
+                      }`}
                     >
-                      <TableCell>
+                      <TableCell className="border-0">
                         <RadioGroupItem 
                           value={card.id} 
                           id={`card-${card.id}`} 
                         />
                       </TableCell>
-                      <TableCell>{card.cardNumber}</TableCell>
-                      <TableCell>{card.cardHolderName}</TableCell>
-                      <TableCell>{card.expirationDate}</TableCell>
-                      <TableCell>
+                      <TableCell className="border-0">{card.cardNumber}</TableCell>
+                      <TableCell className="border-0">{card.cardHolderName}</TableCell>
+                      <TableCell className="border-0">{card.expirationDate}</TableCell>
+                      <TableCell className="border-0">
                         <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                           card.status === 'ACTIVE' 
-                            ? 'bg-green-100 text-green-800'
+                            ? 'bg-pcard-status-green-light text-pcard-status-green-dark'
                             : card.status === 'EXPIRED'
-                            ? 'bg-red-100 text-red-800'
-                            : 'bg-yellow-100 text-yellow-800'
+                            ? 'bg-pcard-status-red-light text-pcard-status-red-dark'
+                            : 'bg-pcard-status-orange-light text-pcard-status-orange-dark'
                         }`}>
                           {card.status}
                         </span>
