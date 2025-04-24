@@ -1,4 +1,3 @@
-
 import { useCardLoadsStore, SelectedLoad } from "@/store/useCardLoadsStore";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -119,7 +118,7 @@ export function CardLoadsTable({ cards, clientSettings, page, pageSize }: CardLo
 
   return (
     <div className="overflow-x-auto">
-      <Table>
+      <Table borderless>
         <TableHeader>
           <TableRow>
             <TableHead>Cardholder</TableHead>
