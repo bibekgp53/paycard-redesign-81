@@ -27,7 +27,7 @@ export const useLoadAllocatedCards = ({
           p_account_from: accountFrom,
           p_transfer_from_account_id: transferFromAccountId,
           p_cards_to_load: cardsToLoad,
-          p_limit: 100,
+          p_limit: 10, // Set limit to 10
           p_offset: 0
         });
       
