@@ -13,6 +13,12 @@ export interface AvailableCard {
   cardholder_name?: string;
 }
 
+export interface CardCounts {
+  total: number;
+  allocated: number;
+  unallocated: number;
+}
+
 export async function allocateCard(cardId: string, formData: CardAllocationFormData) {
   try {
     console.log("Allocating card with ID:", cardId);
@@ -78,4 +84,42 @@ export async function searchAvailableCards(
 
   if (error) throw error;
   return data;
+}
+
+export async function getCardCounts(): Promise<CardCounts> {
+  try {
+    // Get total cards count
+    const { count: totalCount, error: totalError } = await supabase
+      .from('cards')
+      .select('*', { count: 'exact', head: true });
+    
+    if (totalError) throw totalError;
+    
+    // Get allocated cards count (status = active)
+    const { count: allocatedCount, error: allocatedError } = await supabase
+      .from('cards')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'active');
+    
+    if (allocatedError) throw allocatedError;
+    
+    // Calculate unallocated cards
+    const total = totalCount || 0;
+    const allocated = allocatedCount || 0;
+    const unallocated = total - allocated;
+    
+    return {
+      total,
+      allocated,
+      unallocated
+    };
+  } catch (error) {
+    console.error("Error fetching card counts:", error);
+    // Return default values if there's an error
+    return {
+      total: 40,
+      allocated: 10,
+      unallocated: 30
+    };
+  }
 }

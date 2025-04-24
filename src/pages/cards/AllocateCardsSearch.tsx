@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,7 +10,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { RadioGroupBase, RadioGroupItem } from "@/components/ui/radio-group";
 import { useQuery } from "@tanstack/react-query";
-import { searchAvailableCards } from "@/services/cardAllocation";
+import { searchAvailableCards, getCardCounts } from "@/services/cardAllocation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function AllocateCardsSearch() {
@@ -20,9 +20,16 @@ export default function AllocateCardsSearch() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const { data: cards, isLoading } = useQuery({
+  const { data: cards, isLoading: cardsLoading } = useQuery({
     queryKey: ['availableCards', searchTerm, currentPage],
     queryFn: () => searchAvailableCards(searchTerm, currentPage, itemsPerPage)
+  });
+
+  const { data: cardCounts, isLoading: countsLoading } = useQuery({
+    queryKey: ['cardCounts'],
+    queryFn: getCardCounts,
+    refetchOnWindowFocus: true,
+    refetchOnMount: true
   });
 
   const handleContinue = () => {
@@ -40,10 +47,6 @@ export default function AllocateCardsSearch() {
     }
   };
 
-  const totalCards = 40; // Total cards in system
-  const allocatedCards = 20; // Number of allocated cards
-  const unallocatedCards = 20; // Number of unallocated cards
-
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
@@ -54,19 +57,19 @@ export default function AllocateCardsSearch() {
       <div className="grid grid-cols-3 gap-4 mb-8">
         <Card className="bg-paycard-navy text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">{totalCards}</div>
+            <div className="text-4xl font-bold mb-2">{countsLoading ? "..." : cardCounts?.total}</div>
             <div className="text-sm">Total Cards</div>
           </CardContent>
         </Card>
         <Card className="bg-paycard-salmon text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">{unallocatedCards}</div>
+            <div className="text-4xl font-bold mb-2">{countsLoading ? "..." : cardCounts?.unallocated}</div>
             <div className="text-sm">Unallocated Cards</div>
           </CardContent>
         </Card>
         <Card className="border border-gray-200">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2 text-paycard-navy">{allocatedCards}</div>
+            <div className="text-4xl font-bold mb-2 text-paycard-navy">{countsLoading ? "..." : cardCounts?.allocated}</div>
             <div className="text-sm text-gray-600">Allocated Cards</div>
           </CardContent>
         </Card>
@@ -111,7 +114,7 @@ export default function AllocateCardsSearch() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {isLoading ? (
+                {cardsLoading ? (
                   Array.from({ length: 5 }).map((_, index) => (
                     <TableRow key={index}>
                       <TableCell><Skeleton className="h-4 w-4" /></TableCell>
