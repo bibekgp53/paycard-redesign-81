@@ -7,7 +7,10 @@ import { StepIndicator } from "@/components/ui/step-indicator";
 export default function AllocateCardsConfirm() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { formData, cardNumber } = location.state || {};
+  const { formData, cardNumber, allocationType } = location.state || {};
+
+  const currentStep = allocationType === "search" ? 4 : 3;
+  const totalSteps = allocationType === "search" ? 4 : 3;
 
   const handleBack = () => {
     navigate(-1);
@@ -21,6 +24,7 @@ export default function AllocateCardsConfirm() {
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
         <h1 className="text-3xl font-bold text-paycard-navy">Allocate Card</h1>
+        <StepIndicator currentStep={currentStep} totalSteps={totalSteps} />
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-8">

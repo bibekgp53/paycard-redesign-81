@@ -36,7 +36,8 @@ export default function AllocateCardsDetails() {
         formData,
         cardNumber,
         sequenceNumber,
-        trackingNumber
+        trackingNumber,
+        allocationType
       } 
     });
   };
