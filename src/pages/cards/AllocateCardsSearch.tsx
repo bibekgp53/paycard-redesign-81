@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
-import { Checkbox } from "@/components/ui/checkbox";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 // Generate more complete mock data
 const mockData = Array.from({ length: 50 }, (_, i) => ({
@@ -107,28 +107,31 @@ export default function AllocateCardsSearch() {
             </Select>
           </div>
 
-          <div className="rounded-lg border overflow-hidden">
+          <div className="rounded-lg overflow-hidden">
             <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[50px]"></TableHead>
-                  <TableHead>Card Number</TableHead>
-                  <TableHead>Card Holder Name</TableHead>
-                  <TableHead>Expiration Date</TableHead>
-                  <TableHead>Status</TableHead>
+              <TableHeader className="bg-paycard-navy-150">
+                <TableRow className="border-none hover:bg-transparent">
+                  <TableHead className="w-[50px] text-paycard-navy-900 font-semibold">Select</TableHead>
+                  <TableHead className="text-paycard-navy-900 font-semibold">Card Number</TableHead>
+                  <TableHead className="text-paycard-navy-900 font-semibold">Card Holder Name</TableHead>
+                  <TableHead className="text-paycard-navy-900 font-semibold">Expiration Date</TableHead>
+                  <TableHead className="text-paycard-navy-900 font-semibold">Status</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {paginatedData.map((card) => (
                   <TableRow 
                     key={card.id}
-                    className={selectedCard === card.id ? 'bg-blue-50' : undefined}
+                    className={`border-none hover:bg-paycard-navy-100 ${selectedCard === card.id ? 'bg-paycard-navy-150' : ''}`}
                   >
                     <TableCell>
-                      <Checkbox
-                        checked={selectedCard === card.id}
-                        onCheckedChange={() => setSelectedCard(card.id)}
-                      />
+                      <RadioGroup 
+                        value={selectedCard}
+                        onValueChange={setSelectedCard}
+                        className="flex items-center"
+                      >
+                        <RadioGroupItem value={card.id} id={`card-${card.id}`} />
+                      </RadioGroup>
                     </TableCell>
                     <TableCell>{card.cardNumber}</TableCell>
                     <TableCell>{card.cardHolderName}</TableCell>
@@ -136,10 +139,10 @@ export default function AllocateCardsSearch() {
                     <TableCell>
                       <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                         card.status === 'ACTIVE' 
-                          ? 'bg-green-100 text-green-800'
+                          ? 'bg-pcard-status-green-light text-pcard-status-green-dark'
                           : card.status === 'EXPIRED'
-                          ? 'bg-red-100 text-red-800'
-                          : 'bg-yellow-100 text-yellow-800'
+                          ? 'bg-pcard-status-red-light text-pcard-status-red-dark'
+                          : 'bg-pcard-status-orange-light text-pcard-status-orange-dark'
                       }`}>
                         {card.status}
                       </span>

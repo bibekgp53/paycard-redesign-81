@@ -393,6 +393,16 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: Json
       }
+      insert_card_requests: {
+        Args: { objects: Json }
+        Returns: {
+          id: string
+          number_of_cards: number
+          recipient_name: string
+          status: string
+          created_at: string
+        }[]
+      }
       mask_card_number: {
         Args: { card_number: string }
         Returns: string
