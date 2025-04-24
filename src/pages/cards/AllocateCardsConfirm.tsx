@@ -21,18 +21,37 @@ export default function AllocateCardsConfirm() {
   return (
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
-        <h1 className="text-3xl font-bold text-paycard-navy">Confirm Allocation</h1>
-        <StepIndicator currentStep={4} totalSteps={4} />
+        <h1 className="text-3xl font-bold text-paycard-navy">Allocate Card</h1>
+        <StepIndicator currentStep={4} totalSteps={5} />
+      </div>
+
+      <div className="grid grid-cols-3 gap-4 mb-8">
+        <Card className="bg-paycard-navy text-white">
+          <div className="p-6">
+            <div className="text-4xl font-bold mb-2">40</div>
+            <div className="text-sm">Total Cards</div>
+          </div>
+        </Card>
+        <Card className="bg-paycard-salmon text-white">
+          <div className="p-6">
+            <div className="text-4xl font-bold mb-2">20</div>
+            <div className="text-sm">Unallocated Cards</div>
+          </div>
+        </Card>
+        <Card className="border border-gray-200">
+          <div className="p-6">
+            <div className="text-4xl font-bold mb-2 text-paycard-navy">10</div>
+            <div className="text-sm text-gray-600">Allocated Cards</div>
+          </div>
+        </Card>
       </div>
 
       <Card>
-        <div className="px-6 pt-6">
-          <h2 className="text-2xl font-bold text-paycard-navy mb-6 text-center">
+        <div className="p-6">
+          <h2 className="text-2xl font-bold text-paycard-navy mb-6">
             Confirm allocation
           </h2>
-        </div>
 
-        <div className="p-6">
           <Table>
             <TableHeader>
               <TableRow>
@@ -56,9 +75,14 @@ export default function AllocateCardsConfirm() {
             </TableBody>
           </Table>
 
-          <div className="flex justify-end mt-8">
+          <div className="flex justify-between mt-8">
             <Button
-              variant="default"
+              variant="outline"
+              onClick={handleBack}
+            >
+              Back
+            </Button>
+            <Button
               onClick={handleConfirm}
             >
               CONFIRM

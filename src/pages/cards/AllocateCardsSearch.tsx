@@ -49,7 +49,7 @@ export default function AllocateCardsSearch() {
     <div className="max-w-4xl mx-auto">
       <div className="flex justify-between items-start mb-4">
         <h1 className="text-3xl font-bold text-paycard-navy">Allocate Card</h1>
-        <StepIndicator currentStep={2} totalSteps={3} />
+        <StepIndicator currentStep={2} totalSteps={5} />
       </div>
 
       <div className="grid grid-cols-3 gap-4 mb-8">
@@ -104,6 +104,8 @@ export default function AllocateCardsSearch() {
                 <TableRow>
                   <TableHead className="w-[50px]"></TableHead>
                   <TableHead>Card Number</TableHead>
+                  <TableHead>Card Holder Name</TableHead>
+                  <TableHead>Expiration Date</TableHead>
                   <TableHead>Status</TableHead>
                 </TableRow>
               </TableHeader>
@@ -120,11 +122,15 @@ export default function AllocateCardsSearch() {
                       />
                     </TableCell>
                     <TableCell>{card.cardNumber}</TableCell>
+                    <TableCell>{card.cardHolderName || '-'}</TableCell>
+                    <TableCell>{card.expirationDate || '-'}</TableCell>
                     <TableCell>
                       <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
-                        card.status === 'INACTIVE' 
-                          ? 'bg-yellow-100 text-yellow-800'
-                          : 'bg-red-100 text-red-800'
+                        card.status === 'ACTIVE' 
+                          ? 'bg-green-100 text-green-800'
+                          : card.status === 'EXPIRED'
+                          ? 'bg-red-100 text-red-800'
+                          : 'bg-yellow-100 text-yellow-800'
                       }`}>
                         {card.status}
                       </span>
@@ -135,7 +141,7 @@ export default function AllocateCardsSearch() {
             </Table>
           </div>
 
-          <div className="mt-4">
+          <div className="mt-4 flex justify-center">
             <Pagination>
               <PaginationContent>
                 {Array.from({ length: totalPages }).map((_, index) => (
