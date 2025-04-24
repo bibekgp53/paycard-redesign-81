@@ -10,6 +10,7 @@ import { SearchCardForm } from "./components/SearchCardForm";
 import { SearchResultsTable } from "./components/SearchResultsTable";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function SearchLoadTo() {
   const navigate = useNavigate();
@@ -72,6 +73,32 @@ export default function SearchLoadTo() {
     { label: "Search Card", isCurrentPage: true }
   ];
 
+  const handleContinue = async () => {
+    if (selectedCards.length === 1) {
+      // Get the selected card's account_card_id
+      const selectedCard = results.find(card => card.account_card_id === selectedCards[0]);
+      
+      if (selectedCard) {
+        // Call search_load_allocated with the selected card's account_card_id
+        const { data, error } = await supabase
+          .rpc('search_load_allocated', {
+            p_account_from: false,
+            p_transfer_from_account_id: selectedCard.account_card_id,
+            p_limit: 100,
+            p_offset: 0
+          });
+
+        if (error) {
+          console.error("Error loading allocated cards:", error);
+          return;
+        }
+
+        // Navigate to the card loads page with the accountFrom parameter
+        navigate("/load-funds-from/card-loads?accountFrom=false");
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       <Breadcrumb items={breadcrumbItems} />
@@ -120,7 +147,8 @@ export default function SearchLoadTo() {
             Back
           </Button>
           <Button 
-            disabled={selectedCards.length === 0}
+            onClick={handleContinue}
+            disabled={selectedCards.length !== 1}
           >
             Continue
           </Button>
