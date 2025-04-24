@@ -26,12 +26,12 @@ export default function LoadFundsFrom() {
             setSelectedLoadFundsToCard("card-loads");
             navigate("/load-funds-from/to?accountFrom=false");
           }}
-          className="text-left transition-all hover:scale-[1.02] focus:outline-none"
+          className="text-left transition-all hover:scale-[1.01] focus:outline-none"
         >
           <Card className={`p-8 h-full border-2 ${
             selectedLoadFundsToCard === "card-loads"
               ? "border-paycard-salmon"
-              : "hover:border-paycard-salmon border-transparent"
+              : "border-paycard-navy-200 hover:border-paycard-salmon"
           }`}>
             <div className="flex items-start gap-6">
               <div className="p-4 rounded-full bg-paycard-navy-100">
@@ -54,12 +54,12 @@ export default function LoadFundsFrom() {
             setSelectedLoadFundsToCard("search");
             navigate("/load-funds-from/to?accountFrom=true");
           }}
-          className="text-left transition-all hover:scale-[1.02] focus:outline-none"
+          className="text-left transition-all hover:scale-[1.01] focus:outline-none"
         >
           <Card className={`p-8 h-full border-2 ${
             selectedLoadFundsToCard === "search"
               ? "border-paycard-salmon"
-              : "hover:border-paycard-salmon border-transparent"
+              : "border-paycard-navy-200 hover:border-paycard-salmon"
           }`}>
             <div className="flex items-start gap-6">
               <div className="p-4 rounded-full bg-paycard-navy-100">
