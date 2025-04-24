@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -93,12 +92,12 @@ export default function SearchLoadTo() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <Card className="bg-white p-6">
-        <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold text-paycard-navy">Load funds into card</h1>
         <p className="text-gray-600">
-          Load funds into cards from your profile or transfer funds from a stopped card.
+          Load funds into cards from your Profile or transfer funds from a stopped card.
         </p>
-      </Card>
+      </div>
 
       <Card className="mb-8 p-6">
         <h2 className="text-xl font-semibold text-paycard-navy mb-6">Search Card</h2>
