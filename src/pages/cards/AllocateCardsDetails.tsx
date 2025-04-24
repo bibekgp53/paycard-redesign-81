@@ -10,8 +10,8 @@ export default function AllocateCardsDetails() {
   const location = useLocation();
   const { cardNumber, sequenceNumber, trackingNumber, allocationType } = location.state || {};
   
+  const currentStep = allocationType === "search" ? 2 : 1;
   const totalSteps = allocationType === "search" ? 4 : 3;
-  const currentStep = allocationType === "search" ? 3 : 2;
 
   const [formData, setFormData] = useState({
     firstName: "",

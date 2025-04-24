@@ -9,7 +9,7 @@ export default function AllocateCardsConfirm() {
   const navigate = useNavigate();
   const { formData, cardNumber, allocationType } = location.state || {};
 
-  const currentStep = allocationType === "search" ? 4 : 3;
+  const currentStep = allocationType === "search" ? 3 : 2;
   const totalSteps = allocationType === "search" ? 4 : 3;
 
   const handleBack = () => {
