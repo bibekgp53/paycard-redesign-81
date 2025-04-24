@@ -1,3 +1,4 @@
+
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -7,7 +8,7 @@ import { StepIndicator } from "@/components/ui/step-indicator";
 export default function AllocateCardsConfirm() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { formData, cardNumber, allocationType } = location.state || {};
+  const { formData, id, cardNumber, allocationType } = location.state || {};
 
   const currentStep = allocationType === "search" ? 3 : 2;
   const totalSteps = allocationType === "search" ? 4 : 3;

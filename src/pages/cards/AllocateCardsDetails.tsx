@@ -16,7 +16,7 @@ import { Input } from "@/components/ui/input";
 export default function AllocateCardsDetails() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { cardNumber, sequenceNumber, trackingNumber, allocationType } = location.state || {};
+  const { id, cardNumber, sequenceNumber, trackingNumber, allocationType } = location.state || {};
   
   const currentStep = allocationType === "search" ? 2 : 1;
   const totalSteps = allocationType === "search" ? 4 : 3;
@@ -33,11 +33,12 @@ export default function AllocateCardsDetails() {
   });
 
   const { mutate: submitAllocation, isPending } = useMutation({
-    mutationFn: () => allocateCard(cardNumber, form.getValues()),
+    mutationFn: () => allocateCard(id, form.getValues()),
     onSuccess: () => {
       navigate("/cards/allocate/confirm", { 
         state: { 
           formData: form.getValues(),
+          id,
           cardNumber,
           sequenceNumber,
           trackingNumber,
@@ -162,6 +163,7 @@ export default function AllocateCardsDetails() {
               />
 
               <div className="mt-6 text-sm text-gray-600 space-y-1">
+                <p>Card ID: {id || '-'}</p>
                 <p>Card Number: {cardNumber || '-'}</p>
                 <p>Sequence Number: {sequenceNumber || '-'}</p>
                 <p>Tracking Number: {trackingNumber || '-'}</p>

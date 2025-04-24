@@ -1,3 +1,4 @@
+
 import { supabase } from "@/integrations/supabase/client";
 import { CardAllocationFormData } from "@/lib/validations/card-allocation";
 
@@ -13,6 +14,7 @@ export interface AvailableCard {
 }
 
 export async function allocateCard(cardId: string, formData: CardAllocationFormData) {
+  // We now expect cardId to be the actual UUID from the database, not the card number
   const { error } = await supabase
     .from('card_allocations')
     .insert({
@@ -27,6 +29,14 @@ export async function allocateCard(cardId: string, formData: CardAllocationFormD
     });
 
   if (error) throw error;
+  
+  // Also update the card status to 'active'
+  const { error: cardUpdateError } = await supabase
+    .from('cards')
+    .update({ status: 'active' })
+    .eq('id', cardId);
+    
+  if (cardUpdateError) throw cardUpdateError;
 }
 
 export async function searchAvailableCards(
