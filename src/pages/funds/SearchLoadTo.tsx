@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -138,10 +139,12 @@ export default function SearchLoadTo() {
             <TableHeader>
               <TableRow>
                 <TableHead className="w-12">
-                  <Checkbox
-                    checked={selectedCards.length === results.length && results.length > 0}
-                    onCheckedChange={handleSelectAll}
-                  />
+                  <div className="flex items-center justify-center h-4">
+                    <Checkbox
+                      checked={selectedCards.length === results.length && results.length > 0}
+                      onCheckedChange={handleSelectAll}
+                    />
+                  </div>
                 </TableHead>
                 <TableHead>Card Number</TableHead>
                 <TableHead>Card Holder</TableHead>
@@ -154,10 +157,12 @@ export default function SearchLoadTo() {
               {results.map((card) => (
                 <TableRow key={card.account_card_id}>
                   <TableCell>
-                    <Checkbox
-                      checked={selectedCards.includes(card.account_card_id)}
-                      onCheckedChange={() => toggleCardSelection(card.account_card_id)}
-                    />
+                    <div className="flex items-center justify-center h-4">
+                      <Checkbox
+                        checked={selectedCards.includes(card.account_card_id)}
+                        onCheckedChange={() => toggleCardSelection(card.account_card_id)}
+                      />
+                    </div>
                   </TableCell>
                   <TableCell>{card.cardnumber}</TableCell>
                   <TableCell>{card.cardholder}</TableCell>
