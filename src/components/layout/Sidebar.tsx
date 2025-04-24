@@ -1,4 +1,3 @@
-
 import { CreditCard, WalletCards, Bell, LogOut } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
@@ -46,7 +45,6 @@ export function Sidebar() {
       <div className="flex flex-col h-full min-h-0">
         {/* Header section */}
         <div className="p-4 flex items-center gap-2">
-          <div className="bg-paycard-salmon h-8 w-8 rounded"></div>
           <span className="text-paycard-navy font-semibold text-xl">PayCard</span>
         </div>
 
