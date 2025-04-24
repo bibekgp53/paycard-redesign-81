@@ -488,7 +488,9 @@ const SidebarGroup = React.forwardRef<
               <ChevronRight 
                 className={cn(
                   "ml-auto h-4 w-4 transition-transform",
-                  !collapsed && "transform rotate-90"
+                  !collapsed 
+                    ? "transform rotate-90 text-[#9b87f5]" // Primary Purple when expanded
+                    : "text-[#8E9196]" // Neutral Gray when collapsed
                 )} 
               />
             )}
@@ -547,7 +549,7 @@ const SidebarGroupAction = React.forwardRef<
       ref={ref}
       data-sidebar="group-action"
       className={cn(
-        "absolute right-3 top-3.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 [&>svg]:size-4 [&>svg]:shrink-0",
+        "absolute right-3 top-3.5 flex aspect-square w-5 items-center justify-center rounded-md p-0 text-sidebar-foreground outline-none ring-sidebar-ring transition-transform hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-2 peer-hover/menu-button:text-sidebar-accent-foreground [&>svg]:size-4 [&>svg]:shrink-0",
         // Increases the hit area of the button on mobile.
         "after:absolute after:-inset-2 after:md:hidden",
         "group-data-[collapsible=icon]:hidden",
