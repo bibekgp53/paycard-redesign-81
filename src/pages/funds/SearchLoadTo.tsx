@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Card } from "@/components/ui/card";
@@ -122,7 +121,10 @@ export default function SearchLoadTo() {
               onChange={(e) => setSearchString(e.target.value)}
             />
           </div>
-          <Button onClick={handleSearch}>
+          <Button 
+            onClick={handleSearch} 
+            variant="accent"  // Changed from default to accent variant
+          >
             <Search className="h-4 w-4 mr-2" />
             Search
           </Button>
@@ -184,17 +186,21 @@ export default function SearchLoadTo() {
             />
           </div>
         )}
-      </Card>
 
-      <div className="flex justify-between">
-        <Button 
-          variant="outline" 
-          onClick={handleLoadFundsClick}
-        >
-          Back
-        </Button>
-        <Button disabled={selectedCards.length === 0}>Load Funds</Button>
-      </div>
+        <div className="flex justify-between">
+          <Button 
+            variant="outline" 
+            onClick={handleLoadFundsClick}
+          >
+            Back
+          </Button>
+          <Button 
+            disabled={selectedCards.length === 0}
+          >
+            Continue  {/* Changed from "Load Funds" to "Continue" */}
+          </Button>
+        </div>
+      </Card>
     </div>
   );
 }
