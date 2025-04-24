@@ -1,7 +1,6 @@
 
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Json } from '@/integrations/supabase/types';
 
 export type SearchField = 'cardNumber' | 'cardholder' | 'idPassportNumber' | 'expiryDate' | 'referenceNumber';
 
@@ -15,13 +14,11 @@ export interface SearchResult {
 }
 
 export interface SearchMetadata {
-  total_count: number;
   filtered_count: number;
 }
 
 interface SearchLoadToResponse {
   records: SearchResult[];
-  total_count: number;
   filtered_count: number;
 }
 
@@ -59,7 +56,6 @@ export const useSearchLoadTo = () => {
       if (responseData) {
         setResults(responseData.records || []);
         setMetadata({
-          total_count: responseData.total_count,
           filtered_count: responseData.filtered_count
         });
       } else {
