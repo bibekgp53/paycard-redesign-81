@@ -1,7 +1,8 @@
+
 import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
+import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { format } from "date-fns";
 import { useCardLoadsStore } from "@/store/useCardLoadsStore";
 import { supabase } from "@/integrations/supabase/client";
@@ -164,23 +165,15 @@ export default function ConfirmLoad() {
     return <InvoiceDisplay {...invoiceMeta} />;
   }
 
+  const breadcrumbItems = [
+    { label: "Load Funds From", path: "/load-funds-from" },
+    { label: "Card Loads", path: "/load-funds-from/card-loads" },
+    { label: "Confirm Load", isCurrentPage: true }
+  ];
+
   return (
     <div className="space-y-6">
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={() => navigate("/load-funds-from")}>Load Funds From</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbLink onClick={() => navigate("/load-funds-from/card-loads")}>Card Loads</BreadcrumbLink>
-          </BreadcrumbItem>
-          <BreadcrumbSeparator />
-          <BreadcrumbItem>
-            <BreadcrumbPage>Confirm Load</BreadcrumbPage>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <Breadcrumb items={breadcrumbItems} />
 
       <Card className="bg-white p-6">
         <h1 className="text-2xl font-bold text-paycard-navy mb-2">Confirm Card Load</h1>
