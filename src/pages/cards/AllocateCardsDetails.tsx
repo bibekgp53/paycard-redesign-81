@@ -2,12 +2,16 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { StepIndicator } from "@/components/ui/step-indicator";
-import { allocateCard, CardAllocationForm } from "@/services/cardAllocation";
+import { allocateCard } from "@/services/cardAllocation";
 import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { cardAllocationSchema, type CardAllocationFormData } from "@/lib/validations/card-allocation";
+import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
 
 export default function AllocateCardsDetails() {
   const navigate = useNavigate();
@@ -17,20 +21,23 @@ export default function AllocateCardsDetails() {
   const currentStep = allocationType === "search" ? 2 : 1;
   const totalSteps = allocationType === "search" ? 4 : 3;
 
-  const [formData, setFormData] = useState<CardAllocationForm>({
-    firstName: "",
-    surname: "",
-    idNumber: "",
-    cellphone: "",
-    reference: ""
+  const form = useForm<CardAllocationFormData>({
+    resolver: zodResolver(cardAllocationSchema),
+    defaultValues: {
+      firstName: "",
+      surname: "",
+      idNumber: "",
+      cellphone: "",
+      reference: "",
+    },
   });
 
   const { mutate: submitAllocation, isPending } = useMutation({
-    mutationFn: () => allocateCard(cardNumber, formData),
+    mutationFn: () => allocateCard(cardNumber, form.getValues()),
     onSuccess: () => {
       navigate("/cards/allocate/confirm", { 
         state: { 
-          formData,
+          formData: form.getValues(),
           cardNumber,
           sequenceNumber,
           trackingNumber,
@@ -44,16 +51,7 @@ export default function AllocateCardsDetails() {
     }
   });
 
-  const handleChange = (field: keyof CardAllocationForm) => (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: event.target.value
-    }));
-  };
-
-  const handleContinue = () => {
+  const onSubmit = (data: CardAllocationFormData) => {
     submitAllocation();
   };
 
@@ -89,81 +87,102 @@ export default function AllocateCardsDetails() {
         <CardContent className="p-6">
           <h2 className="text-2xl font-bold text-paycard-navy mb-6">Card holder details</h2>
 
-          <form className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-paycard-navy mb-1">
-                  FIRST NAME
-                </label>
-                <Input
-                  value={formData.firstName}
-                  onChange={handleChange("firstName")}
-                  required
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-paycard-navy">FIRST NAME *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="surname"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-paycard-navy">SURNAME *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
               </div>
-              <div>
-                <label className="block text-sm font-medium text-paycard-navy mb-1">
-                  SURNAME
-                </label>
-                <Input
-                  value={formData.surname}
-                  onChange={handleChange("surname")}
-                  required
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-paycard-navy mb-1">
-                  ID/PASSPORT NUMBER
-                </label>
-                <Input
-                  value={formData.idNumber}
-                  onChange={handleChange("idNumber")}
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-paycard-navy mb-1">
-                  CELLPHONE NUMBER
-                </label>
-                <Input
-                  value={formData.cellphone}
-                  onChange={handleChange("cellphone")}
-                  required
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-paycard-navy mb-1">
-                REFERENCE
-              </label>
-              <Input
-                value={formData.reference}
-                onChange={handleChange("reference")}
-              />
-            </div>
 
-            <div className="mt-6 text-sm text-gray-600 space-y-1">
-              <p>Card Number: {cardNumber || '-'}</p>
-              <p>Sequence Number: {sequenceNumber || '-'}</p>
-              <p>Tracking Number: {trackingNumber || '-'}</p>
-            </div>
-          </form>
+              <div className="grid grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="idNumber"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-paycard-navy">ID/PASSPORT NUMBER *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="cellphone"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-paycard-navy">CELLPHONE NUMBER *</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="reference"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-paycard-navy">REFERENCE</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="mt-6 text-sm text-gray-600 space-y-1">
+                <p>Card Number: {cardNumber || '-'}</p>
+                <p>Sequence Number: {sequenceNumber || '-'}</p>
+                <p>Tracking Number: {trackingNumber || '-'}</p>
+              </div>
+
+              <div className="flex justify-between mt-6">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => navigate(-1)}
+                >
+                  Back
+                </Button>
+                <Button type="submit" disabled={isPending}>
+                  Continue
+                </Button>
+              </div>
+            </form>
+          </Form>
         </CardContent>
       </Card>
-
-      <div className="flex justify-between">
-        <Button
-          variant="outline"
-          onClick={() => navigate(-1)}
-        >
-          Back
-        </Button>
-        <Button onClick={handleContinue} disabled={isPending}>
-          Continue
-        </Button>
-      </div>
     </div>
   );
 }

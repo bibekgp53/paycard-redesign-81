@@ -1,13 +1,7 @@
-
 import { supabase } from "@/integrations/supabase/client";
+import { CardAllocationFormData } from "@/lib/validations/card-allocation";
 
-export interface CardAllocationForm {
-  firstName: string;
-  surname: string;
-  idNumber: string;
-  cellphone: string;
-  reference?: string;
-}
+export type { CardAllocationFormData };
 
 export interface AvailableCard {
   id: string;
@@ -18,7 +12,7 @@ export interface AvailableCard {
   cardholder_name?: string;
 }
 
-export async function allocateCard(cardId: string, formData: CardAllocationForm) {
+export async function allocateCard(cardId: string, formData: CardAllocationFormData) {
   const { error } = await supabase
     .from('card_allocations')
     .insert({
