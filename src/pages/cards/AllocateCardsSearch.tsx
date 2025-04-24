@@ -1,7 +1,6 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -9,15 +8,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@/components/ui/pagination";
 
-const mockData = Array.from({ length: 20 }, (_, i) => ({
+// Generate more complete mock data
+const mockData = Array.from({ length: 50 }, (_, i) => ({
   id: (i + 1).toString(),
   cardNumber: Math.random().toString().slice(2, 14),
   sequenceNumber: Math.floor(Math.random() * 900000) + 100000,
-  trackingNumber: Math.random() > 0.5 ? Math.floor(Math.random() * 900000) + 100000 : null,
-  cardHolderName: Math.random() > 0.7 ? `User ${i + 1}` : null,
-  expirationDate: Math.random() > 0.6 ? `${Math.floor(Math.random() * 12) + 1}/${Math.floor(Math.random() * 5) + 24}` : null,
+  trackingNumber: Math.floor(Math.random() * 900000) + 100000,
+  cardHolderName: `User ${i + 1}`,
+  expirationDate: `${Math.floor(Math.random() * 12) + 1}/${Math.floor(Math.random() * 5) + 24}`,
   status: ["INACTIVE", "EXPIRED", "ACTIVE"][Math.floor(Math.random() * 3)]
 }));
 
@@ -25,7 +24,7 @@ export default function AllocateCardsSearch() {
   const navigate = useNavigate();
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 6;
+  const itemsPerPage = 10;
 
   const handleContinue = () => {
     if (selectedCard) {
@@ -46,6 +45,14 @@ export default function AllocateCardsSearch() {
   );
 
   const totalPages = Math.ceil(mockData.length / itemsPerPage);
+
+  const handlePreviousPage = () => {
+    setCurrentPage((prev) => Math.max(prev - 1, 1));
+  };
+
+  const handleNextPage = () => {
+    setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -124,8 +131,8 @@ export default function AllocateCardsSearch() {
                       />
                     </TableCell>
                     <TableCell>{card.cardNumber}</TableCell>
-                    <TableCell>{card.cardHolderName || '-'}</TableCell>
-                    <TableCell>{card.expirationDate || '-'}</TableCell>
+                    <TableCell>{card.cardHolderName}</TableCell>
+                    <TableCell>{card.expirationDate}</TableCell>
                     <TableCell>
                       <span className={`inline-flex rounded-full px-2 py-1 text-xs font-semibold ${
                         card.status === 'ACTIVE' 
@@ -143,21 +150,30 @@ export default function AllocateCardsSearch() {
             </Table>
           </div>
 
-          <div className="mt-4 flex justify-center">
-            <Pagination>
-              <PaginationContent>
-                {Array.from({ length: totalPages }).map((_, index) => (
-                  <PaginationItem key={index}>
-                    <PaginationLink
-                      onClick={() => setCurrentPage(index + 1)}
-                      isActive={currentPage === index + 1}
-                    >
-                      {index + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
-              </PaginationContent>
-            </Pagination>
+          <div className="mt-4 flex items-center justify-between px-2">
+            <div className="text-sm text-gray-500">
+              Page {currentPage} of {totalPages}
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+              >
+                Next
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
