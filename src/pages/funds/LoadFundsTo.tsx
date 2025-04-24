@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -67,32 +68,32 @@ export default function LoadFundsTo() {
         </BreadcrumbList>
       </Breadcrumb>
 
-      <Card className="bg-white p-6">
-        <h1 className="text-2xl font-bold text-paycard-navy mb-2">Load funds into card</h1>
+      <div className="space-y-2">
+        <h1 className="text-2xl font-bold text-paycard-navy">Load funds into card</h1>
         <p className="text-gray-600">
           Load funds into cards from your Profile or transfer funds from a stopped card.
         </p>
-      </Card>
+      </div>
 
       <div className="flex flex-col gap-6">
         <button
           onClick={handleCardLoadsClick}
           className="text-left transition-all hover:scale-[1.01] focus:outline-none"
         >
-          <Card className={`p-6 h-full border-2 ${
+          <Card className={`p-8 h-full border-2 ${
             selectedLoadFundsToCard === "card-loads"
               ? "border-paycard-salmon"
               : "border-paycard-navy-200 hover:border-paycard-salmon"
           }`}>
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-full bg-paycard-navy-100">
-                <Users className="h-6 w-6 text-paycard-navy" />
+            <div className="flex items-start gap-6">
+              <div className="p-4 rounded-full bg-paycard-navy-100">
+                <Users className="h-8 w-8 text-paycard-navy" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-paycard-navy mb-2">
+                <h3 className="text-2xl font-semibold text-paycard-navy mb-3">
                   Load to multiple cards
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-lg">
                   Load funds to multiple cards at once
                 </p>
               </div>
@@ -104,20 +105,20 @@ export default function LoadFundsTo() {
           onClick={handleSearchClick}
           className="text-left transition-all hover:scale-[1.01] focus:outline-none"
         >
-          <Card className={`p-6 h-full border-2 ${
+          <Card className={`p-8 h-full border-2 ${
             selectedLoadFundsToCard === "search"
               ? "border-paycard-salmon"
               : "border-paycard-navy-200 hover:border-paycard-salmon"
           }`}>
-            <div className="flex items-start gap-4">
-              <div className="p-3 rounded-full bg-paycard-navy-100">
-                <Search className="h-6 w-6 text-paycard-navy" />
+            <div className="flex items-start gap-6">
+              <div className="p-4 rounded-full bg-paycard-navy-100">
+                <Search className="h-8 w-8 text-paycard-navy" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-paycard-navy mb-2">
+                <h3 className="text-2xl font-semibold text-paycard-navy mb-3">
                   Search for a card
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-gray-600 text-lg">
                   Search and select a specific card to load funds
                 </p>
               </div>
