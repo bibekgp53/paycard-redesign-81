@@ -7,7 +7,7 @@ import { StepIndicator } from "@/components/ui/step-indicator";
 import { allocateCard, getCardCounts } from "@/services/cardAllocation";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Loader2 } from "lucide-react";
 import { FlashMessage } from "@/components/ui/flash-message";
 
@@ -19,12 +19,19 @@ export default function AllocateCardsConfirm() {
   const [allocationError, setAllocationError] = useState<string | null>(null);
   const queryClient = useQueryClient();
 
+  // Ensure consistent card counts across steps
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['cardCounts'] });
+  }, [queryClient]);
+
   const currentStep = allocationType === "search" ? 3 : 2;
   const totalSteps = allocationType === "search" ? 4 : 3;
 
   const { data: cardCounts, isLoading: countsLoading } = useQuery({
     queryKey: ['cardCounts'],
-    queryFn: getCardCounts
+    queryFn: getCardCounts,
+    staleTime: 0,
+    refetchOnWindowFocus: false
   });
 
   const { mutate: submitAllocation, isPending } = useMutation({

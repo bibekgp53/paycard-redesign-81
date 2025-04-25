@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,13 +9,19 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { cardAllocationSchema, type CardAllocationFormData } from "@/lib/validations/card-allocation";
 import { FormField, FormItem, FormLabel, FormControl, FormMessage, Form } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getCardCounts } from "@/services/cardAllocation";
 
 export default function AllocateCardsDetails() {
   const navigate = useNavigate();
   const location = useLocation();
   const { id, cardNumber, sequenceNumber, trackingNumber, allocationType } = location.state || {};
+  const queryClient = useQueryClient();
+
+  // Ensure consistent card counts across steps
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['cardCounts'] });
+  }, [queryClient]);
   
   // Reintroduce currentStep and totalSteps
   const currentStep = allocationType === "search" ? 2 : 1;
@@ -25,7 +31,8 @@ export default function AllocateCardsDetails() {
   const { data: cardCounts, isLoading } = useQuery({
     queryKey: ['cardCounts'],
     queryFn: getCardCounts,
-    staleTime: 0
+    staleTime: 0,
+    refetchOnWindowFocus: false
   });
 
   const form = useForm<CardAllocationFormData>({
@@ -62,19 +69,19 @@ export default function AllocateCardsDetails() {
       <div className="grid grid-cols-3 gap-4 mb-8">
         <Card className="bg-paycard-navy text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.total || 40}</div>
+            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.total}</div>
             <div className="text-sm">Total Cards</div>
           </CardContent>
         </Card>
         <Card className="bg-paycard-salmon text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.unallocated || 17}</div>
+            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.unallocated}</div>
             <div className="text-sm">Unallocated Cards</div>
           </CardContent>
         </Card>
         <Card className="border border-gray-200">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2 text-paycard-navy">{isLoading ? "..." : cardCounts?.allocated || 13}</div>
+            <div className="text-4xl font-bold mb-2 text-paycard-navy">{isLoading ? "..." : cardCounts?.allocated}</div>
             <div className="text-sm text-gray-600">Allocated Cards</div>
           </CardContent>
         </Card>

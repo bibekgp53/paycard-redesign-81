@@ -22,7 +22,7 @@ export default function AllocateCardsSearch() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  // Force refresh card data when component mounts
+  // Force refresh card data when component mounts to ensure counts are consistent
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ['availableCards'] });
     queryClient.invalidateQueries({ queryKey: ['cardCounts'] });
@@ -32,15 +32,15 @@ export default function AllocateCardsSearch() {
     queryKey: ['availableCards', searchTerm, currentPage],
     queryFn: () => searchAvailableCards(searchTerm, currentPage, itemsPerPage),
     staleTime: 0, // Always refetch when requested
-    retry: 1
+    retry: 1,
+    refetchOnWindowFocus: false
   });
 
   const { data: cardCounts, isLoading: countsLoading, error: countsError } = useQuery({
     queryKey: ['cardCounts'],
     queryFn: getCardCounts,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
-    staleTime: 0 // Always refetch when requested
+    staleTime: 0, // Always refetch when requested
+    refetchOnWindowFocus: false
   });
 
   // Handle errors
@@ -102,7 +102,7 @@ export default function AllocateCardsSearch() {
         <Card className="border border-gray-200">
           <CardContent className="p-6">
             <div className="text-4xl font-bold mb-2 text-paycard-navy">{countsLoading ? "..." : cardCounts?.allocated}</div>
-            <div className="text-sm text-gray-600">Allocated Cards</div>
+            <div className="text-sm">Allocated Cards</div>
           </CardContent>
         </Card>
       </div>

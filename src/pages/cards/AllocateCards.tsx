@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -15,19 +14,18 @@ export default function AllocateCards() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const queryClient = useQueryClient();
 
+  // Clear all cardCounts cache on page load
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['cardCounts'] });
+  }, [queryClient]);
+
   // Use staleTime: 0 to ensure fresh data on mount
   const { data: cardCounts, isLoading, error } = useQuery({
     queryKey: ['cardCounts'],
     queryFn: getCardCounts,
-    refetchOnWindowFocus: true,
-    refetchOnMount: true,
+    refetchOnWindowFocus: false,
     staleTime: 0
   });
-
-  useEffect(() => {
-    // Force refresh the card counts when the component mounts
-    queryClient.invalidateQueries({ queryKey: ['cardCounts'] });
-  }, [queryClient]);
 
   useEffect(() => {
     if (error) {
@@ -64,19 +62,19 @@ export default function AllocateCards() {
       <div className="grid grid-cols-3 gap-4 mb-8">
         <Card className="bg-paycard-navy text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.total || 40}</div>
+            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.total}</div>
             <div className="text-sm">Total Cards</div>
           </CardContent>
         </Card>
         <Card className="bg-paycard-salmon text-white">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.unallocated || 28}</div>
+            <div className="text-4xl font-bold mb-2">{isLoading ? "..." : cardCounts?.unallocated}</div>
             <div className="text-sm">Unallocated Cards</div>
           </CardContent>
         </Card>
         <Card className="border border-gray-200">
           <CardContent className="p-6">
-            <div className="text-4xl font-bold mb-2 text-paycard-navy">{isLoading ? "..." : cardCounts?.allocated || 12}</div>
+            <div className="text-4xl font-bold mb-2 text-paycard-navy">{isLoading ? "..." : cardCounts?.allocated}</div>
             <div className="text-sm text-gray-600">Allocated Cards</div>
           </CardContent>
         </Card>

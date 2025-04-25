@@ -98,9 +98,35 @@ export async function searchAvailableCards(
   }
 }
 
+// Define a singleton pattern to cache card counts
+const cardCountsCache = {
+  data: null as CardCounts | null,
+  timestamp: 0,
+  TTL: 5000, // 5 seconds cache
+  
+  isValid() {
+    return this.data !== null && (Date.now() - this.timestamp < this.TTL);
+  },
+  
+  set(counts: CardCounts) {
+    this.data = counts;
+    this.timestamp = Date.now();
+  },
+  
+  clear() {
+    this.data = null;
+  }
+};
+
 export async function getCardCounts(): Promise<CardCounts> {
   try {
     console.log("Fetching card counts from database");
+    
+    // Use cached value if valid
+    if (cardCountsCache.isValid()) {
+      console.log("Using cached card counts:", cardCountsCache.data);
+      return cardCountsCache.data!;
+    }
     
     // Fixed total as per requirement
     const totalCount = 40;
@@ -133,18 +159,35 @@ export async function getCardCounts(): Promise<CardCounts> {
     
     console.log("Card counts calculated:", { total: totalCount, allocated, unallocated });
     
-    return {
+    const counts = {
       total: totalCount,
       allocated: allocated,
       unallocated: unallocated
     };
+    
+    // Cache the results
+    cardCountsCache.set(counts);
+    
+    return counts;
   } catch (error) {
     console.error("Error fetching card counts:", error);
-    // Return default values as fallback
-    return {
+    
+    // If we have valid cached data, return that instead of default values
+    if (cardCountsCache.isValid() && cardCountsCache.data) {
+      console.log("Error occurred but returning cached counts:", cardCountsCache.data);
+      return cardCountsCache.data;
+    }
+    
+    // Return default values that match the fixed total of 40
+    const defaultCounts = {
       total: 40,
       allocated: 13,
       unallocated: 27
     };
+    
+    // Cache these default values
+    cardCountsCache.set(defaultCounts);
+    
+    return defaultCounts;
   }
 }
