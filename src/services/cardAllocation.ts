@@ -62,6 +62,9 @@ export async function allocateCard(cardId: string, formData: CardAllocationFormD
       throw error;
     }
     
+    // After successful allocation, invalidate the cache to force fresh counts on next fetch
+    cardCountsCache.clear();
+    
     console.log("Allocation completed successfully");
     return { success: true };
   } catch (error) {
@@ -128,8 +131,15 @@ export async function getCardCounts(): Promise<CardCounts> {
       return cardCountsCache.data!;
     }
     
-    // Fixed total as per requirement
-    const totalCount = 40;
+    // Query the database for total cards count
+    const { count: totalCount, error: totalError } = await supabase
+      .from('cards')
+      .select('*', { count: 'exact', head: true });
+    
+    if (totalError) {
+      console.error("Error counting total cards:", totalError);
+      throw totalError;
+    }
     
     // Query the database for cards with 'active' status
     const { count: allocatedCount, error: allocatedError } = await supabase
@@ -154,15 +164,16 @@ export async function getCardCounts(): Promise<CardCounts> {
     }
     
     // Get the actual counts or default to 0 if null
+    const total = totalCount || 0;
     const allocated = allocatedCount || 0;
     const unallocated = unallocatedCount || 0;
     
-    console.log("Card counts calculated:", { total: totalCount, allocated, unallocated });
+    console.log("Card counts calculated:", { total, allocated, unallocated });
     
     const counts = {
-      total: totalCount,
-      allocated: allocated,
-      unallocated: unallocated
+      total,
+      allocated,
+      unallocated
     };
     
     // Cache the results
@@ -178,16 +189,6 @@ export async function getCardCounts(): Promise<CardCounts> {
       return cardCountsCache.data;
     }
     
-    // Return default values that match the fixed total of 40
-    const defaultCounts = {
-      total: 40,
-      allocated: 13,
-      unallocated: 27
-    };
-    
-    // Cache these default values
-    cardCountsCache.set(defaultCounts);
-    
-    return defaultCounts;
+    throw error;
   }
 }
