@@ -1,4 +1,3 @@
-
 import { supabase } from "@/integrations/supabase/client";
 import { CardAllocationFormData } from "@/lib/validations/card-allocation";
 
@@ -131,50 +130,37 @@ export async function getCardCounts(): Promise<CardCounts> {
       return cardCountsCache.data!;
     }
     
-    // Query the database for total cards count
+    // Get total count of all cards
     const { count: totalCount, error: totalError } = await supabase
       .from('cards')
       .select('*', { count: 'exact', head: true });
+      
+    if (totalError) throw totalError;
     
-    if (totalError) {
-      console.error("Error counting total cards:", totalError);
-      throw totalError;
-    }
-    
-    // Query the database for cards with 'active' status
+    // Get count of allocated cards (active with cardholder_name)
     const { count: allocatedCount, error: allocatedError } = await supabase
       .from('cards')
       .select('*', { count: 'exact', head: true })
-      .eq('status', 'active');
+      .eq('status', 'active')
+      .not('cardholder_name', 'is', null);
+      
+    if (allocatedError) throw allocatedError;
     
-    if (allocatedError) {
-      console.error("Error counting allocated cards:", allocatedError);
-      throw allocatedError;
-    }
-    
-    // Query the database for cards with 'inactive' status
+    // Get count of unallocated cards (either inactive or active without cardholder_name)
     const { count: unallocatedCount, error: unallocatedError } = await supabase
       .from('cards')
       .select('*', { count: 'exact', head: true })
-      .eq('status', 'inactive');
+      .or('status.eq.inactive,and(status.eq.active,cardholder_name.is.null)');
       
-    if (unallocatedError) {
-      console.error("Error counting unallocated cards:", unallocatedError);
-      throw unallocatedError;
-    }
-    
-    // Get the actual counts or default to 0 if null
-    const total = totalCount || 0;
-    const allocated = allocatedCount || 0;
-    const unallocated = unallocatedCount || 0;
-    
-    console.log("Card counts calculated:", { total, allocated, unallocated });
+    if (unallocatedError) throw unallocatedError;
     
     const counts = {
-      total,
-      allocated,
-      unallocated
+      total: totalCount || 0,
+      allocated: allocatedCount || 0,
+      unallocated: unallocatedCount || 0
     };
+    
+    console.log("Card counts calculated:", counts);
     
     // Cache the results
     cardCountsCache.set(counts);
@@ -183,7 +169,7 @@ export async function getCardCounts(): Promise<CardCounts> {
   } catch (error) {
     console.error("Error fetching card counts:", error);
     
-    // If we have valid cached data, return that instead of default values
+    // If we have valid cached data, return that instead of throwing
     if (cardCountsCache.isValid() && cardCountsCache.data) {
       console.log("Error occurred but returning cached counts:", cardCountsCache.data);
       return cardCountsCache.data;
