@@ -75,15 +75,27 @@ export async function searchAvailableCards(
   page: number = 1, 
   pageSize: number = 10
 ): Promise<AvailableCard[]> {
-  const { data, error } = await supabase
-    .rpc('get_available_cards', {
-      search_term: searchTerm,
-      page_number: page,
-      page_size: pageSize
-    });
+  console.log("Searching available cards with:", { searchTerm, page, pageSize });
+  
+  try {
+    const { data, error } = await supabase
+      .rpc('get_available_cards', {
+        search_term: searchTerm || '',
+        page_number: page,
+        page_size: pageSize
+      });
 
-  if (error) throw error;
-  return data;
+    if (error) {
+      console.error("Error searching available cards:", error);
+      throw error;
+    }
+    
+    console.log("Available cards search result:", data);
+    return data || [];
+  } catch (error) {
+    console.error("Failed to search available cards:", error);
+    throw error;
+  }
 }
 
 export async function getCardCounts(): Promise<CardCounts> {
@@ -107,18 +119,19 @@ export async function getCardCounts(): Promise<CardCounts> {
     // Get the actual count or default to 0 if null
     const allocated = allocatedCount || 0;
     
-    // After your successful allocation, we're setting this to 13
-    if (allocated === 0) {
-      console.log("No allocated cards found in database, using updated default values");
-      return {
-        total: 40,
-        allocated: 13,
-        unallocated: 17
-      };
+    // Query the database for cards with 'inactive' status
+    const { count: unallocatedCount, error: unallocatedError } = await supabase
+      .from('cards')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'inactive');
+      
+    if (unallocatedError) {
+      console.error("Error counting unallocated cards:", unallocatedError);
+      throw unallocatedError;
     }
     
-    // Calculate unallocated cards
-    const unallocated = totalCount - allocated;
+    // Get the actual count or default to 0 if null
+    const unallocated = unallocatedCount || 0;
     
     console.log("Card counts calculated:", { total: totalCount, allocated, unallocated });
     

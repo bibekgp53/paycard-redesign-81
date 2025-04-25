@@ -9,28 +9,60 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { StepIndicator } from "@/components/ui/step-indicator";
 import { RadioGroupBase, RadioGroupItem } from "@/components/ui/radio-group";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { searchAvailableCards, getCardCounts } from "@/services/cardAllocation";
 import { Skeleton } from "@/components/ui/skeleton";
+import { toast } from "@/components/ui/use-toast";
 
 export default function AllocateCardsSearch() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
-  const { data: cards, isLoading: cardsLoading } = useQuery({
+  // Force refresh card data when component mounts
+  useEffect(() => {
+    queryClient.invalidateQueries({ queryKey: ['availableCards'] });
+    queryClient.invalidateQueries({ queryKey: ['cardCounts'] });
+  }, [queryClient]);
+
+  const { data: cards, isLoading: cardsLoading, error: cardsError } = useQuery({
     queryKey: ['availableCards', searchTerm, currentPage],
-    queryFn: () => searchAvailableCards(searchTerm, currentPage, itemsPerPage)
+    queryFn: () => searchAvailableCards(searchTerm, currentPage, itemsPerPage),
+    staleTime: 0, // Always refetch when requested
+    retry: 1
   });
 
-  const { data: cardCounts, isLoading: countsLoading } = useQuery({
+  const { data: cardCounts, isLoading: countsLoading, error: countsError } = useQuery({
     queryKey: ['cardCounts'],
     queryFn: getCardCounts,
     refetchOnWindowFocus: true,
-    refetchOnMount: true
+    refetchOnMount: true,
+    staleTime: 0 // Always refetch when requested
   });
+
+  // Handle errors
+  useEffect(() => {
+    if (cardsError) {
+      toast({
+        title: "Error loading cards",
+        description: "There was a problem loading the available cards. Please try again.",
+        variant: "destructive"
+      });
+      console.error("Cards error:", cardsError);
+    }
+
+    if (countsError) {
+      toast({
+        title: "Error loading card counts",
+        description: "There was a problem loading the card counts. Please try again.",
+        variant: "destructive"
+      });
+      console.error("Card counts error:", countsError);
+    }
+  }, [cardsError, countsError]);
 
   const handleContinue = () => {
     if (selectedCard) {
