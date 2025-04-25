@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -14,9 +15,10 @@ export default function AllocateCards() {
   const [agreedToTerms, setAgreedToTerms] = useState(false);
   const queryClient = useQueryClient();
 
-  // Clear all cardCounts cache on page load
+  // Clear all cardCounts cache on page load to ensure fresh data
   useEffect(() => {
     queryClient.invalidateQueries({ queryKey: ['cardCounts'] });
+    console.log("Invalidated cardCounts query cache");
   }, [queryClient]);
 
   // Use staleTime: 0 to ensure fresh data on mount
@@ -28,6 +30,7 @@ export default function AllocateCards() {
   });
 
   useEffect(() => {
+    console.log("Card counts from query:", cardCounts);
     if (error) {
       toast({
         title: "Error loading card counts",
@@ -36,7 +39,7 @@ export default function AllocateCards() {
       });
       console.error("Card counts error:", error);
     }
-  }, [error]);
+  }, [cardCounts, error]);
 
   const handleContinue = () => {
     if (!agreedToTerms) {
