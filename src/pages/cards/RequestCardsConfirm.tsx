@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle2 } from "lucide-react";
+import { Receipt } from "lucide-react";
 
 type FormValues = {
   numberOfCards: number;
@@ -43,23 +43,93 @@ export default function RequestCardsConfirm() {
     navigate('/cards/request');
   };
 
+  const generateInvoiceNumber = () => {
+    const date = new Date();
+    return `INV-${date.getFullYear()}${String(date.getMonth() + 1).padStart(2, '0')}${String(date.getDate()).padStart(2, '0')}-${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('en-ZA');
+  };
+
   if (isCompleted) {
+    const currentDate = new Date();
+    const invoiceNumber = generateInvoiceNumber();
+    const referenceNumber = `ORD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
+    const vatReg = "4010105461";
+    
     return (
-      <div className="max-w-4xl mx-auto text-center">
+      <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-start mb-4">
-          <h1 className="text-3xl font-bold text-paycard-navy">Card Order Completed</h1>
+          <h1 className="text-3xl font-bold text-paycard-navy">Card Order Invoice</h1>
         </div>
         
-        <Card className="mb-8 py-12">
-          <CardContent className="flex flex-col items-center justify-center">
-            <CheckCircle2 size={80} className="text-green-500 mb-6" />
-            <h2 className="text-2xl font-semibold text-paycard-navy mb-4">Card Order Completed</h2>
-            <p className="text-lg text-gray-600 mb-8">
-              Your order for {formData.numberOfCards} cards has been successfully processed.
-            </p>
-            <Button onClick={handleFinished} className="w-full max-w-xs">
-              I'M FINISHED
-            </Button>
+        <Card className="mb-8">
+          <CardContent className="p-6">
+            <div className="flex justify-between mb-6">
+              <div className="flex flex-col">
+                <h2 className="text-2xl font-semibold text-paycard-navy">INVOICE</h2>
+                <p className="text-gray-600">Standard Bank</p>
+                <p className="text-sm text-gray-500">The Standard Bank of South Africa Limited</p>
+                <p className="text-sm text-gray-500">Reg. No. 1962/000738/06</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm"><span className="font-medium">Invoice Number:</span> {invoiceNumber}</p>
+                <p className="text-sm"><span className="font-medium">Date:</span> {formatDate(currentDate)}</p>
+                <p className="text-sm"><span className="font-medium">Reference:</span> {referenceNumber}</p>
+                <p className="text-sm"><span className="font-medium">VAT Registration:</span> {vatReg}</p>
+              </div>
+            </div>
+
+            <div className="mt-6">
+              <h3 className="font-medium mb-3">Billed To:</h3>
+              <p>{formData.receiverName}</p>
+              <p>ID: {formData.receiverId}</p>
+              <p>{formData.deliveryAddress}</p>
+              <p>{formData.city}, {formData.code}</p>
+              <p>Contact: {formData.contactNumber}</p>
+              {formData.alternativeContactNumber && (
+                <p>Alt. Contact: {formData.alternativeContactNumber}</p>
+              )}
+            </div>
+
+            <div className="mt-8">
+              <table className="w-full text-left">
+                <thead>
+                  <tr className="bg-paycard-navy text-white">
+                    <th className="p-2">Description</th>
+                    <th className="p-2 text-right">Quantity</th>
+                    <th className="p-2 text-right">Unit Price</th>
+                    <th className="p-2 text-right">Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="border-b">
+                    <td className="p-2">Prepaid Cards</td>
+                    <td className="p-2 text-right">{formData.numberOfCards}</td>
+                    <td className="p-2 text-right">R {cardCost.perCardCost.toFixed(2)}</td>
+                    <td className="p-2 text-right">R {cardCost.totalCardCost.toFixed(2)}</td>
+                  </tr>
+                  <tr className="border-b">
+                    <td className="p-2">Delivery Fee ({formData.deliveryMethod})</td>
+                    <td className="p-2 text-right">1</td>
+                    <td className="p-2 text-right">R {cardCost.deliveryFee.toFixed(2)}</td>
+                    <td className="p-2 text-right">R {cardCost.deliveryFee.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td className="p-2 text-right" colSpan={3}><strong>Total:</strong></td>
+                    <td className="p-2 text-right font-bold">R {cardCost.totalCostWithDelivery.toFixed(2)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-10 text-center">
+              <p className="text-gray-600 mb-6">Thank you for your order. Your cards will be delivered to the address provided.</p>
+              <Button onClick={handleFinished} className="w-full max-w-xs">
+                I'M FINISHED
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
