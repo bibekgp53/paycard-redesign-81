@@ -1,10 +1,11 @@
-
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
-import { Receipt } from "lucide-react";
+import { Icon } from "@/components/ui/icon";
+import { Download } from "lucide-react";
+import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 
 type FormValues = {
   numberOfCards: number;
@@ -52,6 +53,295 @@ export default function RequestCardsConfirm() {
     return date.toLocaleDateString('en-ZA');
   };
 
+  const handleDownloadInvoice = async () => {
+    try {
+      // Create a new PDF document
+      const pdfDoc = await PDFDocument.create();
+      const page = pdfDoc.addPage([595, 842]); // A4 size
+      const { width, height } = page.getSize();
+      
+      // Load fonts
+      const fontRegular = await pdfDoc.embedFont(StandardFonts.Helvetica);
+      const fontBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+      
+      // Document title
+      page.drawText('INVOICE', {
+        x: 50,
+        y: height - 50,
+        size: 24,
+        font: fontBold,
+        color: rgb(0.05, 0.12, 0.22), // Dark navy blue
+      });
+      
+      // Invoice details
+      const currentDate = new Date();
+      const invoiceNumber = generateInvoiceNumber();
+      const referenceNumber = `ORD-${Math.floor(Math.random() * 100000).toString().padStart(5, '0')}`;
+      const vatReg = "4010105461";
+      
+      page.drawText(`Standard Bank`, {
+        x: 50,
+        y: height - 80,
+        size: 12,
+        font: fontRegular,
+      });
+      
+      page.drawText(`The Standard Bank of South Africa Limited`, {
+        x: 50,
+        y: height - 100,
+        size: 10,
+        font: fontRegular,
+        color: rgb(0.4, 0.4, 0.4),
+      });
+      
+      page.drawText(`Reg. No. 1962/000738/06`, {
+        x: 50,
+        y: height - 115,
+        size: 10,
+        font: fontRegular,
+        color: rgb(0.4, 0.4, 0.4),
+      });
+      
+      // Right aligned info
+      page.drawText(`Invoice Number: ${invoiceNumber}`, {
+        x: width - 250,
+        y: height - 80,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`Date: ${formatDate(currentDate)}`, {
+        x: width - 250,
+        y: height - 95,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`Reference: ${referenceNumber}`, {
+        x: width - 250,
+        y: height - 110,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`VAT Registration: ${vatReg}`, {
+        x: width - 250,
+        y: height - 125,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      // Customer details
+      page.drawText('Billed To:', {
+        x: 50,
+        y: height - 180,
+        size: 12,
+        font: fontBold,
+      });
+      
+      page.drawText(`${formData.receiverName}`, {
+        x: 50,
+        y: height - 200,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`ID: ${formData.receiverId}`, {
+        x: 50,
+        y: height - 215,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`${formData.deliveryAddress}`, {
+        x: 50,
+        y: height - 230,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`${formData.city}, ${formData.code}`, {
+        x: 50,
+        y: height - 245,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`Contact: ${formData.contactNumber}`, {
+        x: 50,
+        y: height - 260,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      if (formData.alternativeContactNumber) {
+        page.drawText(`Alt. Contact: ${formData.alternativeContactNumber}`, {
+          x: 50,
+          y: height - 275,
+          size: 10,
+          font: fontRegular,
+        });
+      }
+      
+      // Invoice table header
+      const tableTop = height - 320;
+      
+      // Draw table header
+      page.drawRectangle({
+        x: 50,
+        y: tableTop - 20,
+        width: width - 100,
+        height: 20,
+        color: rgb(0.05, 0.12, 0.22),
+      });
+      
+      page.drawText('Description', {
+        x: 60,
+        y: tableTop - 13,
+        size: 10,
+        font: fontBold,
+        color: rgb(1, 1, 1),
+      });
+      
+      page.drawText('Quantity', {
+        x: 250,
+        y: tableTop - 13,
+        size: 10,
+        font: fontBold,
+        color: rgb(1, 1, 1),
+      });
+      
+      page.drawText('Unit Price', {
+        x: 350,
+        y: tableTop - 13,
+        size: 10,
+        font: fontBold,
+        color: rgb(1, 1, 1),
+      });
+      
+      page.drawText('Amount', {
+        x: 450,
+        y: tableTop - 13,
+        size: 10,
+        font: fontBold,
+        color: rgb(1, 1, 1),
+      });
+      
+      // Table row 1
+      page.drawText('Prepaid Cards', {
+        x: 60,
+        y: tableTop - 40,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`${formData.numberOfCards}`, {
+        x: 250,
+        y: tableTop - 40,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`R ${cardCost.perCardCost.toFixed(2)}`, {
+        x: 350,
+        y: tableTop - 40,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`R ${cardCost.totalCardCost.toFixed(2)}`, {
+        x: 450,
+        y: tableTop - 40,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      // Draw separator
+      page.drawLine({
+        start: { x: 50, y: tableTop - 50 },
+        end: { x: width - 50, y: tableTop - 50 },
+        thickness: 1,
+        color: rgb(0.8, 0.8, 0.8),
+      });
+      
+      // Table row 2
+      page.drawText(`Delivery Fee (${formData.deliveryMethod})`, {
+        x: 60,
+        y: tableTop - 70,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText('1', {
+        x: 250,
+        y: tableTop - 70,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`R ${cardCost.deliveryFee.toFixed(2)}`, {
+        x: 350,
+        y: tableTop - 70,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      page.drawText(`R ${cardCost.deliveryFee.toFixed(2)}`, {
+        x: 450,
+        y: tableTop - 70,
+        size: 10,
+        font: fontRegular,
+      });
+      
+      // Draw separator
+      page.drawLine({
+        start: { x: 50, y: tableTop - 80 },
+        end: { x: width - 50, y: tableTop - 80 },
+        thickness: 1,
+        color: rgb(0.8, 0.8, 0.8),
+      });
+      
+      // Total
+      page.drawText('Total:', {
+        x: 400,
+        y: tableTop - 100,
+        size: 12,
+        font: fontBold,
+      });
+      
+      page.drawText(`R ${cardCost.totalCostWithDelivery.toFixed(2)}`, {
+        x: 450,
+        y: tableTop - 100,
+        size: 12,
+        font: fontBold,
+      });
+      
+      // Thank you note
+      page.drawText('Thank you for your order. Your cards will be delivered to the address provided.', {
+        x: width / 2 - 200,
+        y: tableTop - 150,
+        size: 10,
+        font: fontRegular,
+        color: rgb(0.4, 0.4, 0.4),
+      });
+      
+      // Serialize the PDF document
+      const pdfBytes = await pdfDoc.save();
+      
+      // Create a Blob from the PDF data
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      
+      // Create a link element to trigger the download
+      const link = document.createElement('a');
+      link.href = window.URL.createObjectURL(blob);
+      link.download = `card_order_invoice_${invoiceNumber}.pdf`;
+      link.click();
+      
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    }
+  };
+
   if (isCompleted) {
     const currentDate = new Date();
     const invoiceNumber = generateInvoiceNumber();
@@ -62,6 +352,15 @@ export default function RequestCardsConfirm() {
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-start mb-4">
           <h1 className="text-3xl font-bold text-paycard-navy">Card Order Invoice</h1>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="flex items-center gap-2" 
+            onClick={handleDownloadInvoice}
+          >
+            <Download size={16} />
+            Download
+          </Button>
         </div>
         
         <Card className="mb-8">
