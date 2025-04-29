@@ -1,5 +1,5 @@
-
 import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -26,6 +26,8 @@ const formSchema = z.object({
 type FormValues = z.infer<typeof formSchema>;
 
 export default function RequestCards() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [cardCost, setCardCost] = useState({
     perCardCost: 16.00,
@@ -36,7 +38,7 @@ export default function RequestCards() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: {
+    defaultValues: location.state?.formData || {
       numberOfCards: 0,
       receiverName: "",
       receiverId: "",
@@ -66,17 +68,19 @@ export default function RequestCards() {
 
   function onSubmit(values: FormValues) {
     setIsSubmitting(true);
-    console.log("Form values:", values);
 
     // Simulate API call
     setTimeout(() => {
       setIsSubmitting(false);
-      toast({
-        title: "Order submitted",
-        description: `Order for ${values.numberOfCards} cards has been submitted.`,
+      
+      // Navigate to confirm page with form data
+      navigate('/cards/request/confirm', { 
+        state: { 
+          formData: values,
+          cardCost
+        } 
       });
-      form.reset();
-    }, 1000);
+    }, 500);
   }
 
   const RequiredFieldIndicator = () => <span className="text-paycard-red ml-1">*</span>;

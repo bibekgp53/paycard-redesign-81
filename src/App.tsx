@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,7 +21,8 @@ import LoadFundsTo from "./pages/funds/LoadFundsTo";
 import CardLoads from "./pages/funds/CardLoads";
 import ConfirmLoad from "./pages/funds/ConfirmLoad";
 import DesignSystem from "./pages/DesignSystem";
-import RequestCards from "./pages/cards/RequestCards"
+import RequestCards from "./pages/cards/RequestCards";
+import RequestCardsConfirm from "./pages/cards/RequestCardsConfirm";
 import AllocateCardsSearch from "./pages/cards/AllocateCardsSearch";
 import SearchLoadTo from "./pages/funds/SearchLoadTo";
 
@@ -46,6 +48,7 @@ const App = () => (
             <Route path="/cards/allocate/confirm" element={<MainLayout><AllocateCardsConfirm /></MainLayout>} />
             <Route path="/cards/allocate/complete" element={<MainLayout><AllocateCardsComplete /></MainLayout>} />
             <Route path="/cards/request" element={<MainLayout><RequestCards /></MainLayout>} />
+            <Route path="/cards/request/confirm" element={<MainLayout><RequestCardsConfirm /></MainLayout>} />
             
             {/* Funds Management */}
             <Route path="/load-funds-from" element={<MainLayout><LoadFundsFrom /></MainLayout>} />
