@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -27,6 +27,12 @@ type FormValues = z.infer<typeof formSchema>;
 
 export default function RequestCards() {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [cardCost, setCardCost] = useState({
+    perCardCost: 16.00,
+    deliveryFee: 70.00,
+    totalCardCost: 0,
+    totalCostWithDelivery: 0
+  });
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -43,6 +49,21 @@ export default function RequestCards() {
     },
   });
 
+  // Watch for changes in number of cards to update cost calculations
+  const numberOfCards = form.watch("numberOfCards");
+
+  useEffect(() => {
+    const numCards = Number(numberOfCards) || 0;
+    const totalCardCost = numCards * cardCost.perCardCost;
+    const totalCostWithDelivery = totalCardCost + cardCost.deliveryFee;
+    
+    setCardCost(prev => ({
+      ...prev,
+      totalCardCost,
+      totalCostWithDelivery
+    }));
+  }, [numberOfCards, cardCost.perCardCost, cardCost.deliveryFee]);
+
   function onSubmit(values: FormValues) {
     setIsSubmitting(true);
     console.log("Form values:", values);
@@ -57,6 +78,8 @@ export default function RequestCards() {
       form.reset();
     }, 1000);
   }
+
+  const RequiredFieldIndicator = () => <span className="text-paycard-red ml-1">*</span>;
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -80,16 +103,25 @@ export default function RequestCards() {
                   name="numberOfCards"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Number of Cards</FormLabel>
+                      <div className="flex justify-between items-start">
+                        <FormLabel>Number of Cards<RequiredFieldIndicator /></FormLabel>
+                      </div>
                       <FormControl>
                         <Input 
                           type="number" 
                           placeholder="Enter number of cards" 
                           {...field}
                           onChange={(e) => field.onChange(Number(e.target.value))}
+                          error={!!form.formState.errors.numberOfCards}
                         />
                       </FormControl>
                       <FormMessage />
+                      
+                      {/* Cost calculation information */}
+                      <div className="mt-3 text-sm text-gray-600">
+                        <p>Total cost of cards at: R {cardCost.perCardCost.toFixed(2)} per card: R {cardCost.totalCardCost.toFixed(2)}</p>
+                        <p>Cost including: R {cardCost.deliveryFee.toFixed(2)} delivery fee: R {cardCost.totalCostWithDelivery.toFixed(2)}</p>
+                      </div>
                     </FormItem>
                   )}
                 />
@@ -107,9 +139,13 @@ export default function RequestCards() {
                   name="receiverName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Receiver Name</FormLabel>
+                      <FormLabel>Receiver Name<RequiredFieldIndicator /></FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter receiver's full name" {...field} />
+                        <Input 
+                          placeholder="Enter receiver's full name" 
+                          {...field}
+                          error={!!form.formState.errors.receiverName} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -121,9 +157,13 @@ export default function RequestCards() {
                   name="receiverId"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Receiver ID Number</FormLabel>
+                      <FormLabel>Receiver ID Number<RequiredFieldIndicator /></FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter receiver's ID number" {...field} />
+                        <Input 
+                          placeholder="Enter receiver's ID number" 
+                          {...field}
+                          error={!!form.formState.errors.receiverId} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -136,9 +176,13 @@ export default function RequestCards() {
                     name="contactNumber"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Contact Number</FormLabel>
+                        <FormLabel>Contact Number<RequiredFieldIndicator /></FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter primary contact number" {...field} />
+                          <Input 
+                            placeholder="Enter primary contact number" 
+                            {...field}
+                            error={!!form.formState.errors.contactNumber} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -165,7 +209,7 @@ export default function RequestCards() {
                   name="deliveryMethod"
                   render={({ field }) => (
                     <FormItem className="space-y-3">
-                      <FormLabel>Delivery Method</FormLabel>
+                      <FormLabel>Delivery Method<RequiredFieldIndicator /></FormLabel>
                       <FormControl>
                         <RadioGroup
                           name="deliveryMethod"
@@ -188,9 +232,13 @@ export default function RequestCards() {
                   name="deliveryAddress"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Delivery Address</FormLabel>
+                      <FormLabel>Delivery Address<RequiredFieldIndicator /></FormLabel>
                       <FormControl>
-                        <Input placeholder="Enter street address" {...field} />
+                        <Input 
+                          placeholder="Enter street address" 
+                          {...field}
+                          error={!!form.formState.errors.deliveryAddress} 
+                        />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -203,9 +251,13 @@ export default function RequestCards() {
                     name="city"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>City</FormLabel>
+                        <FormLabel>City<RequiredFieldIndicator /></FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter city name" {...field} />
+                          <Input 
+                            placeholder="Enter city name" 
+                            {...field}
+                            error={!!form.formState.errors.city} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -217,9 +269,13 @@ export default function RequestCards() {
                     name="code"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Postal Code</FormLabel>
+                        <FormLabel>Postal Code<RequiredFieldIndicator /></FormLabel>
                         <FormControl>
-                          <Input placeholder="Enter postal code" {...field} />
+                          <Input 
+                            placeholder="Enter postal code" 
+                            {...field}
+                            error={!!form.formState.errors.code} 
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
