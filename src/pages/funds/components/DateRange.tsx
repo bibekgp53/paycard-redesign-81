@@ -10,6 +10,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { DateRange as DateRangeType } from "react-day-picker";
 
 interface DateRangeProps {
   dateRange: {
@@ -55,20 +56,11 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
               from: dateRange.from,
               to: dateRange.to,
             }}
-            // Fix the TypeScript error by properly typing the onSelect handler for range mode
-            onSelect={(selectedDate) => {
-              // When in range mode, the selectedDate is an object with from and to properties
-              if (selectedDate) {
-                onDateRangeChange({
-                  from: selectedDate.from,
-                  to: selectedDate.to
-                });
-              } else {
-                onDateRangeChange({
-                  from: undefined,
-                  to: undefined
-                });
-              }
+            onSelect={(selectedRange: DateRangeType | undefined) => {
+              onDateRangeChange({
+                from: selectedRange?.from,
+                to: selectedRange?.to,
+              });
             }}
             numberOfMonths={2}
             className="pointer-events-auto"
