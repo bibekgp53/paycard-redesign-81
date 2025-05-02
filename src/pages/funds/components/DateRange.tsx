@@ -1,5 +1,5 @@
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Popover,
   PopoverContent,
@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { format } from "date-fns";
+import { format, isAfter, isSameDay } from "date-fns";
 
 // Define a type for date range to properly handle the calendar range selection
 interface DateRangeType {
@@ -23,6 +23,44 @@ interface DateRangeProps {
 }
 
 export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
+  // Track which date we're currently selecting (from or to)
+  const [selectingTo, setSelectingTo] = useState<boolean>(false);
+
+  // Reset the selecting state when dateRange changes externally
+  useEffect(() => {
+    setSelectingTo(false);
+  }, [dateRange.from, dateRange.to]);
+
+  // Handle the calendar date selection
+  const handleSelect = (date: Date | undefined) => {
+    if (!date) return;
+    
+    if (!selectingTo) {
+      // First selection sets the 'from' date
+      onDateRangeChange({
+        from: date,
+        to: undefined
+      });
+      setSelectingTo(true);
+    } else {
+      // Second selection sets the 'to' date
+      // Ensure 'to' date is after or same as 'from' date
+      if (dateRange.from && (isAfter(date, dateRange.from) || isSameDay(date, dateRange.from))) {
+        onDateRangeChange({
+          from: dateRange.from,
+          to: date
+        });
+      } else if (dateRange.from) {
+        // If user selected a date before 'from', swap them
+        onDateRangeChange({
+          from: date,
+          to: dateRange.from
+        });
+      }
+      setSelectingTo(false);
+    }
+  };
+
   return (
     <div className="grid gap-2">
       <Popover>
@@ -50,29 +88,20 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
+          <div className="p-3 border-b border-border">
+            <div className="text-sm font-medium">
+              {!selectingTo ? (
+                <span>Select start date</span>
+              ) : (
+                <span>Select end date</span>
+              )}
+            </div>
+          </div>
           <Calendar
             initialFocus
-            mode="range"
+            selected={selectingTo ? dateRange.to : dateRange.from}
+            onSelect={handleSelect}
             defaultMonth={dateRange.from}
-            // The type issue is here - we need to properly type the Calendar props
-            selected={{
-              from: dateRange.from,
-              to: dateRange.to
-            } as any}
-            onSelect={(range: any) => {
-              // Handle the range selection
-              if (range) {
-                onDateRangeChange({
-                  from: range.from,
-                  to: range.to
-                });
-              } else {
-                onDateRangeChange({
-                  from: undefined,
-                  to: undefined
-                });
-              }
-            }}
             numberOfMonths={2}
             className="pointer-events-auto"
           />
