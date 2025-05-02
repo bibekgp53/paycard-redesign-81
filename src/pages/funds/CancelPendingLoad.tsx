@@ -197,7 +197,7 @@ export default function CancelPendingLoad() {
         </div>
 
         {/* Results table with improved styling - updated to use borderless prop */}
-        <div className="bg-white rounded-lg overflow-hidden border border-paycard-navy-150">
+        <div className="bg-white rounded-lg overflow-hidden">
           <Table borderless>
             <TableHeader className="bg-paycard-navy-100/40">
               <TableRow className="hover:bg-transparent">
