@@ -43,8 +43,23 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
     }
     
     // Reset the selecting state when dateRange changes externally
-    setSelectingTo(!!dateRange.from && !dateRange.to);
+    if (dateRange.from && !dateRange.to) {
+      setSelectingTo(true);
+    } else {
+      setSelectingTo(false);
+    }
   }, [dateRange.from, dateRange.to]);
+
+  // When the popover opens, set the correct selection state based on existing date range
+  useEffect(() => {
+    if (open) {
+      if (dateRange.from && !dateRange.to) {
+        setSelectingTo(true);
+      } else if (!dateRange.from) {
+        setSelectingTo(false);
+      }
+    }
+  }, [open, dateRange.from, dateRange.to]);
 
   // Handle the calendar date selection
   const handleSelect = (date: Date | undefined) => {
@@ -106,11 +121,12 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
           </div>
           <Calendar
             initialFocus
-            selected={selectingTo ? dateRange.from : dateRange.from}
+            selected={selectingTo ? undefined : dateRange.from}
             onSelect={handleSelect}
-            defaultMonth={dateRange.from}
+            defaultMonth={dateRange.from || undefined}
             numberOfMonths={2}
             className="pointer-events-auto"
+            highlightedDays={dateRange.from && !selectingTo ? [dateRange.from] : []}
           />
         </PopoverContent>
       </Popover>
