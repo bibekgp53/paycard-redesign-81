@@ -11,12 +11,15 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 
+// Define a type for date range to properly handle the calendar range selection
+interface DateRangeType {
+  from: Date | undefined;
+  to: Date | undefined;
+}
+
 interface DateRangeProps {
-  dateRange: {
-    from: Date | undefined;
-    to: Date | undefined;
-  };
-  onDateRangeChange: (range: { from: Date | undefined; to: Date | undefined }) => void;
+  dateRange: DateRangeType;
+  onDateRangeChange: (range: DateRangeType) => void;
 }
 
 export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
@@ -51,15 +54,24 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
             initialFocus
             mode="range"
             defaultMonth={dateRange.from}
-            // Cast the selected prop to any to bypass type checking
-            // @ts-ignore - We're using Calendar in range mode which expects a different type
-            selected={dateRange}
-            // @ts-ignore - We need to handle range selection differently than single date selection
-            onSelect={(range) => {
-              onDateRangeChange({
-                from: range?.from,
-                to: range?.to,
-              });
+            // The type issue is here - we need to properly type the Calendar props
+            selected={{
+              from: dateRange.from,
+              to: dateRange.to
+            } as any}
+            onSelect={(range: any) => {
+              // Handle the range selection
+              if (range) {
+                onDateRangeChange({
+                  from: range.from,
+                  to: range.to
+                });
+              } else {
+                onDateRangeChange({
+                  from: undefined,
+                  to: undefined
+                });
+              }
             }}
             numberOfMonths={2}
             className="pointer-events-auto"
