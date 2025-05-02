@@ -1,5 +1,5 @@
 
-import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, ChevronDown, ChevronRight } from "lucide-react";
+import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, ChevronDown, ChevronRight, CalendarX } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
@@ -41,6 +41,7 @@ export function Sidebar() {
 
   const fundMenuItems = [
     { icon: WalletCards, label: "Load Funds to Cards", path: "/load-funds-from" },
+    { icon: CalendarX, label: "Cancel Pending Load", path: "/cancel-pending-load" },
   ];
 
   return (
@@ -61,7 +62,7 @@ export function Sidebar() {
             </div>
           </div>
           
-          <div className="flex flex-col gap-0 flex-1 min-h-0"> {/* Changed gap from gap-1 to gap-0 */}
+          <div className="flex flex-col gap-0 flex-1 min-h-0">
             {/* Cards Group */}
             <SidebarGroup title="Cards" collapsible defaultCollapsed={false}>
               {cardMenuItems.map((item) => (

@@ -25,6 +25,7 @@ import RequestCards from "./pages/cards/RequestCards";
 import RequestCardsConfirm from "./pages/cards/RequestCardsConfirm";
 import AllocateCardsSearch from "./pages/cards/AllocateCardsSearch";
 import SearchLoadTo from "./pages/funds/SearchLoadTo";
+import CancelPendingLoad from "./pages/funds/CancelPendingLoad";
 
 const queryClient = new QueryClient();
 
@@ -56,6 +57,7 @@ const App = () => (
             <Route path="/load-funds-from/to/search-card" element={<MainLayout><SearchLoadTo /></MainLayout>} />
             <Route path="/load-funds-from/card-loads" element={<MainLayout><CardLoads /></MainLayout>} />
             <Route path="/load-funds-from/card-loads/confirm-load" element={<MainLayout><ConfirmLoad /></MainLayout>} />
+            <Route path="/cancel-pending-load" element={<MainLayout><CancelPendingLoad /></MainLayout>} />
             
             {/* Design System */}
             <Route path="/design-system" element={<DesignSystem />} />
