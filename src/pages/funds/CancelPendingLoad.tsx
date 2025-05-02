@@ -84,22 +84,22 @@ export default function CancelPendingLoad() {
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-2xl font-bold text-paycard-navy">Find a pending load</h1>
+        <h1 className="text-2xl font-bold text-paycard-navy">Cancel pending load</h1>
         <p className="text-gray-600">
           Search for pending loads to cancel.
         </p>
       </div>
 
-      <Card className="p-6">
-        <div className="flex justify-between mb-4">
-          <div>
-            <h3 className="text-sm uppercase text-gray-500 mb-2">FIND</h3>
-            <div className="relative">
+      <Card className="p-6 max-w-4xl mx-auto">
+        <div className="mb-6">
+          <h3 className="text-sm uppercase text-gray-500 mb-2">SEARCH</h3>
+          <div className="flex items-center gap-4">
+            <div className="relative flex-1">
               <Input
                 placeholder="Enter your search here"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-[400px] pr-10"
+                className="pr-10"
               />
               <Button 
                 variant="ghost" 
@@ -109,19 +109,17 @@ export default function CancelPendingLoad() {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <p className="text-xs text-gray-500 mt-1">(LEAVE BLANK TO SHOW ALL)</p>
+            <div>
+              <h3 className="text-sm uppercase text-gray-500">SEARCH BY</h3>
+              <RadioGroup 
+                name="searchType"
+                options={searchTypeOptions}
+                value={searchType} 
+                onChange={setSearchType}
+                inline
+              />
+            </div>
           </div>
-        </div>
-        
-        <div className="mb-6">
-          <h3 className="text-sm uppercase text-gray-500 mb-2">SEARCH BY</h3>
-          <RadioGroup 
-            name="searchType"
-            options={searchTypeOptions}
-            value={searchType} 
-            onChange={setSearchType}
-            inline
-          />
         </div>
 
         <div className="mb-6">
@@ -144,7 +142,6 @@ export default function CancelPendingLoad() {
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <CalendarComponent
-                    mode="single"
                     selected={startDate}
                     onSelect={setStartDate}
                     initialFocus
@@ -169,7 +166,6 @@ export default function CancelPendingLoad() {
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0">
                   <CalendarComponent
-                    mode="single"
                     selected={endDate}
                     onSelect={setEndDate}
                     initialFocus
