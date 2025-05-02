@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -197,7 +196,7 @@ export default function CancelPendingLoad() {
           </div>
         </div>
 
-        {/* Results table with improved styling - updated to match CardLoads styling */}
+        {/* Results table with styling matching CardLoads */}
         <div className="bg-white rounded-lg overflow-hidden">
           <Table borderless>
             <TableHeader>
