@@ -55,11 +55,20 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
               from: dateRange.from,
               to: dateRange.to,
             }}
-            onSelect={(selectedRange: { from?: Date; to?: Date } | undefined) => {
-              onDateRangeChange({
-                from: selectedRange?.from,
-                to: selectedRange?.to,
-              });
+            // Fix the TypeScript error by properly typing the onSelect handler for range mode
+            onSelect={(selectedDate) => {
+              // When in range mode, the selectedDate is an object with from and to properties
+              if (selectedDate) {
+                onDateRangeChange({
+                  from: selectedDate.from,
+                  to: selectedDate.to
+                });
+              } else {
+                onDateRangeChange({
+                  from: undefined,
+                  to: undefined
+                });
+              }
             }}
             numberOfMonths={2}
             className="pointer-events-auto"
