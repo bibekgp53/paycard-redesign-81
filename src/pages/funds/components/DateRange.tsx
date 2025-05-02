@@ -55,7 +55,7 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
               from: dateRange.from,
               to: dateRange.to,
             }}
-            onSelect={(selectedRange) => {
+            onSelect={(selectedRange: { from?: Date; to?: Date } | undefined) => {
               onDateRangeChange({
                 from: selectedRange?.from,
                 to: selectedRange?.to,

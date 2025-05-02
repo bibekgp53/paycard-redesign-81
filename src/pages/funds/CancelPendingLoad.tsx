@@ -1,5 +1,4 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -58,16 +57,46 @@ export default function CancelPendingLoad() {
   
   const [results, setResults] = useState(mockPendingLoads);
   const [hasSearched, setHasSearched] = useState(false);
+  const [allLoads, setAllLoads] = useState(mockPendingLoads);
+  
+  useEffect(() => {
+    // Initialize the results with all loads
+    setResults(mockPendingLoads);
+    setAllLoads(mockPendingLoads);
+  }, []);
   
   const handleSearch = () => {
     setHasSearched(true);
-    // In a real app, this would filter based on actual criteria
+    
+    let filteredResults = [...allLoads];
+    
+    // Filter by search query if provided
     if (searchQuery.trim() !== "") {
-      setResults(mockPendingLoads.filter(load => 
+      filteredResults = filteredResults.filter(load => 
         load.cardNumber.toLowerCase().includes(searchQuery.toLowerCase())
-      ));
+      );
+    }
+    
+    // Filter by date range if provided
+    if (dateRange.from || dateRange.to) {
+      filteredResults = filteredResults.filter(load => {
+        const loadDate = new Date(load.requestedOn);
+        
+        // Check if the load date is within the selected range
+        const isAfterStartDate = dateRange.from ? loadDate >= dateRange.from : true;
+        const isBeforeEndDate = dateRange.to ? loadDate <= dateRange.to : true;
+        
+        return isAfterStartDate && isBeforeEndDate;
+      });
+    }
+    
+    setResults(filteredResults);
+    
+    // Show a toast message with the number of results found
+    if (filteredResults.length === 0) {
+      toast.info("No pending loads found matching your search criteria.");
     } else {
-      setResults(mockPendingLoads);
+      toast.success(`Found ${filteredResults.length} pending load(s).`);
     }
   };
 
@@ -81,6 +110,8 @@ export default function CancelPendingLoad() {
     toast.success(`Load of ${selectedLoad?.amount} for card ${selectedLoad?.cardNumber} has been cancelled.`);
     // Remove the cancelled load from the results
     setResults(results.filter(load => load !== selectedLoad));
+    // Also remove it from allLoads to keep the data consistent
+    setAllLoads(allLoads.filter(load => load !== selectedLoad));
     setConfirmDialogOpen(false);
   };
   
