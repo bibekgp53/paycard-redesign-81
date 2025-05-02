@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Calendar, Search, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { 
   Select, 
   SelectContent, 
@@ -20,14 +20,8 @@ import {
   DialogFooter,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { 
-  Popover,
-  PopoverContent,
-  PopoverTrigger 
-} from "@/components/ui/popover";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
-import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { toast } from "sonner";
 import { DateRange } from "./components/DateRange";
 
@@ -88,69 +82,66 @@ export default function CancelPendingLoad() {
   
   return (
     <div>
-      {/* Page title and subtitle in center, matching design from image */}
-      <div className="mb-10">
-        <h1 className="text-2xl font-bold text-paycard-navy text-center">Cancel Pending Load</h1>
-        <p className="text-gray-600 text-center mt-2">
-          Search for pending loads to cancel.
-        </p>
-      </div>
-
-      {/* Main card with improved design */}
+      {/* Page title and subtitle positioned at the start of the card */}
       <Card className="p-8 max-w-4xl mx-auto shadow-md rounded-xl bg-white border-paycard-navy-150">
-        {/* Search section */}
         <div className="mb-8">
-          <div className="grid grid-cols-1 gap-6">
-            <div className="flex flex-col md:flex-row gap-4 items-start">
-              <div className="flex-1">
-                <div className="relative">
-                  <div className="text-sm font-medium mb-2">SEARCH</div>
-                  <div className="relative">
-                    <Input
-                      placeholder="Enter search query"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="pl-10 bg-paycard-navy-100/30 border-paycard-navy-200 focus:ring-paycard-navy-300"
-                    />
-                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-paycard-navy-400" size={16} />
-                  </div>
-                </div>
-              </div>
-              
-              <div>
-                <div className="text-sm font-medium mb-2">SEARCH BY</div>
-                <Select value={searchType} onValueChange={setSearchType}>
-                  <SelectTrigger className="w-[180px] bg-paycard-navy-100/30">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {searchTypeOptions.map(option => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+          <h1 className="text-2xl font-bold text-paycard-navy">Cancel Pending Load</h1>
+          <p className="text-gray-600 mt-2">
+            Search for pending loads to cancel.
+          </p>
+        </div>
+
+        {/* Search section - all elements in one line */}
+        <div className="mb-8">
+          <div className="flex items-center gap-4">
+            {/* Search field with icon */}
+            <div className="relative flex-1">
+              <div className="text-sm font-medium mb-2">SEARCH</div>
+              <div className="relative">
+                <Input
+                  placeholder="Enter search query"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-10 bg-paycard-navy-100/30 border-paycard-navy-200 focus:ring-paycard-navy-300"
+                />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-paycard-navy-400" size={16} />
               </div>
             </div>
-          </div>
-        </div>
+            
+            {/* Search by dropdown */}
+            <div>
+              <div className="text-sm font-medium mb-2">SEARCH BY</div>
+              <Select value={searchType} onValueChange={setSearchType}>
+                <SelectTrigger className="w-[180px] bg-paycard-navy-100/30">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {searchTypeOptions.map(option => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-        {/* Date range filter - combined into a single component */}
-        <div className="mb-8">
-          <div className="text-sm font-medium mb-2">FILTER BY DATE RANGE</div>
-          <DateRange dateRange={dateRange} onDateRangeChange={setDateRange} />
-        </div>
-        
-        {/* Search button */}
-        <div className="flex justify-end mb-8">
-          <Button 
-            onClick={handleSearch} 
-            className="bg-paycard-navy hover:bg-paycard-navy-800 text-white font-medium shadow-sm transition-all duration-200 ease-in-out"
-          >
-            <Search className="h-4 w-4 mr-2" />
-            SEARCH
-          </Button>
+            {/* Date range filter */}
+            <div className="flex-1">
+              <div className="text-sm font-medium mb-2">FILTER BY DATE RANGE</div>
+              <DateRange dateRange={dateRange} onDateRangeChange={setDateRange} />
+            </div>
+            
+            {/* Search button */}
+            <div className="pt-8">
+              <Button 
+                onClick={handleSearch} 
+                className="bg-paycard-navy hover:bg-paycard-navy-800 text-white font-medium shadow-sm transition-all duration-200 ease-in-out"
+              >
+                <Search className="h-4 w-4 mr-2" />
+                SEARCH
+              </Button>
+            </div>
+          </div>
         </div>
 
         {/* Results table with improved styling */}
