@@ -38,12 +38,22 @@ export default function CancelPendingLoad() {
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedLoad, setSelectedLoad] = useState<any | null>(null);
   
-  // Mock data for demonstration
+  // Extended mock data for demonstration with 10+ rows
   const mockPendingLoads = [
     { cardNumber: "53*****0772", amount: "R 50.00", requestedOn: "2025-04-15 03:24:29", frequency: "Once" },
-    { cardNumber: "53*****0772", amount: "R 56.00", requestedOn: "2025-01-22 11:14:2", frequency: "Once" },
-    { cardNumber: "53*****0772", amount: "R 50.00", requestedOn: "2025-01-15 09:05:3", frequency: "Once" },
-    { cardNumber: "53*****4479", amount: "R 50.00", requestedOn: "2025-01-15 09:05:3", frequency: "Once" },
+    { cardNumber: "53*****0772", amount: "R 56.00", requestedOn: "2025-01-22 11:14:22", frequency: "Once" },
+    { cardNumber: "53*****0772", amount: "R 50.00", requestedOn: "2025-01-15 09:05:35", frequency: "Once" },
+    { cardNumber: "53*****4479", amount: "R 50.00", requestedOn: "2025-01-15 09:05:30", frequency: "Once" },
+    { cardNumber: "53*****1283", amount: "R 75.00", requestedOn: "2025-04-30 14:28:12", frequency: "Weekly" },
+    { cardNumber: "53*****9821", amount: "R 100.00", requestedOn: "2025-04-28 09:17:45", frequency: "Monthly" },
+    { cardNumber: "53*****6547", amount: "R 200.00", requestedOn: "2025-04-27 16:42:19", frequency: "Once" },
+    { cardNumber: "53*****3390", amount: "R 45.00", requestedOn: "2025-04-25 10:33:08", frequency: "Monthly" },
+    { cardNumber: "53*****5102", amount: "R 150.00", requestedOn: "2025-04-24 15:51:36", frequency: "Once" },
+    { cardNumber: "53*****8274", amount: "R 65.00", requestedOn: "2025-04-23 11:09:22", frequency: "Weekly" },
+    { cardNumber: "53*****1947", amount: "R 90.00", requestedOn: "2025-04-22 08:47:15", frequency: "Once" },
+    { cardNumber: "53*****7623", amount: "R 120.00", requestedOn: "2025-04-21 13:22:40", frequency: "Monthly" },
+    { cardNumber: "53*****4091", amount: "R 85.00", requestedOn: "2025-04-20 17:15:53", frequency: "Once" },
+    { cardNumber: "53*****6358", amount: "R 30.00", requestedOn: "2025-04-19 12:38:27", frequency: "Weekly" }
   ];
   
   const [results, setResults] = useState(mockPendingLoads);
