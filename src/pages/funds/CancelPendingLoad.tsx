@@ -1,10 +1,9 @@
 
 import React, { useState } from "react";
-import { Breadcrumb } from "@/components/ui/breadcrumb";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Calendar, Search } from "lucide-react";
+import { Calendar, Search, X } from "lucide-react";
 import { 
   Select, 
   SelectContent, 
@@ -14,14 +13,31 @@ import {
 } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { RadioGroup } from "@/components/ui/radio-group";
-import { Label } from "@/components/ui/label";
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogHeader, 
+  DialogTitle, 
+  DialogFooter,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { 
+  Popover,
+  PopoverContent,
+  PopoverTrigger 
+} from "@/components/ui/popover";
+import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { toast } from "sonner";
 
 export default function CancelPendingLoad() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("cardNumber");
-  const [selectedYear, setSelectedYear] = useState("2025");
-  const [startDate, setStartDate] = useState("");
-  const [endDate, setEndDate] = useState("");
+  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
+  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [selectedLoad, setSelectedLoad] = useState<any | null>(null);
   
   // Mock data for demonstration
   const mockPendingLoads = [
@@ -45,14 +61,19 @@ export default function CancelPendingLoad() {
       setResults(mockPendingLoads);
     }
   };
-  
-  const breadcrumbItems = [
-    { label: "Home", path: "/dashboard" },
-    { label: "Cancel pending load", isCurrentPage: true }
-  ];
 
-  const currentYear = new Date().getFullYear();
-  const yearOptions = Array.from({ length: 5 }, (_, i) => (currentYear - 2 + i).toString());
+  const handleRowClick = (load: any) => {
+    setSelectedLoad(load);
+    setConfirmDialogOpen(true);
+  };
+
+  const handleConfirmCancel = () => {
+    // In a real app, this would call an API to cancel the load
+    toast.success(`Load of ${selectedLoad?.amount} for card ${selectedLoad?.cardNumber} has been cancelled.`);
+    // Remove the cancelled load from the results
+    setResults(results.filter(load => load !== selectedLoad));
+    setConfirmDialogOpen(false);
+  };
   
   const searchTypeOptions = [
     { value: "cardNumber", label: "Card Number" },
@@ -62,8 +83,6 @@ export default function CancelPendingLoad() {
   
   return (
     <div className="space-y-6">
-      <Breadcrumb items={breadcrumbItems} />
-      
       <div className="space-y-2">
         <h1 className="text-2xl font-bold text-paycard-navy">Find a pending load</h1>
         <p className="text-gray-600">
@@ -92,22 +111,6 @@ export default function CancelPendingLoad() {
             </div>
             <p className="text-xs text-gray-500 mt-1">(LEAVE BLANK TO SHOW ALL)</p>
           </div>
-          
-          <div>
-            <h3 className="text-sm uppercase text-gray-500 mb-2">FILTER BY YEAR</h3>
-            <Select value={selectedYear} onValueChange={setSelectedYear}>
-              <SelectTrigger className="w-[200px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {yearOptions.map((year) => (
-                  <SelectItem key={year} value={year}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
         </div>
         
         <div className="mb-6">
@@ -122,40 +125,64 @@ export default function CancelPendingLoad() {
         </div>
 
         <div className="mb-6">
-          <h3 className="text-lg font-medium text-paycard-navy mb-4">FILTER ALLOCATED CARD DATES</h3>
+          <h3 className="text-lg font-medium text-paycard-navy mb-4">FILTER BY DATE</h3>
           <div className="flex space-x-4">
             <div className="flex-1">
               <p className="text-sm uppercase text-gray-500 mb-2">START DATE</p>
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="MM/DD/YYYY"
-                  value={startDate}
-                  onChange={(e) => setStartDate(e.target.value)}
-                  className="pl-10"
-                />
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal pl-10 relative",
+                      !startDate && "text-muted-foreground"
+                    )}
+                  >
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                    {startDate ? format(startDate, "PP") : "Select date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <CalendarComponent
+                    mode="single"
+                    selected={startDate}
+                    onSelect={setStartDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
             <div className="flex-1">
               <p className="text-sm uppercase text-gray-500 mb-2">END DATE</p>
-              <div className="relative">
-                <Input
-                  type="text"
-                  placeholder="MM/DD/YYYY"
-                  value={endDate}
-                  onChange={(e) => setEndDate(e.target.value)}
-                  className="pl-10"
-                />
-                <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
-              </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal pl-10 relative",
+                      !endDate && "text-muted-foreground"
+                    )}
+                  >
+                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+                    {endDate ? format(endDate, "PP") : "Select date"}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <CalendarComponent
+                    mode="single"
+                    selected={endDate}
+                    onSelect={setEndDate}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
             </div>
           </div>
         </div>
         
         <Button 
           onClick={handleSearch} 
-          className="bg-blue-500 hover:bg-blue-600 text-white w-[200px] mb-8"
+          className="bg-paycard-navy hover:bg-paycard-navy-800 text-white w-[200px] mb-8"
         >
           SEARCH
         </Button>
@@ -173,7 +200,11 @@ export default function CancelPendingLoad() {
             <TableBody>
               {results.length > 0 ? (
                 results.map((load, index) => (
-                  <TableRow key={index}>
+                  <TableRow 
+                    key={index}
+                    className="cursor-pointer hover:bg-gray-100"
+                    onClick={() => handleRowClick(load)}
+                  >
                     <TableCell className="text-blue-500">{load.cardNumber}</TableCell>
                     <TableCell>{load.amount}</TableCell>
                     <TableCell>{load.requestedOn}</TableCell>
@@ -189,6 +220,56 @@ export default function CancelPendingLoad() {
           </Table>
         </div>
       </Card>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-xl text-paycard-navy">Cancel Pending Load</DialogTitle>
+            <DialogDescription className="py-2">
+              Are you sure you want to cancel the following pending load?
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedLoad && (
+            <div className="py-4 space-y-2">
+              <div className="flex justify-between border-b pb-2">
+                <span className="font-medium">Card Number:</span>
+                <span>{selectedLoad.cardNumber}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2">
+                <span className="font-medium">Amount:</span>
+                <span>{selectedLoad.amount}</span>
+              </div>
+              <div className="flex justify-between border-b pb-2">
+                <span className="font-medium">Requested On:</span>
+                <span>{selectedLoad.requestedOn}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="font-medium">Frequency:</span>
+                <span>{selectedLoad.frequency}</span>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter className="gap-2">
+            <Button 
+              variant="outline" 
+              onClick={() => setConfirmDialogOpen(false)}
+              className="border-gray-300"
+            >
+              <X className="mr-2 h-4 w-4" />
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleConfirmCancel} 
+              className="bg-paycard-navy hover:bg-paycard-navy-800"
+            >
+              Confirm
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
