@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -196,10 +197,10 @@ export default function CancelPendingLoad() {
           </div>
         </div>
 
-        {/* Results table with improved styling - updated to use borderless prop */}
+        {/* Results table with improved styling - updated to match CardLoads styling */}
         <div className="bg-white rounded-lg overflow-hidden">
           <Table borderless>
-            <TableHeader className="bg-paycard-navy-100/40">
+            <TableHeader>
               <TableRow className="hover:bg-transparent">
                 <TableHead className="text-paycard-navy-700 font-bold">CARD NUMBER</TableHead>
                 <TableHead className="text-paycard-navy-700 font-bold">AMOUNT</TableHead>
