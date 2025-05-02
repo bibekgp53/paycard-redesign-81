@@ -12,7 +12,6 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { RadioGroup } from "@/components/ui/radio-group";
 import { 
   Dialog, 
   DialogContent, 
@@ -30,12 +29,18 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Calendar as CalendarComponent } from "@/components/ui/calendar";
 import { toast } from "sonner";
+import { DateRange } from "./components/DateRange";
 
 export default function CancelPendingLoad() {
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("cardNumber");
-  const [startDate, setStartDate] = useState<Date | undefined>(undefined);
-  const [endDate, setEndDate] = useState<Date | undefined>(undefined);
+  const [dateRange, setDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({
+    from: undefined,
+    to: undefined,
+  });
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedLoad, setSelectedLoad] = useState<any | null>(null);
   
@@ -82,111 +87,66 @@ export default function CancelPendingLoad() {
   ];
   
   return (
-    <div className="space-y-6">
-      {/* Centered title and subtitle */}
-      <div className="text-center max-w-3xl mx-auto space-y-2">
-        <h1 className="text-2xl font-bold text-paycard-navy">Cancel pending load</h1>
-        <p className="text-gray-600">
+    <div>
+      {/* Page title and subtitle in center, matching design from image */}
+      <div className="mb-10">
+        <h1 className="text-2xl font-bold text-paycard-navy text-center">Cancel Pending Load</h1>
+        <p className="text-gray-600 text-center mt-2">
           Search for pending loads to cancel.
         </p>
       </div>
 
       {/* Main card with improved design */}
       <Card className="p-8 max-w-4xl mx-auto shadow-md rounded-xl bg-white border-paycard-navy-150">
-        {/* Search section with improved alignment */}
+        {/* Search section */}
         <div className="mb-8">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-            {/* Search input */}
-            <div>
-              <h3 className="text-sm font-semibold uppercase text-paycard-navy-500 mb-3">SEARCH</h3>
-              <div className="relative">
-                <Input
-                  placeholder="Enter your search here"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10 bg-paycard-navy-100/30 border-paycard-navy-200 focus:ring-paycard-navy-300"
-                />
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-paycard-navy-400" size={16} />
+          <div className="grid grid-cols-1 gap-6">
+            <div className="flex flex-col md:flex-row gap-4 items-start">
+              <div className="flex-1">
+                <div className="relative">
+                  <div className="text-sm font-medium mb-2">SEARCH</div>
+                  <div className="relative">
+                    <Input
+                      placeholder="Enter search query"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10 bg-paycard-navy-100/30 border-paycard-navy-200 focus:ring-paycard-navy-300"
+                    />
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-paycard-navy-400" size={16} />
+                  </div>
+                </div>
               </div>
-            </div>
-            
-            {/* Search by options */}
-            <div>
-              <h3 className="text-sm font-semibold uppercase text-paycard-navy-500 mb-3">SEARCH BY</h3>
-              <RadioGroup 
-                name="searchType"
-                options={searchTypeOptions}
-                value={searchType} 
-                onChange={setSearchType}
-                inline
-              />
+              
+              <div>
+                <div className="text-sm font-medium mb-2">SEARCH BY</div>
+                <Select value={searchType} onValueChange={setSearchType}>
+                  <SelectTrigger className="w-[180px] bg-paycard-navy-100/30">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {searchTypeOptions.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Date filter section with modern design */}
+        {/* Date range filter - combined into a single component */}
         <div className="mb-8">
-          <h3 className="text-sm font-semibold uppercase text-paycard-navy-500 mb-3">FILTER BY DATE</h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Start date */}
-            <div>
-              <p className="text-xs font-medium text-paycard-navy-400 mb-2">START DATE</p>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal pl-10 relative bg-paycard-navy-100/30 border-paycard-navy-200 hover:bg-paycard-navy-100/50",
-                      !startDate && "text-muted-foreground"
-                    )}
-                  >
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-paycard-navy-400" size={16} />
-                    {startDate ? format(startDate, "PP") : "Select date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <CalendarComponent
-                    selected={startDate}
-                    onSelect={setStartDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-            
-            {/* End date */}
-            <div>
-              <p className="text-xs font-medium text-paycard-navy-400 mb-2">END DATE</p>
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal pl-10 relative bg-paycard-navy-100/30 border-paycard-navy-200 hover:bg-paycard-navy-100/50",
-                      !endDate && "text-muted-foreground"
-                    )}
-                  >
-                    <Calendar className="absolute left-3 top-1/2 transform -translate-y-1/2 text-paycard-navy-400" size={16} />
-                    {endDate ? format(endDate, "PP") : "Select date"}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <CalendarComponent
-                    selected={endDate}
-                    onSelect={setEndDate}
-                    initialFocus
-                  />
-                </PopoverContent>
-              </Popover>
-            </div>
-          </div>
+          <div className="text-sm font-medium mb-2">FILTER BY DATE RANGE</div>
+          <DateRange dateRange={dateRange} onDateRangeChange={setDateRange} />
         </div>
         
-        {/* Search button with improved design */}
-        <div className="flex justify-center mb-8">
+        {/* Search button */}
+        <div className="flex justify-end mb-8">
           <Button 
             onClick={handleSearch} 
-            className="bg-paycard-navy hover:bg-paycard-navy-800 text-white font-semibold px-8 py-2 shadow-sm transition-all duration-200 ease-in-out"
+            className="bg-paycard-navy hover:bg-paycard-navy-800 text-white font-medium shadow-sm transition-all duration-200 ease-in-out"
           >
             <Search className="h-4 w-4 mr-2" />
             SEARCH
