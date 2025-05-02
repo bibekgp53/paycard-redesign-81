@@ -25,10 +25,23 @@ interface DateRangeProps {
 export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
   // Track which date we're currently selecting (from or to)
   const [selectingTo, setSelectingTo] = useState<boolean>(false);
+  // State to track the display text for the button
+  const [displayText, setDisplayText] = useState<string>("Select date range");
 
-  // Reset the selecting state when dateRange changes externally
+  // Update display text whenever dateRange changes
   useEffect(() => {
-    setSelectingTo(false);
+    if (dateRange.from) {
+      if (dateRange.to) {
+        setDisplayText(`${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`);
+      } else {
+        setDisplayText(format(dateRange.from, "PPP"));
+      }
+    } else {
+      setDisplayText("Select date range");
+    }
+    
+    // Reset the selecting state when dateRange changes externally
+    setSelectingTo(!!dateRange.from && !dateRange.to);
   }, [dateRange.from, dateRange.to]);
 
   // Handle the calendar date selection
@@ -61,17 +74,6 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
     }
   };
 
-  // Format the display for the button text
-  const formatButtonText = () => {
-    if (dateRange.from) {
-      if (dateRange.to) {
-        return `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`;
-      }
-      return format(dateRange.from, "PPP");
-    }
-    return "Select date range";
-  };
-
   return (
     <div className="grid gap-2">
       <Popover>
@@ -85,7 +87,7 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {formatButtonText()}
+            {displayText}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
@@ -100,7 +102,7 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
           </div>
           <Calendar
             initialFocus
-            selected={selectingTo ? dateRange.to : dateRange.from}
+            selected={selectingTo ? dateRange.from : dateRange.from}
             onSelect={handleSelect}
             defaultMonth={dateRange.from}
             numberOfMonths={2}

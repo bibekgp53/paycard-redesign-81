@@ -100,6 +100,14 @@ export default function CancelPendingLoad() {
     }
   };
 
+  const handleDateRangeChange = (newDateRange: {
+    from: Date | undefined;
+    to: Date | undefined;
+  }) => {
+    console.log("Date range changed:", newDateRange);
+    setDateRange(newDateRange);
+  };
+
   const handleRowClick = (load: any) => {
     setSelectedLoad(load);
     setConfirmDialogOpen(true);
@@ -169,7 +177,10 @@ export default function CancelPendingLoad() {
             {/* Date range filter */}
             <div className="flex-1">
               <div className="text-sm font-medium mb-2">FILTER BY DATE RANGE</div>
-              <DateRange dateRange={dateRange} onDateRangeChange={setDateRange} />
+              <DateRange 
+                dateRange={dateRange} 
+                onDateRangeChange={handleDateRangeChange} 
+              />
             </div>
             
             {/* Search button */}
