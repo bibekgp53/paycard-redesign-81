@@ -27,6 +27,8 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
   const [selectingTo, setSelectingTo] = useState<boolean>(false);
   // State to track the display text for the button
   const [displayText, setDisplayText] = useState<string>("Select date range");
+  // State to control the open/close state of the popover
+  const [open, setOpen] = useState(false);
 
   // Update display text whenever dateRange changes
   useEffect(() => {
@@ -71,12 +73,14 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
         });
       }
       setSelectingTo(false);
+      // Close the popover after selecting the end date
+      setOpen(false);
     }
   };
 
   return (
     <div className="grid gap-2">
-      <Popover>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             id="date"
