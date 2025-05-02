@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
@@ -29,9 +30,9 @@ export default function LoadFundsFrom() {
     try {
       setSelectedLoadFundsToCard("search");
       setSelectedLoadFundsFrom("card");
-      navigate("/load-funds-from/to?accountFrom=true");
+      // No navigation - store selection in state only
     } catch (error) {
-      setError("Could not navigate to the selected page");
+      setError("Could not process the selection");
     }
   };
 
