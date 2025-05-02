@@ -61,6 +61,17 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
     }
   };
 
+  // Format the display for the button text
+  const formatButtonText = () => {
+    if (dateRange.from) {
+      if (dateRange.to) {
+        return `${format(dateRange.from, "PPP")} - ${format(dateRange.to, "PPP")}`;
+      }
+      return format(dateRange.from, "PPP");
+    }
+    return "Select date range";
+  };
+
   return (
     <div className="grid gap-2">
       <Popover>
@@ -74,17 +85,7 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
             )}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
-            {dateRange.from ? (
-              dateRange.to ? (
-                <>
-                  {format(dateRange.from, "PPP")} - {format(dateRange.to, "PPP")}
-                </>
-              ) : (
-                format(dateRange.from, "PPP")
-              )
-            ) : (
-              <span>Select date range</span>
-            )}
+            {formatButtonText()}
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start">
