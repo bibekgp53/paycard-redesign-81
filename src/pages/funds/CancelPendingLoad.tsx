@@ -13,7 +13,7 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup } from "@/components/ui/radio-group";
 import { Label } from "@/components/ui/label";
 
 export default function CancelPendingLoad() {
@@ -53,6 +53,12 @@ export default function CancelPendingLoad() {
 
   const currentYear = new Date().getFullYear();
   const yearOptions = Array.from({ length: 5 }, (_, i) => (currentYear - 2 + i).toString());
+  
+  const searchTypeOptions = [
+    { value: "cardNumber", label: "Card Number" },
+    { value: "cardHolder", label: "Card Holder" },
+    { value: "referenceNumber", label: "Reference Number" }
+  ];
   
   return (
     <div className="space-y-6">
@@ -107,23 +113,12 @@ export default function CancelPendingLoad() {
         <div className="mb-6">
           <h3 className="text-sm uppercase text-gray-500 mb-2">SEARCH BY</h3>
           <RadioGroup 
+            name="searchType"
+            options={searchTypeOptions}
             value={searchType} 
-            onValueChange={setSearchType} 
-            className="flex space-x-6"
-          >
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="cardNumber" id="cardNumber" />
-              <Label htmlFor="cardNumber">Card Number</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="cardHolder" id="cardHolder" />
-              <Label htmlFor="cardHolder">Card Holder</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="referenceNumber" id="referenceNumber" />
-              <Label htmlFor="referenceNumber">Reference Number</Label>
-            </div>
-          </RadioGroup>
+            onChange={setSearchType}
+            inline
+          />
         </div>
 
         <div className="mb-6">

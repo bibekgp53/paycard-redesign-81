@@ -60,7 +60,7 @@ interface RadioGroupProps {
 
 function RadioGroup({
   name,
-  options,
+  options = [], // Default to an empty array to prevent undefined.map() error
   value,
   onChange,
   label,
@@ -81,7 +81,7 @@ function RadioGroup({
         <p className="block text-sm font-medium font-poppins text-paycard-navy mb-2">{label}</p>
       )}
       <RadioGroupBase value={value} onValueChange={handleChange} className={cn("space-y-2", inline && "flex space-y-0 space-x-6")}>
-        {options.map((option) => (
+        {options && options.map((option) => (
           <div key={option.value} className="flex items-center space-x-2">
             <RadioGroupItem value={option.value} id={`${name}-${option.value}`} />
             <label
