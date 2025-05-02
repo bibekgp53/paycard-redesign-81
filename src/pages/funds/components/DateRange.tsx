@@ -93,6 +93,11 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
     }
   };
 
+  // Custom day render function to highlight the selected "from" date
+  const modifiers = {
+    selected: selectingTo && dateRange.from ? [dateRange.from] : []
+  };
+
   return (
     <div className="grid gap-2">
       <Popover open={open} onOpenChange={setOpen}>
@@ -126,7 +131,10 @@ export function DateRange({ dateRange, onDateRangeChange }: DateRangeProps) {
             defaultMonth={dateRange.from || undefined}
             numberOfMonths={2}
             className="pointer-events-auto"
-            highlightedDays={dateRange.from && !selectingTo ? [dateRange.from] : []}
+            modifiers={modifiers}
+            modifiersClassNames={{
+              selected: "bg-primary text-primary-foreground"
+            }}
           />
         </PopoverContent>
       </Popover>
