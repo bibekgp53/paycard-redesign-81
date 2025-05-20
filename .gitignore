@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# do NOT ignore nested dist in shared-ui
+!src/libs/shared-ui/dist
