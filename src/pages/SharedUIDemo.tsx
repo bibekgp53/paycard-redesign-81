@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Alert } from "@/libs/shared-ui/components/shared/Alert";
 import { Badge } from "@/libs/shared-ui/components/shared/Badge";
@@ -7,7 +6,6 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/libs/sha
 import { Input } from "@/libs/shared-ui/components/shared/Input";
 import { Heading, Text } from "@/libs/shared-ui/components/shared/Typography";
 import { ThemeToggle } from "@/libs/shared-ui/components/shared/ThemeToggle";
-import "../libs/shared-ui/shared-ui.css";
 
 const SharedUIDemo = () => {
   return (
