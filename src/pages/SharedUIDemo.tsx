@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { 
   Alert, 
@@ -13,7 +12,7 @@ import {
   Heading, 
   Text, 
   ThemeToggle 
-} from "@/libs/shared-ui/components/shared";
+} from "../libs/shared-ui/components/shared";
 
 const SharedUIDemo = () => {
   return (
