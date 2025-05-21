@@ -1,4 +1,3 @@
-
 import * as React from "react"
 import { ChevronDown, ChevronRight, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -43,7 +42,7 @@ const Sidebar = React.forwardRef<
       <div
         data-collapsed={collapsed ? "" : undefined}
         className={cn(
-          "group/sidebar shrink-0 flex flex-col border-r bg-white dark:bg-gray-950 transition-width duration-300",
+          "group/sidebar shrink-0 flex flex-col transition-width duration-300",
           collapsed || variant === "collapsed" ? "w-16" : "w-64",
           className
         )}
@@ -143,11 +142,11 @@ const SidebarGroup = ({
                 {!collapsed && (
                   <>
                     {isCollapsed ? (
-                      <ChevronRight className="h-4 w-4 mr-1 text-gray-500" />
+                      <ChevronRight className="h-4 w-4 mr-1" />
                     ) : (
-                      <ChevronDown className="h-4 w-4 mr-1 text-gray-500" />
+                      <ChevronDown className="h-4 w-4 mr-1" />
                     )}
-                    <span className="text-xs font-medium uppercase text-gray-500">
+                    <span className="text-xs font-medium uppercase">
                       {title}
                     </span>
                   </>
@@ -157,7 +156,7 @@ const SidebarGroup = ({
           ) : (
             <>
               {!collapsed && (
-                <span className="text-xs font-medium uppercase text-gray-500 px-1.5">
+                <span className="text-xs font-medium uppercase px-1.5">
                   {title}
                 </span>
               )}
@@ -274,12 +273,8 @@ const SidebarItem = ({
       <button
         onClick={handleClick}
         className={cn(
-          "flex items-center rounded-md w-full p-2",
-          "hover:bg-gray-100 dark:hover:bg-gray-800",
+          "flex items-center rounded-none w-full p-2",
           "text-sm font-medium",
-          isActive 
-            ? "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20" 
-            : "text-gray-700 dark:text-gray-300",
           collapsed && "justify-center",
           className
         )}

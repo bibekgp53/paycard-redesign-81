@@ -1,5 +1,5 @@
 
-import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, ChevronDown, ChevronRight, CalendarX, Layers } from "lucide-react";
+import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, CalendarX, Layers } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
@@ -50,35 +50,41 @@ export function Sidebar() {
   ];
 
   return (
-    <UISidebar>
+    <UISidebar className="bg-[#0F1F38] border-none">
       <div className="flex flex-col h-full min-h-0">
         {/* Header section */}
-        <div className="p-2 flex items-center gap-2">
-          <span className="text-paycard-navy font-semibold text-xl">PayCard</span>
+        <div className="p-4 flex items-center gap-2">
+          <div className="h-8 w-8 bg-paycard-salmon rounded"></div>
+          <span className="text-white font-semibold text-xl">PayCard</span>
         </div>
 
         <SidebarContent>
-          <div className="pt-0 p-0 -mt-1">
-            <div className="text-sm text-gray-300 pb-2 pl-4">
-              Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
+          <div className="pt-4 p-4">
+            <div className="text-sm text-white/90 pb-4">
+              Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '5000.00'}</span>
             </div>
           </div>
           
           <div className="flex flex-col gap-0 flex-1 min-h-0">
             {/* Cards Group */}
-            <SidebarGroup title="Cards" collapsible defaultCollapsed={false}>
+            <SidebarGroup 
+              title="CARDS" 
+              collapsible 
+              defaultCollapsed={false}
+              className="text-white/70 py-1"
+            >
               {cardMenuItems.map((item) => (
                 <div key={item.path} className="mb-0">
                   <Link to={item.path}>
                     <SidebarItem
                       label={item.label}
-                      icon={<item.icon size={18} />}
+                      icon={<item.icon size={18} className="text-white/90" />}
                       active={isActive(item.path)}
                       className={cn(
-                        "hover:bg-paycard-salmon/40 hover:text-white transition-colors pl-8",
+                        "hover:bg-paycard-salmon/20 text-white/90 transition-colors pl-8 py-3",
                         isActive(item.path)
-                          ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon"
-                          : "text-gray-300"
+                          ? "bg-paycard-salmon text-white border-l-0"
+                          : "text-white/90"
                       )}
                     />
                   </Link>
@@ -87,19 +93,24 @@ export function Sidebar() {
             </SidebarGroup>
 
             {/* Funds Group */}
-            <SidebarGroup title="Funds" collapsible defaultCollapsed={false}>
+            <SidebarGroup 
+              title="FUNDS" 
+              collapsible 
+              defaultCollapsed={false}
+              className="text-white/70 py-1"
+            >
               {fundMenuItems.map((item) => (
                 <div key={item.path} className="mb-0">
                   <Link to={item.path}>
                     <SidebarItem
                       label={item.label}
-                      icon={<item.icon size={18} />}
+                      icon={<item.icon size={18} className="text-white/90" />}
                       active={isActive(item.path)}
                       className={cn(
-                        "hover:bg-paycard-salmon/40 hover:text-white transition-colors pl-8",
+                        "hover:bg-paycard-salmon/20 text-white/90 transition-colors pl-8 py-3",
                         isActive(item.path)
-                          ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon"
-                          : "text-gray-300"
+                          ? "bg-paycard-salmon text-white border-l-0"
+                          : "text-white/90"
                       )}
                     />
                   </Link>
@@ -108,19 +119,24 @@ export function Sidebar() {
             </SidebarGroup>
             
             {/* Demo Group */}
-            <SidebarGroup title="Demo" collapsible defaultCollapsed={false}>
+            <SidebarGroup 
+              title="DEMO" 
+              collapsible 
+              defaultCollapsed={false}
+              className="text-white/70 py-1"
+            >
               {demoMenuItems.map((item) => (
                 <div key={item.path} className="mb-0">
                   <Link to={item.path}>
                     <SidebarItem
                       label={item.label}
-                      icon={<item.icon size={18} />}
+                      icon={<item.icon size={18} className="text-white/90" />}
                       active={isActive(item.path)}
                       className={cn(
-                        "hover:bg-paycard-salmon/40 hover:text-white transition-colors pl-8",
+                        "hover:bg-paycard-salmon/20 text-white/90 transition-colors pl-8 py-3",
                         isActive(item.path)
-                          ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon"
-                          : "text-gray-300"
+                          ? "bg-paycard-salmon text-white border-l-0"
+                          : "text-white/90"
                       )}
                     />
                   </Link>
@@ -131,15 +147,15 @@ export function Sidebar() {
         </SidebarContent>
 
         {/* Footer section */}
-        <div className="mt-auto border-t border-paycard-navy-800">
-          <div className="p-0">
-            <div className="flex items-center justify-between gap-2 min-h-[40px] pl-4 pr-2">
-              <span className="text-gray-300 text-sm leading-none">Test User</span>
-              <div className="flex items-center gap-1">
-                <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
+        <div className="mt-auto border-t border-white/10">
+          <div className="p-4">
+            <div className="flex items-center justify-between gap-2">
+              <span className="text-white/90 text-sm">Test User</span>
+              <div className="flex items-center gap-2">
+                <button className="text-white/70 hover:text-white p-1 rounded-md transition-colors">
                   <Bell size={18} />
                 </button>
-                <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
+                <button className="text-white/70 hover:text-white p-1 rounded-md transition-colors">
                   <LogOut size={18} />
                 </button>
               </div>
