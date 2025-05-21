@@ -19,10 +19,7 @@ export default defineConfig(({ mode }) => ({
       name: 'paycard-app',
       filename: 'remoteEntry.js',
       exposes: {
-        './SharedUIDemo': './src/pages/SharedUIDemo.tsx',
-        './Sidebar': './src/components/layout/Sidebar.tsx',
-        './MainLayout': './src/components/layout/MainLayout.tsx',
-        './SharedUI': './src/libs/shared-ui/components/shared/index.js',
+        './App': './src/remoteEntry.tsx',
       },
       shared: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query']
     }),

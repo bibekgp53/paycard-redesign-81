@@ -10,8 +10,5 @@ if (rootElement) {
   createRoot(rootElement).render(<App />);
 }
 
-// Export components that can be consumed by a host application
-export { default as SharedUIDemo } from './pages/SharedUIDemo';
-export { Sidebar } from './components/layout/Sidebar';
-export { MainLayout } from './components/layout/MainLayout';
-export * from './libs/shared-ui/components/shared';
+// Export the App
+export { default } from './App';

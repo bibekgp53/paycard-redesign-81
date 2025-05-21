@@ -1,15 +1,13 @@
+
 # PayCard Microfrontend
 
-This application has been configured as a microfrontend using Vite's Module Federation. This allows certain components of the application to be consumed by a shell application.
+This application has been configured as a microfrontend using Vite's Module Federation. This allows the entire application to be consumed by a shell application.
 
-## Exposed Components
+## Exposed Application
 
-The following components are exposed for use in a shell application:
+The entire PayCard application is exposed for use in a shell application:
 
-- `./SharedUIDemo` - The Shared UI demonstration component
-- `./Sidebar` - The application sidebar component
-- `./MainLayout` - The main layout component
-- `./SharedUI` - All shared UI components
+- `./App` - The complete PayCard application
 
 ## How to Consume This Microfrontend
 
@@ -27,24 +25,38 @@ export default defineConfig({
       remotes: {
         paycard: 'http://your-paycard-app-url/assets/remoteEntry.js',
       },
-      shared: ['react', 'react-dom', 'react-router-dom']
+      shared: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query']
     })
   ],
   // ... other configuration
 });
 ```
 
-Then you can import and use the components in your shell application:
+Then you can import and use the application in your shell application:
 
 ```jsx
-import { SharedUIDemo } from 'paycard/SharedUIDemo';
-import { SharedUI } from 'paycard/SharedUI';
+import { mount } from 'paycard/App';
 
 function App() {
+  const containerRef = useRef(null);
+  
+  useEffect(() => {
+    let cleanup;
+    if (containerRef.current) {
+      cleanup = mount(containerRef.current);
+    }
+    
+    return () => {
+      if (cleanup) {
+        cleanup.unmount();
+      }
+    };
+  }, []);
+  
   return (
     <div>
       <h1>Shell Application</h1>
-      <SharedUIDemo />
+      <div ref={containerRef} />
     </div>
   );
 }
@@ -55,11 +67,11 @@ function App() {
 When developing the microfrontend:
 
 1. Run `npm run dev` to start the application in standalone mode
-2. Run `npm run build` to create the production build with the federated modules
+2. Run `npm run build` to create the production build with the federated module
 
 ## Requirements
 
 The shell application should use compatible versions of:
 - React 18+
 - React Router DOM 6+
-- @tanstack/react-query (if using the components that depend on it)
+- @tanstack/react-query
