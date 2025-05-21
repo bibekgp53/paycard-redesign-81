@@ -29,6 +29,8 @@ export default defineConfig(({ mode }) => ({
       "@": path.resolve(__dirname, "./src"),
       "@shared-ui": path.resolve(__dirname, "./src/libs/shared-ui"),
       "@shared-components": path.resolve(__dirname, "./src/libs/shared-ui/components/shared"),
+      "react": path.resolve(__dirname, "./node_modules/react"),
+      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
     },
   },
   optimizeDeps: {
