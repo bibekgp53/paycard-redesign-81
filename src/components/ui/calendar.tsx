@@ -57,12 +57,8 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        // Fix the type error by using correct format for component overrides
-        icons: {
-          // Using the icon objects that match react-day-picker expected format
-          left: () => <ChevronLeft className="h-4 w-4" />,
-          right: () => <ChevronRight className="h-4 w-4" />,
-        }
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />
       }}
       {...props}
     />
