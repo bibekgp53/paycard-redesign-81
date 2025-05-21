@@ -7,7 +7,10 @@ import { buttonVariants } from "@/components/ui/button";
 import { CalendarTimeSection } from "./calendar-time-section";
 
 // Only support single mode for Calendar!
-export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
+export type CalendarProps = Omit<
+  React.ComponentProps<typeof DayPicker>,
+  "mode" | "selected" | "onSelect"
+> & {
   showTimeInput?: boolean;
   timeLabel?: React.ReactNode;
   selected?: Date | undefined;
@@ -24,13 +27,16 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  const handleDaySelect = (date: Date | undefined) => {
-    if (!date || !onSelect) return;
-    if (selected) {
-      date.setHours(selected.getHours(), selected.getMinutes(), selected.getSeconds(), 0);
-    }
-    onSelect(date, { fromTimeInput: false });
-  };
+  const handleDaySelect = React.useCallback(
+    (date: Date | undefined) => {
+      if (!date || !onSelect) return;
+      if (selected) {
+        date.setHours(selected.getHours(), selected.getMinutes(), selected.getSeconds(), 0);
+      }
+      onSelect(date, { fromTimeInput: false });
+    },
+    [onSelect, selected]
+  );
 
   return (
     <div>
