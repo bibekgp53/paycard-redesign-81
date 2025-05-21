@@ -1,5 +1,5 @@
 
-import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, CalendarX, Layers, ChevronLeft, ChevronRight } from "lucide-react";
+import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, CalendarX, Layers, ChevronDown, ChevronRight } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
@@ -99,7 +99,7 @@ export function Sidebar() {
                       {cardsCollapsed ? (
                         <ChevronRight size={16} className="text-paycard-salmon" />
                       ) : (
-                        <ChevronLeft size={16} />
+                        <ChevronDown size={16} />
                       )}
                     </button>
                   </>
@@ -141,7 +141,7 @@ export function Sidebar() {
                       {fundsCollapsed ? (
                         <ChevronRight size={16} className="text-paycard-salmon" />
                       ) : (
-                        <ChevronLeft size={16} />
+                        <ChevronDown size={16} />
                       )}
                     </button>
                   </>
@@ -183,7 +183,7 @@ export function Sidebar() {
                       {demoCollapsed ? (
                         <ChevronRight size={16} className="text-paycard-salmon" />
                       ) : (
-                        <ChevronLeft size={16} />
+                        <ChevronDown size={16} />
                       )}
                     </button>
                   </>
