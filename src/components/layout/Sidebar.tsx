@@ -1,5 +1,5 @@
 
-import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, ChevronDown, ChevronRight, CalendarX } from "lucide-react";
+import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, ChevronDown, ChevronRight, CalendarX, Layers } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
@@ -42,6 +42,11 @@ export function Sidebar() {
   const fundMenuItems = [
     { icon: WalletCards, label: "Load Funds to Cards", path: "/load-funds-from" },
     { icon: CalendarX, label: "Cancel Pending Load", path: "/cancel-pending-load" },
+  ];
+
+  // Add the development/demo items
+  const demoMenuItems = [
+    { icon: Layers, label: "Shared UI Demo", path: "/shared-ui" },
   ];
 
   return (
@@ -87,6 +92,27 @@ export function Sidebar() {
             {/* Funds Group */}
             <SidebarGroup title="Funds" collapsible defaultCollapsed={false}>
               {fundMenuItems.map((item) => (
+                <div key={item.path} className="mb-0">
+                  <Link to={item.path}>
+                    <SidebarItem
+                      label={item.label}
+                      icon={<item.icon size={18} />}
+                      active={isActive(item.path)}
+                      className={cn(
+                        "hover:bg-paycard-salmon/40 hover:text-white transition-colors pl-8",
+                        isActive(item.path)
+                          ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon"
+                          : "text-gray-300"
+                      )}
+                    />
+                  </Link>
+                </div>
+              ))}
+            </SidebarGroup>
+            
+            {/* Demo Group */}
+            <SidebarGroup title="Demo" collapsible defaultCollapsed={false}>
+              {demoMenuItems.map((item) => (
                 <div key={item.path} className="mb-0">
                   <Link to={item.path}>
                     <SidebarItem
