@@ -9,6 +9,7 @@ import { apolloClient } from './lib/apollo-client';
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
+import SharedUIDemo from "./pages/SharedUIDemo";
 import LinkCardsForm from "./pages/cards/LinkCardsForm";
 import LinkCardsConfirm from "./pages/cards/LinkCardsConfirm";
 import AllocateCards from "./pages/cards/AllocateCards";
@@ -39,6 +40,7 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<MainLayout><Dashboard /></MainLayout>} />
+            <Route path="/shared-ui" element={<MainLayout><SharedUIDemo /></MainLayout>} />
             
             {/* Card Management */}
             <Route path="/cards/link" element={<MainLayout><LinkCardsForm /></MainLayout>} />
