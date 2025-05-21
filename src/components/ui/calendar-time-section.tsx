@@ -4,7 +4,7 @@ import { TimeInput } from "./time-input";
 
 interface CalendarTimeSectionProps {
   showTimeInput?: boolean;
-  selected?: Date;
+  selected?: Date | null;
   onSelect?: (date: Date, opts?: { fromTimeInput?: boolean }) => void;
   timeLabel?: React.ReactNode;
 }

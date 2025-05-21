@@ -1,118 +1,123 @@
 
 import React, { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Label } from "@/components/ui/label";
-import { CalendarIcon, Clock } from "lucide-react";
-import { format } from "date-fns";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
+import { CalendarTimeSection } from "@/components/ui/calendar-time-section";
+import { formatDate } from "date-fns";
 
-// Format function: date only = dd-MMM-yyyy; datetime = dd-MMM-yyyy HH:mm:ss
-function formatDateCustom(date?: Date) {
-  if (!date) return "";
-  return format(date, "dd-MMM-yyyy");
-}
-function formatDateTimeCustom(date?: Date) {
-  if (!date) return "";
-  return format(date, "dd-MMM-yyyy HH:mm:ss");
+interface DateRange {
+  from: Date | undefined;
+  to?: Date | undefined;
 }
 
 interface LoadEffectiveDateProps {
-  effectiveDate: 0 | 1;
-  selectedDate: Date | undefined;
-  onEffectiveDateChange: (value: 0 | 1) => void;
-  onSelectedDateChange: (date: Date | undefined) => void;
+  selectedDate: Date | null;
+  onDateChange: (date: Date) => void;
+  disabled?: boolean;
+  disablePastDates?: boolean;
 }
 
 export const LoadEffectiveDate = ({
-  effectiveDate,
   selectedDate,
-  onEffectiveDateChange,
-  onSelectedDateChange,
+  onDateChange,
+  disabled = false,
+  disablePastDates = true,
 }: LoadEffectiveDateProps) => {
-  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
-  const handleDateChange = (date: Date | undefined, fromTimeInput?: boolean) => {
-    onSelectedDateChange(date);
-    if (!fromTimeInput) {
-      setIsPopoverOpen(false);
+  // Create functions to handle calendar state
+  const toggleCalendar = () => {
+    if (!disabled) {
+      setCalendarOpen(!calendarOpen);
     }
   };
 
-  const handleRadioChange = (value: 0 | 1) => {
-    onEffectiveDateChange(value);
+  const handleDateSelect = (date: Date) => {
+    // Preserve time component from the previously selected date if it exists
+    if (selectedDate) {
+      date.setHours(selectedDate.getHours());
+      date.setMinutes(selectedDate.getMinutes());
+      date.setSeconds(selectedDate.getSeconds());
+    } else {
+      // Set default time to 12:00 PM
+      date.setHours(12);
+      date.setMinutes(0);
+      date.setSeconds(0);
+    }
+    onDateChange(date);
+  };
+
+  const handleTimeChange = (date: Date, opts?: { fromTimeInput?: boolean }) => {
+    onDateChange(date);
+    // Don't close the calendar when time is updated via the time inputs
+    if (!opts?.fromTimeInput) {
+      setCalendarOpen(false);
+    }
+  };
+
+  // Create a function to check if a date is in the past
+  const isDateInPast = (date: Date) => {
+    if (!disablePastDates) return false;
+    
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return date < today;
   };
 
   return (
-    <div className="space-y-2">
-      <h3 className="text-sm font-medium">
-        {/* Default to "Load Effective Date" unless "Delay until" is chosen */}
-        {effectiveDate === 1 ? "Delay until" : "Load Effective Date"}
-      </h3>
-      <div className="flex space-x-4">
-        <div className="flex items-center space-x-2">
-          <input
-            type="radio"
-            id="immediately"
-            name="effective-date"
-            value={0}
-            checked={effectiveDate === 0}
-            onChange={() => handleRadioChange(0)}
-            className="h-4 w-4 text-paycard-navy border-paycard-navy-300 focus:ring-paycard-navy-500"
-          />
-          <Label htmlFor="immediately">Immediately</Label>
-        </div>
-        <div className="flex items-center space-x-2">
-          <input
-            type="radio"
-            id="delay"
-            name="effective-date"
-            value={1}
-            checked={effectiveDate === 1}
-            onChange={() => handleRadioChange(1)}
-            className="h-4 w-4 text-paycard-navy border-paycard-navy-300 focus:ring-paycard-navy-500"
-          />
-          <Label htmlFor="delay">Delay until</Label>
-        </div>
+    <div className="w-full">
+      <div className="mb-2">
+        <p className="text-sm font-medium text-paycard-navy">Effective Date</p>
       </div>
-
-      {effectiveDate === 1 && (
-        <div className="mt-2 w-[260px]">
-          <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen}>
-            <PopoverTrigger asChild>
-              <Button variant={"outline"} className="w-full justify-start text-left font-normal">
-                <CalendarIcon className="mr-2 h-4 w-4" />
-                {selectedDate ? (
-                  <>
-                    {formatDateTimeCustom(selectedDate)}
-                  </>
-                ) : (
-                  <span>Pick a date and time</span>
-                )}
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                selected={selectedDate}
-                onSelect={(date: Date | undefined, opts?: { fromTimeInput?: boolean }) =>
-                  handleDateChange(date, opts?.fromTimeInput)
-                }
-                initialFocus
-                className="p-3 pointer-events-auto"
-                showTimeInput={true}
-                timeLabel={
-                  <div className="flex items-center">
-                    <Clock className="h-4 w-4 mr-1" /> Time
-                  </div>
-                }
-                // No longer disable past dates
-                // disabled={(date) => date < new Date()}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-      )}
+      <div className="relative">
+        <Button
+          variant="outline"
+          className={cn(
+            "w-full justify-between text-left font-normal border-paycard-navy-200",
+            !selectedDate && "text-muted-foreground",
+            disabled && "opacity-50 cursor-not-allowed"
+          )}
+          onClick={toggleCalendar}
+          disabled={disabled}
+        >
+          <div>
+            {selectedDate ? (
+              <div className="flex flex-col">
+                <span className="text-paycard-navy">
+                  {formatDate(selectedDate, "EEEE dd MMMM yyyy")}
+                </span>
+                <span className="text-paycard-navy-400 text-xs">
+                  {formatDate(selectedDate, "h:mm a")}
+                </span>
+              </div>
+            ) : (
+              <span>Select date and time</span>
+            )}
+          </div>
+          <ChevronRight className="h-4 w-4 opacity-50 rotate-90" />
+        </Button>
+        {calendarOpen && (
+          <div className="absolute z-50 mt-2 bg-white border border-paycard-navy-200 rounded-md shadow-lg p-3 w-full sm:w-auto">
+            <Calendar
+              mode="single"
+              selected={selectedDate || undefined}
+              onSelect={handleDateSelect}
+              disabled={isDateInPast}
+              initialFocus
+            />
+            <CalendarTimeSection
+              showTimeInput
+              selected={selectedDate}
+              onSelect={handleTimeChange}
+              timeLabel="Time"
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
+export default LoadEffectiveDate;

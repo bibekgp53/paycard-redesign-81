@@ -1,313 +1,309 @@
 
 import * as React from "react"
-import {
-  ChevronLeft,
-  ChevronRight,
-  LayoutDashboard,
-  Settings,
-  Compass,
-  ChevronDown,
-  ListChecks,
-  type LucideIcon,
-} from "lucide-react"
-import { useLocation, useNavigate } from 'react-router-dom';
-
+import { ChevronDown, ChevronRight, Menu } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet"
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./collapsible"
+import { useNavigate, useLocation } from "react-router-dom"
 
-// Create context for sidebar state
+export interface SidebarProps {
+  children?: React.ReactNode
+  className?: string
+  collapsed?: boolean
+  defaultCollapsed?: boolean
+  variant?: "default" | "collapsed"
+}
+
 const SidebarContext = React.createContext<{
-  collapsed: boolean;
-  setCollapsed: (collapsed: boolean) => void;
-} | undefined>(undefined);
+  collapsed: boolean
+  setCollapsed: (collapsed: boolean) => void
+}>({
+  collapsed: false,
+  setCollapsed: () => {},
+})
 
-export function SidebarProvider({ children }: { children: React.ReactNode }) {
-  const [collapsed, setCollapsed] = React.useState(false);
+const Sidebar = React.forwardRef<
+  HTMLDivElement,
+  SidebarProps
+>(({
+  children,
+  className,
+  collapsed: controlledCollapsed,
+  defaultCollapsed = false,
+  variant = "default",
+  ...props
+}, ref) => {
+  const [internalCollapsed, setInternalCollapsed] = React.useState<boolean>(defaultCollapsed)
+  const collapsed = controlledCollapsed !== undefined ? controlledCollapsed : internalCollapsed
+  
+  const setCollapsed = React.useCallback((value: boolean) => {
+    setInternalCollapsed(value)
+  }, [])
+
+  return (
+    <SidebarContext.Provider value={{ collapsed, setCollapsed }}>
+      <div
+        data-collapsed={collapsed ? "" : undefined}
+        className={cn(
+          "group/sidebar shrink-0 flex flex-col border-r bg-white dark:bg-gray-950 transition-width duration-300",
+          collapsed || variant === "collapsed" ? "w-16" : "w-64",
+          className
+        )}
+        ref={ref}
+        {...props}
+      >
+        {children}
+      </div>
+    </SidebarContext.Provider>
+  )
+})
+Sidebar.displayName = "Sidebar"
+
+const SidebarProvider = ({ children }: { children: React.ReactNode }) => {
+  const [collapsed, setCollapsed] = React.useState(false)
   
   return (
     <SidebarContext.Provider value={{ collapsed, setCollapsed }}>
-      {children}
+      <div className="flex min-h-screen w-full">
+        {children}
+      </div>
     </SidebarContext.Provider>
-  );
+  )
 }
 
-export function useSidebar() {
-  const context = React.useContext(SidebarContext);
-  if (!context) {
-    throw new Error("useSidebar must be used within a SidebarProvider");
-  }
-  return context;
-}
-
-interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  routes?: Route[];
-  variant?: 'full' | 'collapsed';
-  collapsible?: 'left' | 'right' | 'none';
-  username?: string;
-}
-
-interface SidebarContentProps extends React.HTMLAttributes<HTMLDivElement> {}
-interface SidebarHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
-interface SidebarFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-interface SidebarItemProps extends React.HTMLAttributes<HTMLDivElement> {
-  icon?: React.ReactNode;
-  label?: string;
-  active?: boolean;
-}
-
-interface SidebarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string;
-  collapsible?: boolean;
-  defaultCollapsed?: boolean;
-}
-
-interface Route {
-  icon: LucideIcon;
-  label: string;
-  path: string;
-}
-
-const sidebarVariants =
-  "fixed flex flex-col p-3 border-r border-r-separator bg-secondary h-screen w-[var(--sidebar-width)] z-50";
-
-export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
-  ({ className, routes, variant = 'full', username, children, collapsible = 'none', ...props }, ref) => {
-    const { collapsed } = useSidebar();
-    const actualVariant = collapsible !== 'none' ? (collapsed ? 'collapsed' : 'full') : variant;
-    
-    return (
-      <aside
-        ref={ref}
-        data-sidebar
-        data-variant={actualVariant}
-        className={cn(
-          sidebarVariants, 
-          actualVariant === 'collapsed' && "w-[60px]",
-          className
-        )}
-        {...props}
-      >
-        {children ? children : (
-          <div className="py-4 flex flex-col h-full">
-            <div className="space-y-2">
-              <h2 className="px-3 font-medium tracking-tight">
-                {actualVariant === 'full' ? 'Acme Corp' : 'A'}
-              </h2>
-              {routes && (
-                <ul className="space-y-1">
-                  {routes.map((route) => (
-                    <SidebarItem 
-                      key={route.path}
-                      icon={<route.icon className="h-4 w-4" />}
-                      label={route.label}
-                      active={location.pathname === route.path}
-                      onClick={() => navigate(route.path)}
-                    />
-                  ))}
-                </ul>
-              )}
-            </div>
-            <div className="mt-auto">
-              <div className="h-px bg-border my-2" />
-              <Button variant="ghost" className="mt-4 w-full justify-start px-3">
-                <Settings className="mr-2 h-4 w-4" />
-                {actualVariant === 'full' && <span>Settings</span>}
-              </Button>
-            </div>
-          </div>
-        )}
-      </aside>
-    );
-  }
-);
-
-Sidebar.displayName = "Sidebar";
-
-export const SidebarContent: React.FC<SidebarContentProps> = ({ 
-  children, 
-  className,
-  ...props 
-}) => {
+const SidebarTrigger = () => {
+  const { collapsed, setCollapsed } = React.useContext(SidebarContext)
+  
   return (
-    <div className={cn("flex-1 overflow-auto py-2", className)} {...props}>
+    <button
+      className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+      onClick={() => setCollapsed(!collapsed)}
+    >
+      <Menu className="h-5 w-5" />
+      <span className="sr-only">Toggle Sidebar</span>
+    </button>
+  )
+}
+
+const SidebarContent = ({ children, className }: { children?: React.ReactNode, className?: string }) => {
+  return (
+    <div className={cn("flex-1 overflow-auto", className)}>
       {children}
     </div>
-  );
-};
+  )
+}
 
-export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
+const SidebarHeader = ({ children, className }: { children?: React.ReactNode, className?: string }) => {
+  return (
+    <div className={cn("p-4 border-b", className)}>
+      {children}
+    </div>
+  )
+}
+
+const SidebarFooter = ({ children, className }: { children?: React.ReactNode, className?: string }) => {
+  return (
+    <div className={cn("p-4 border-t mt-auto", className)}>
+      {children}
+    </div>
+  )
+}
+
+interface SidebarGroupProps {
+  children?: React.ReactNode
+  className?: string
+  title?: string
+  collapsible?: boolean
+  defaultCollapsed?: boolean
+}
+
+const SidebarGroup = ({
   children,
   className,
-  ...props
-}) => {
-  return (
-    <div className={cn("px-3 py-2", className)} {...props}>
-      {children}
-    </div>
-  );
-};
-
-export const SidebarFooter: React.FC<SidebarFooterProps> = ({
-  children,
-  className,
-  ...props
-}) => {
-  return (
-    <div className={cn("mt-auto px-3 py-2", className)} {...props}>
-      {children}
-    </div>
-  );
-};
-
-export const SidebarItem: React.FC<SidebarItemProps> = ({
-  icon,
-  label,
-  active = false,
-  className,
-  onClick,
-  ...props
-}) => {
-  const { collapsed } = useSidebar();
-
-  return (
-    <li {...props}>
-      <Button
-        variant="ghost"
-        className={cn(
-          "justify-start px-3 hover:bg-secondary w-full",
-          active ? "bg-secondary" : "transparent",
-          className
-        )}
-        onClick={onClick}
-      >
-        {icon}
-        {(!collapsed || label === '') && <span className="ml-2">{label}</span>}
-      </Button>
-    </li>
-  );
-};
-
-export const SidebarGroup: React.FC<SidebarGroupProps> = ({
   title,
   collapsible = false,
-  defaultCollapsed = false,
-  children,
-  className,
-  ...props
-}) => {
-  const [isOpen, setIsOpen] = React.useState(!defaultCollapsed);
-  const { collapsed } = useSidebar();
-  
-  if (collapsible) {
-    return (
-      <div className={cn("mb-4", className)} {...props}>
-        {title && !collapsed && (
-          <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-            <div className="flex items-center px-3 py-1">
-              <CollapsibleTrigger asChild>
-                <Button variant="ghost" size="sm" className="p-0 h-auto">
-                  <ChevronDown
-                    className={cn(
-                      "h-4 w-4 transition-transform",
-                      isOpen ? "" : "-rotate-90"
-                    )}
-                  />
-                </Button>
-              </CollapsibleTrigger>
-              <h3 className="text-xs font-medium ml-1">{title}</h3>
-            </div>
-            <CollapsibleContent>
-              <div className="pl-3 mt-1">{children}</div>
-            </CollapsibleContent>
-          </Collapsible>
-        )}
-        {(collapsed || !title) && children}
-      </div>
-    );
+  defaultCollapsed = true,
+}: SidebarGroupProps) => {
+  const [isCollapsed, setIsCollapsed] = React.useState(defaultCollapsed)
+  const { collapsed } = React.useContext(SidebarContext)
+
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    setIsCollapsed(!isCollapsed)
   }
 
   return (
-    <div className={cn("mb-4", className)} {...props}>
-      {title && !collapsed && (
-        <div className="px-3 py-1">
-          <h3 className="text-xs font-medium">{title}</h3>
+    <div className={cn("py-2", className)}>
+      {title && (
+        <div className="flex items-center px-3 py-1.5">
+          {collapsible ? (
+            <button
+              onClick={handleToggle}
+              className="flex items-center w-full text-left"
+            >
+              <div className="flex items-center flex-1">
+                {!collapsed && (
+                  <>
+                    {isCollapsed ? (
+                      <ChevronRight className="h-4 w-4 mr-1 text-gray-500" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4 mr-1 text-gray-500" />
+                    )}
+                    <span className="text-xs font-medium uppercase text-gray-500">
+                      {title}
+                    </span>
+                  </>
+                )}
+              </div>
+            </button>
+          ) : (
+            <>
+              {!collapsed && (
+                <span className="text-xs font-medium uppercase text-gray-500 px-1.5">
+                  {title}
+                </span>
+              )}
+            </>
+          )}
         </div>
       )}
-      <div className={title && !collapsed ? "pl-3 mt-1" : ""}>{children}</div>
+      {(!collapsible || !isCollapsed) && <div>{children}</div>}
     </div>
-  );
-};
-
-interface SidebarToggleProps extends React.HTMLAttributes<HTMLButtonElement> {
-  isCollapsed: boolean;
-  setIsCollapsed: (isCollapsed: boolean) => void;
+  )
 }
 
-export const SidebarToggle = ({
-  isCollapsed,
-  setIsCollapsed,
-  ...props
-}: SidebarToggleProps) => {
+const SidebarGroupLabel = ({ children, className }: { children?: React.ReactNode, className?: string }) => {
+  const { collapsed } = React.useContext(SidebarContext)
+  
+  if (collapsed) return null
+  
   return (
-    <Button
-      type="button"
-      variant="outline"
-      className="h-8 w-8 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground"
-      onClick={() => setIsCollapsed(!isCollapsed)}
-      {...props}
-    >
-      {isCollapsed ? (
-        <ChevronRight className="h-4 w-4" />
-      ) : (
-        <ChevronLeft className="h-4 w-4" />
+    <div className={cn("px-3 py-1.5", className)}>
+      <span className="text-xs font-medium uppercase text-gray-500">
+        {children}
+      </span>
+    </div>
+  )
+}
+
+const SidebarGroupContent = ({ children, className }: { children?: React.ReactNode, className?: string }) => {
+  return (
+    <div className={className}>
+      {children}
+    </div>
+  )
+}
+
+const SidebarMenu = ({ children, className }: { children?: React.ReactNode, className?: string }) => {
+  return (
+    <ul className={cn("grid gap-1 px-2", className)}>
+      {children}
+    </ul>
+  )
+}
+
+const SidebarMenuItem = ({ children, className }: { children?: React.ReactNode, className?: string }) => {
+  return (
+    <li className={className}>
+      {children}
+    </li>
+  )
+}
+
+const SidebarMenuButton = React.forwardRef<
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement> & {
+    asChild?: boolean;
+  }
+>(({ className, asChild = false, ...props }, ref) => {
+  const { collapsed } = React.useContext(SidebarContext)
+  const Comp = asChild ? React.Fragment : "button"
+  const childProps = asChild ? {} : props
+  
+  return (
+    <Comp
+      ref={ref}
+      className={cn(
+        "flex items-center gap-2 rounded-md p-2 w-full",
+        "hover:bg-gray-100 dark:hover:bg-gray-800",
+        "text-sm font-medium text-gray-700 dark:text-gray-300",
+        collapsed && "justify-center",
+        className
       )}
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>
-  );
-};
+      {...childProps}
+    >
+      {asChild ? props.children : 
+        <>
+          {props.children}
+        </>
+      }
+    </Comp>
+  )
+})
+SidebarMenuButton.displayName = "SidebarMenuButton"
 
-interface SidebarMobileProps extends React.HTMLAttributes<HTMLDivElement> {
-  side?: "left" | "right";
-  children?: React.ReactNode;
+const SidebarItem = ({ 
+  icon, 
+  label, 
+  active = false,
+  href,
+  onClick,
+  className
+}: { 
+  icon?: React.ReactNode,
+  label?: React.ReactNode,
+  active?: boolean,
+  href?: string,
+  onClick?: () => void,
+  className?: string
+}) => {
+  const { collapsed } = React.useContext(SidebarContext)
+  const navigate = useNavigate()
+  const location = useLocation()
+  
+  const handleClick = () => {
+    if (href) {
+      navigate(href)
+    } else if (onClick) {
+      onClick()
+    }
+  }
+  
+  const isActive = active || (href && location.pathname.startsWith(href))
+  
+  return (
+    <li>
+      <button
+        onClick={handleClick}
+        className={cn(
+          "flex items-center rounded-md w-full p-2",
+          "hover:bg-gray-100 dark:hover:bg-gray-800",
+          "text-sm font-medium",
+          isActive 
+            ? "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/20" 
+            : "text-gray-700 dark:text-gray-300",
+          collapsed && "justify-center",
+          className
+        )}
+      >
+        {icon && <span className={cn("shrink-0", !collapsed && "mr-2")}>{icon}</span>}
+        {!collapsed && label}
+      </button>
+    </li>
+  )
 }
 
-export const SidebarMobile = React.forwardRef<
-  HTMLDivElement,
-  SidebarMobileProps
->(({ children, className, side = "left", ...props }, ref) => {
-  return (
-    <Sheet>
-      <SheetTrigger asChild>
-        <Button
-          variant="outline"
-          className="h-8 w-8 rounded-md border border-input bg-background hover:bg-accent hover:text-accent-foreground"
-        >
-          <LayoutDashboard className="h-4 w-4" />
-          <span className="sr-only">Toggle Sidebar</span>
-        </Button>
-      </SheetTrigger>
-      <SheetContent side={side} className="p-0 flex flex-col">
-        <div 
-          ref={ref}
-          data-sidebar
-          data-mobile
-          className={cn("flex flex-col h-full", className)}
-          style={{ width: "100%" }}
-          {...props}
-        >
-          {children}
-        </div>
-      </SheetContent>
-    </Sheet>
-  );
-});
-
-SidebarMobile.displayName = "SidebarMobile";
+export {
+  Sidebar,
+  SidebarContext,
+  SidebarProvider,
+  SidebarTrigger,
+  SidebarContent,
+  SidebarHeader,
+  SidebarFooter,
+  SidebarGroup,
+  SidebarGroupLabel,
+  SidebarGroupContent,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarItem,
+}
