@@ -12,7 +12,7 @@ import {
   Heading, 
   Text, 
   ThemeToggle 
-} from "../libs/shared-ui/components/shared";
+} from "../libs/shared-ui/components";
 
 const SharedUIDemo = () => {
   return (
