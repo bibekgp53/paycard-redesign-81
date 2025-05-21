@@ -9,7 +9,7 @@ import { CalendarTimeSection } from "./calendar-time-section";
 // Only support single mode for Calendar!
 export type CalendarProps = Omit<
   React.ComponentProps<typeof DayPicker>,
-  "mode" | "selected" | "onSelect"
+  "mode" | "selected" | "onSelect" | "required"
 > & {
   showTimeInput?: boolean;
   timeLabel?: React.ReactNode;
