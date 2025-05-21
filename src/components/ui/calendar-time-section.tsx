@@ -4,7 +4,7 @@ import { TimeInput } from "./time-input";
 
 interface CalendarTimeSectionProps {
   showTimeInput?: boolean;
-  selected?: Date | null;
+  selected?: Date;
   onSelect?: (date: Date, opts?: { fromTimeInput?: boolean }) => void;
   timeLabel?: React.ReactNode;
 }
@@ -17,10 +17,17 @@ export function CalendarTimeSection({
   timeLabel,
 }: CalendarTimeSectionProps) {
   if (!showTimeInput || !selected) return null;
+  
+  const handleTimeChange = (value: Date) => {
+    if (onSelect) {
+      onSelect(value, { fromTimeInput: true });
+    }
+  };
+
   return (
     <TimeInput
       value={selected}
-      onChange={(value) => onSelect?.(value, { fromTimeInput: true })}
+      onChange={handleTimeChange}
       label={timeLabel}
     />
   );

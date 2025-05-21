@@ -5,23 +5,18 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { CalendarTimeSection } from "@/components/ui/calendar-time-section";
-import { formatDate } from "date-fns";
-
-interface DateRange {
-  from: Date | undefined;
-  to?: Date | undefined;
-}
+import { format } from "date-fns";
 
 interface LoadEffectiveDateProps {
-  selectedDate: Date | null;
-  onDateChange: (date: Date) => void;
+  selectedDate: Date | undefined;
+  onSelectedDateChange: (date: Date) => void;
   disabled?: boolean;
   disablePastDates?: boolean;
 }
 
 export const LoadEffectiveDate = ({
   selectedDate,
-  onDateChange,
+  onSelectedDateChange,
   disabled = false,
   disablePastDates = true,
 }: LoadEffectiveDateProps) => {
@@ -34,7 +29,9 @@ export const LoadEffectiveDate = ({
     }
   };
 
-  const handleDateSelect = (date: Date) => {
+  const handleDateSelect = (date: Date | undefined) => {
+    if (!date) return;
+    
     // Preserve time component from the previously selected date if it exists
     if (selectedDate) {
       date.setHours(selectedDate.getHours());
@@ -46,11 +43,11 @@ export const LoadEffectiveDate = ({
       date.setMinutes(0);
       date.setSeconds(0);
     }
-    onDateChange(date);
+    onSelectedDateChange(date);
   };
 
   const handleTimeChange = (date: Date, opts?: { fromTimeInput?: boolean }) => {
-    onDateChange(date);
+    onSelectedDateChange(date);
     // Don't close the calendar when time is updated via the time inputs
     if (!opts?.fromTimeInput) {
       setCalendarOpen(false);
@@ -86,10 +83,10 @@ export const LoadEffectiveDate = ({
             {selectedDate ? (
               <div className="flex flex-col">
                 <span className="text-paycard-navy">
-                  {formatDate(selectedDate, "EEEE dd MMMM yyyy")}
+                  {format(selectedDate, "EEEE dd MMMM yyyy")}
                 </span>
                 <span className="text-paycard-navy-400 text-xs">
-                  {formatDate(selectedDate, "h:mm a")}
+                  {format(selectedDate, "h:mm a")}
                 </span>
               </div>
             ) : (
@@ -102,14 +99,14 @@ export const LoadEffectiveDate = ({
           <div className="absolute z-50 mt-2 bg-white border border-paycard-navy-200 rounded-md shadow-lg p-3 w-full sm:w-auto">
             <Calendar
               mode="single"
-              selected={selectedDate || undefined}
+              selected={selectedDate}
               onSelect={handleDateSelect}
               disabled={isDateInPast}
               initialFocus
             />
             <CalendarTimeSection
               showTimeInput
-              selected={selectedDate}
+              selected={selectedDate || undefined}
               onSelect={handleTimeChange}
               timeLabel="Time"
             />
