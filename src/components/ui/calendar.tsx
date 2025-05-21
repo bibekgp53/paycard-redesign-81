@@ -58,7 +58,7 @@ function Calendar({
       }}
       components={{
         // Use the correct component property names for react-day-picker v9.7.0
-        PrevMonthButton: (props) => (
+        PreviousMonthButton: (props) => (
           <Button {...props} variant="outline" size="icon" className="h-7 w-7">
             <ChevronLeft className="h-4 w-4" />
           </Button>
