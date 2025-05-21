@@ -16,12 +16,12 @@ export default defineConfig(({ mode }) => ({
     mode === 'development' &&
     componentTagger(),
     federation({
-      name: 'paycard-app',
-      filename: 'remoteEntry.js',
+      name: "lovable",
+      filename: "remoteEntry.js",
       exposes: {
-        './App': './src/remoteEntry.tsx',
+        "./PayCard": "./src/App.tsx"
       },
-      shared: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query']
+      shared: ["react", "react-dom", "@apollo/client", "@auth0/auth0-react"]
     }),
   ].filter(Boolean),
   resolve: {
