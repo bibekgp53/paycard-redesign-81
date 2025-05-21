@@ -1,20 +1,17 @@
 
 import * as React from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { DayPicker, SelectSingleEventHandler } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 import { CalendarTimeSection } from "./calendar-time-section";
 
 // Only support single mode for Calendar!
-export type CalendarProps = Omit<
-  React.ComponentProps<typeof DayPicker>,
-  "mode" | "selected" | "onSelect"
-> & {
+export type CalendarProps = React.ComponentProps<typeof DayPicker> & {
   showTimeInput?: boolean;
   timeLabel?: React.ReactNode;
-  selected: Date | undefined;
-  onSelect: (date: Date | undefined, opts?: { fromTimeInput?: boolean }) => void;
+  selected?: Date | undefined;
+  onSelect?: (date: Date | undefined, opts?: { fromTimeInput?: boolean }) => void;
 };
 
 function Calendar({
@@ -27,8 +24,8 @@ function Calendar({
   onSelect,
   ...props
 }: CalendarProps) {
-  const handleDaySelect: SelectSingleEventHandler = (date) => {
-    if (!date) return;
+  const handleDaySelect = (date: Date | undefined) => {
+    if (!date || !onSelect) return;
     if (selected) {
       date.setHours(selected.getHours(), selected.getMinutes(), selected.getSeconds(), 0);
     }
@@ -39,6 +36,8 @@ function Calendar({
     <div>
       <DayPicker
         mode="single"
+        selected={selected}
+        onSelect={handleDaySelect}
         showOutsideDays={showOutsideDays}
         className={cn("p-3 pointer-events-auto", className)}
         classNames={{
@@ -77,8 +76,6 @@ function Calendar({
           PreviousMonthButton: () => <ChevronLeft className="h-4 w-4" />,
           NextMonthButton: () => <ChevronRight className="h-4 w-4" />,
         }}
-        selected={selected}
-        onSelect={handleDaySelect}
         {...props}
       />
       <CalendarTimeSection
