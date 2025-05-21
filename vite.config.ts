@@ -31,6 +31,7 @@ export default defineConfig(({ mode }) => ({
       "@shared-components": path.resolve(__dirname, "./src/libs/shared-ui/components/shared"),
       "react": path.resolve(__dirname, "./node_modules/react"),
       "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
+      "graphql": path.resolve(__dirname, "./node_modules/graphql"),
     },
   },
   optimizeDeps: {
@@ -49,7 +50,7 @@ export default defineConfig(({ mode }) => ({
         entryFileNames: 'assets/[name].js',
         chunkFileNames: 'assets/[name].js',
       },
-      external: ['react', 'react-dom', 'graphql'] // Added graphql to external dependencies
+      external: ['react', 'react-dom'] // Remove graphql from external dependencies
     }
   }
 }));
