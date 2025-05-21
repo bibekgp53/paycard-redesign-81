@@ -49,7 +49,7 @@ export default defineConfig(({ mode }) => ({
         entryFileNames: 'assets/[name].js',
         chunkFileNames: 'assets/[name].js',
       },
-      external: ['react', 'react-dom']
+      external: ['react', 'react-dom', 'graphql'] // Added graphql to external dependencies
     }
   }
 }));
