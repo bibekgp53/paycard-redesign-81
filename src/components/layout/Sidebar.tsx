@@ -1,18 +1,21 @@
 
-import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, CalendarX, Layers } from "lucide-react";
+import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, CalendarX, Layers, ChevronLeft } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
 import { 
   Sidebar as UISidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarItem
+  SidebarItem,
+  SidebarContext
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
+import { useContext } from "react";
 
 export function Sidebar() {
   const location = useLocation();
   const { data: userHeader } = useUserHeaderQuery();
+  const { collapsed, setCollapsed } = useContext(SidebarContext);
 
   // Check if a submenu path is active
   const isSubmenuActive = (submenuItems = []) => {
@@ -49,14 +52,35 @@ export function Sidebar() {
     { icon: Layers, label: "Shared UI Demo", path: "/shared-ui" },
   ];
 
+  // Toggle sidebar collapsed state
+  const handleToggleCollapse = () => {
+    setCollapsed(!collapsed);
+  };
+
   return (
-    <UISidebar className="bg-[#0F1F38] border-none">
+    <UISidebar className="bg-[#0F1F38] border-none relative">
       <div className="flex flex-col h-full min-h-0">
         {/* Header section */}
         <div className="p-4 flex items-center gap-2">
           <div className="h-8 w-8 bg-paycard-salmon rounded"></div>
           <span className="text-white font-semibold text-xl">PayCard</span>
         </div>
+
+        {/* Collapse button - positioned on the right side of the sidebar */}
+        <button 
+          onClick={handleToggleCollapse}
+          className="absolute top-4 right-2 p-1 rounded-md transition-colors"
+        >
+          <ChevronLeft 
+            size={18} 
+            className={cn(
+              "transition-transform",
+              collapsed 
+                ? "text-paycard-salmon transform rotate-180" 
+                : "text-gray-400"
+            )} 
+          />
+        </button>
 
         <SidebarContent>
           <div className="pt-4 p-4">
