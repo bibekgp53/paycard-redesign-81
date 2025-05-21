@@ -13,10 +13,7 @@ export function SidebarExample() {
       <div className="h-[500px] bg-white rounded-lg shadow p-4">
         <h3 className="text-xl font-semibold mb-4">Full Sidebar</h3>
         <div className="h-[440px] overflow-hidden rounded-lg">
-          <Sidebar 
-            variant="full" 
-            username="Antonin Pospisil"
-          >
+          <Sidebar>
             <SidebarItem 
               label="Dashboard" 
               icon={<Home className="h-5 w-5" />} 
@@ -50,10 +47,7 @@ export function SidebarExample() {
       <div className="h-[500px] bg-white rounded-lg shadow p-4">
         <h3 className="text-xl font-semibold mb-4">Sidebar with Group</h3>
         <div className="h-[440px] overflow-hidden rounded-lg">
-          <Sidebar 
-            variant="full"
-            username="Antonin Pospisil"
-          >
+          <Sidebar>
             <SidebarItem 
               label="Dashboard" 
               icon={<Home className="h-5 w-5" />} 
@@ -78,10 +72,7 @@ export function SidebarExample() {
       <div className="h-[500px] bg-white rounded-lg shadow p-4">
         <h3 className="text-xl font-semibold mb-4">Collapsed Sidebar</h3>
         <div className="h-[440px] overflow-hidden rounded-lg flex justify-center">
-          <Sidebar 
-            variant="collapsed" 
-            username="Antonin Pospisil"
-          >
+          <Sidebar variant="collapsed">
             <SidebarItem 
               icon={<Home className="h-5 w-5" />} 
               label=""

@@ -1,3 +1,4 @@
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -57,31 +58,8 @@ function Calendar({
       }}
       components={{
         ...props.components,
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
-        Head: ({ currentMonth, onMonthSelect, className }) => (
-          <div className={cn("flex items-center justify-between p-2", className)}>
-            <Button
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              onClick={() => onMonthSelect(new Date(currentMonth.getFullYear(), currentMonth.getMonth() - 1))}
-            >
-              <span className="sr-only">Go to previous month</span>
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <div className="text-sm font-semibold">
-              {format(currentMonth, "MMMM YYYY")}
-            </div>
-            <Button
-              variant="ghost"
-              className="h-8 w-8 p-0"
-              onClick={() => onMonthSelect(new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1))}
-            >
-              <span className="sr-only">Go to next month</span>
-              <ChevronRight className="h-4 w-4" />
-            </Button>
-          </div>
-        ),
+        IconLeft: () => <ChevronLeft className="h-4 w-4" />,
+        IconRight: () => <ChevronRight className="h-4 w-4" />,
       }}
       {...props}
     />

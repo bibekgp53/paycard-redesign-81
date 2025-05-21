@@ -50,10 +50,7 @@ export function Sidebar() {
   ];
 
   return (
-    <UISidebar 
-      variant="full" 
-      collapsible="none"
-    >
+    <UISidebar>
       <div className="flex flex-col h-full min-h-0">
         {/* Header section */}
         <div className="p-2 flex items-center gap-2">

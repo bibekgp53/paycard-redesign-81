@@ -1,10 +1,12 @@
+
 import * as React from "react"
 import {
   ChevronLeft,
   ChevronRight,
   LayoutDashboard,
   Settings,
-   compass,
+  Compass,
+  ChevronDown,
   ListChecks,
   type LucideIcon,
 } from "lucide-react"
@@ -18,9 +20,53 @@ import {
   SheetContent,
   SheetTrigger,
 } from "@/components/ui/sheet"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./collapsible"
+
+// Create context for sidebar state
+const SidebarContext = React.createContext<{
+  collapsed: boolean;
+  setCollapsed: (collapsed: boolean) => void;
+} | undefined>(undefined);
+
+export function SidebarProvider({ children }: { children: React.ReactNode }) {
+  const [collapsed, setCollapsed] = React.useState(false);
+  
+  return (
+    <SidebarContext.Provider value={{ collapsed, setCollapsed }}>
+      {children}
+    </SidebarContext.Provider>
+  );
+}
+
+export function useSidebar() {
+  const context = React.useContext(SidebarContext);
+  if (!context) {
+    throw new Error("useSidebar must be used within a SidebarProvider");
+  }
+  return context;
+}
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
-  routes: Route[];
+  routes?: Route[];
+  variant?: 'full' | 'collapsed';
+  collapsible?: 'left' | 'right' | 'none';
+  username?: string;
+}
+
+interface SidebarContentProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SidebarHeaderProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SidebarFooterProps extends React.HTMLAttributes<HTMLDivElement> {}
+
+interface SidebarItemProps extends React.HTMLAttributes<HTMLDivElement> {
+  icon?: React.ReactNode;
+  label?: string;
+  active?: boolean;
+}
+
+interface SidebarGroupProps extends React.HTMLAttributes<HTMLDivElement> {
+  title?: string;
+  collapsible?: boolean;
+  defaultCollapsed?: boolean;
 }
 
 interface Route {
@@ -32,49 +78,52 @@ interface Route {
 const sidebarVariants =
   "fixed flex flex-col p-3 border-r border-r-separator bg-secondary h-screen w-[var(--sidebar-width)] z-50";
 
-const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
-  ({ className, routes, ...props }, ref) => {
-    const navigate = useNavigate();
-    const location = useLocation();
-
+export const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
+  ({ className, routes, variant = 'full', username, children, collapsible = 'none', ...props }, ref) => {
+    const { collapsed } = useSidebar();
+    const actualVariant = collapsible !== 'none' ? (collapsed ? 'collapsed' : 'full') : variant;
+    
     return (
       <aside
         ref={ref}
         data-sidebar
-        className={cn(sidebarVariants, className)}
+        data-variant={actualVariant}
+        className={cn(
+          sidebarVariants, 
+          actualVariant === 'collapsed' && "w-[60px]",
+          className
+        )}
         {...props}
       >
-        <div className="py-4 flex flex-col h-full">
-          <div className="space-y-2">
-            <h2 className="px-3 font-medium tracking-tight">
-              Acme Corp
-            </h2>
-            <ul className="space-y-1">
-              {routes.map((route) => (
-                <li key={route.path}>
-                  <Button
-                    variant="ghost"
-                    className={cn(
-                      "justify-start px-3 hover:bg-secondary w-full",
-                      location.pathname === route.path ? "bg-secondary" : "transparent"
-                    )}
-                    onClick={() => navigate(route.path)}
-                  >
-                    <route.icon className="mr-2 h-4 w-4" />
-                    <span>{route.label}</span>
-                  </Button>
-                </li>
-              ))}
-            </ul>
+        {children ? children : (
+          <div className="py-4 flex flex-col h-full">
+            <div className="space-y-2">
+              <h2 className="px-3 font-medium tracking-tight">
+                {actualVariant === 'full' ? 'Acme Corp' : 'A'}
+              </h2>
+              {routes && (
+                <ul className="space-y-1">
+                  {routes.map((route) => (
+                    <SidebarItem 
+                      key={route.path}
+                      icon={<route.icon className="h-4 w-4" />}
+                      label={route.label}
+                      active={location.pathname === route.path}
+                      onClick={() => navigate(route.path)}
+                    />
+                  ))}
+                </ul>
+              )}
+            </div>
+            <div className="mt-auto">
+              <div className="h-px bg-border my-2" />
+              <Button variant="ghost" className="mt-4 w-full justify-start px-3">
+                <Settings className="mr-2 h-4 w-4" />
+                {actualVariant === 'full' && <span>Settings</span>}
+              </Button>
+            </div>
           </div>
-          <div className="mt-auto">
-            <Separator />
-            <Button variant="ghost" className="mt-4 w-full justify-start px-3">
-              <Settings className="mr-2 h-4 w-4" />
-              Settings
-            </Button>
-          </div>
-        </div>
+        )}
       </aside>
     );
   }
@@ -82,14 +131,127 @@ const Sidebar = React.forwardRef<HTMLDivElement, SidebarProps>(
 
 Sidebar.displayName = "Sidebar";
 
-const Separator = () => <div className="h-px bg-border my-2" />;
+export const SidebarContent: React.FC<SidebarContentProps> = ({ 
+  children, 
+  className,
+  ...props 
+}) => {
+  return (
+    <div className={cn("flex-1 overflow-auto py-2", className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
+export const SidebarHeader: React.FC<SidebarHeaderProps> = ({
+  children,
+  className,
+  ...props
+}) => {
+  return (
+    <div className={cn("px-3 py-2", className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
+export const SidebarFooter: React.FC<SidebarFooterProps> = ({
+  children,
+  className,
+  ...props
+}) => {
+  return (
+    <div className={cn("mt-auto px-3 py-2", className)} {...props}>
+      {children}
+    </div>
+  );
+};
+
+export const SidebarItem: React.FC<SidebarItemProps> = ({
+  icon,
+  label,
+  active = false,
+  className,
+  onClick,
+  ...props
+}) => {
+  const { collapsed } = useSidebar();
+
+  return (
+    <li {...props}>
+      <Button
+        variant="ghost"
+        className={cn(
+          "justify-start px-3 hover:bg-secondary w-full",
+          active ? "bg-secondary" : "transparent",
+          className
+        )}
+        onClick={onClick}
+      >
+        {icon}
+        {(!collapsed || label === '') && <span className="ml-2">{label}</span>}
+      </Button>
+    </li>
+  );
+};
+
+export const SidebarGroup: React.FC<SidebarGroupProps> = ({
+  title,
+  collapsible = false,
+  defaultCollapsed = false,
+  children,
+  className,
+  ...props
+}) => {
+  const [isOpen, setIsOpen] = React.useState(!defaultCollapsed);
+  const { collapsed } = useSidebar();
+  
+  if (collapsible) {
+    return (
+      <div className={cn("mb-4", className)} {...props}>
+        {title && !collapsed && (
+          <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+            <div className="flex items-center px-3 py-1">
+              <CollapsibleTrigger asChild>
+                <Button variant="ghost" size="sm" className="p-0 h-auto">
+                  <ChevronDown
+                    className={cn(
+                      "h-4 w-4 transition-transform",
+                      isOpen ? "" : "-rotate-90"
+                    )}
+                  />
+                </Button>
+              </CollapsibleTrigger>
+              <h3 className="text-xs font-medium ml-1">{title}</h3>
+            </div>
+            <CollapsibleContent>
+              <div className="pl-3 mt-1">{children}</div>
+            </CollapsibleContent>
+          </Collapsible>
+        )}
+        {(collapsed || !title) && children}
+      </div>
+    );
+  }
+
+  return (
+    <div className={cn("mb-4", className)} {...props}>
+      {title && !collapsed && (
+        <div className="px-3 py-1">
+          <h3 className="text-xs font-medium">{title}</h3>
+        </div>
+      )}
+      <div className={title && !collapsed ? "pl-3 mt-1" : ""}>{children}</div>
+    </div>
+  );
+};
 
 interface SidebarToggleProps extends React.HTMLAttributes<HTMLButtonElement> {
   isCollapsed: boolean;
   setIsCollapsed: (isCollapsed: boolean) => void;
 }
 
-const SidebarToggle = ({
+export const SidebarToggle = ({
   isCollapsed,
   setIsCollapsed,
   ...props
@@ -117,7 +279,7 @@ interface SidebarMobileProps extends React.HTMLAttributes<HTMLDivElement> {
   children?: React.ReactNode;
 }
 
-const SidebarMobile = React.forwardRef<
+export const SidebarMobile = React.forwardRef<
   HTMLDivElement,
   SidebarMobileProps
 >(({ children, className, side = "left", ...props }, ref) => {
@@ -149,5 +311,3 @@ const SidebarMobile = React.forwardRef<
 });
 
 SidebarMobile.displayName = "SidebarMobile";
-
-export { Sidebar, SidebarToggle, SidebarMobile };
