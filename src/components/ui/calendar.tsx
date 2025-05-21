@@ -57,8 +57,18 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+        // Use an object map with specific named render functions instead of IconLeft and IconRight
+        // which are not available in the current version of react-day-picker
+        PrevButton: (props) => (
+          <Button {...props} variant="outline" size="icon" className="h-7 w-7">
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+        ),
+        NextButton: (props) => (
+          <Button {...props} variant="outline" size="icon" className="h-7 w-7">
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        ),
       }}
       {...props}
     />
