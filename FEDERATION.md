@@ -18,16 +18,14 @@ import federation from '@originjs/vite-plugin-federation';
 
 export default defineConfig({
   plugins: [
-    // ... other plugins
     federation({
       name: 'host-app',
       remotes: {
         paycard: 'http://your-paycard-app-url/assets/remoteEntry.js',
       },
-      shared: ['react', 'react-dom', '@apollo/client', '@auth0/auth0-react']
+      shared: ['react', 'react-dom', '@apollo/client']
     })
   ],
-  // ... other configuration
 });
 ```
 
@@ -56,6 +54,5 @@ When developing the microfrontend:
 ## Requirements
 
 The shell application should use compatible versions of:
-- React 18+
+- React 19+
 - @apollo/client
-- @auth0/auth0-react
