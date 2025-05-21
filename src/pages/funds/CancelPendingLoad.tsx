@@ -23,8 +23,14 @@ import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { DateRange } from "./components/DateRange";
+import useAuthentication from "@/hooks/useAuthentication.tsx";
 
 export default function CancelPendingLoad() {
+  const pagePermission = 'read:cancel-pending-loads';
+  const { getTokenSilently, hasPermission } = useAuthentication('payportal');
+  useEffect(() => {
+    getTokenSilently();
+  }, []);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchType, setSearchType] = useState("cardNumber");
   const [dateRange, setDateRange] = useState<{
@@ -36,7 +42,7 @@ export default function CancelPendingLoad() {
   });
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [selectedLoad, setSelectedLoad] = useState<any | null>(null);
-  
+
   // Extended mock data for demonstration with 10+ rows
   const mockPendingLoads = [
     { cardNumber: "53*****0772", amount: "R 50.00", requestedOn: "2025-04-15 03:24:29", frequency: "Once" },
@@ -54,44 +60,44 @@ export default function CancelPendingLoad() {
     { cardNumber: "53*****4091", amount: "R 85.00", requestedOn: "2025-04-20 17:15:53", frequency: "Once" },
     { cardNumber: "53*****6358", amount: "R 30.00", requestedOn: "2025-04-19 12:38:27", frequency: "Weekly" }
   ];
-  
+
   const [results, setResults] = useState(mockPendingLoads);
   const [hasSearched, setHasSearched] = useState(false);
   const [allLoads, setAllLoads] = useState(mockPendingLoads);
-  
+
   useEffect(() => {
     // Initialize the results with all loads
     setResults(mockPendingLoads);
     setAllLoads(mockPendingLoads);
   }, []);
-  
+
   const handleSearch = () => {
     setHasSearched(true);
-    
+
     let filteredResults = [...allLoads];
-    
+
     // Filter by search query if provided
     if (searchQuery.trim() !== "") {
-      filteredResults = filteredResults.filter(load => 
+      filteredResults = filteredResults.filter(load =>
         load.cardNumber.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
-    
+
     // Filter by date range if provided
     if (dateRange.from || dateRange.to) {
       filteredResults = filteredResults.filter(load => {
         const loadDate = new Date(load.requestedOn);
-        
+
         // Check if the load date is within the selected range
         const isAfterStartDate = dateRange.from ? loadDate >= dateRange.from : true;
         const isBeforeEndDate = dateRange.to ? loadDate <= dateRange.to : true;
-        
+
         return isAfterStartDate && isBeforeEndDate;
       });
     }
-    
+
     setResults(filteredResults);
-    
+
     // Show a toast message with the number of results found
     if (filteredResults.length === 0) {
       toast.info("No pending loads found matching your search criteria.");
@@ -122,14 +128,14 @@ export default function CancelPendingLoad() {
     setAllLoads(allLoads.filter(load => load !== selectedLoad));
     setConfirmDialogOpen(false);
   };
-  
+
   const searchTypeOptions = [
     { value: "cardNumber", label: "Card Number" },
     { value: "cardHolder", label: "Card Holder" },
     { value: "referenceNumber", label: "Reference Number" }
   ];
-  
-  return (
+
+  return hasPermission(pagePermission) ? (
     <div>
       {/* Page title and subtitle positioned at the start of the card */}
       <Card className="p-8 max-w-4xl mx-auto shadow-md rounded-xl bg-white border-paycard-navy-150">
@@ -156,7 +162,7 @@ export default function CancelPendingLoad() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-paycard-navy-400" size={16} />
               </div>
             </div>
-            
+
             {/* Search by dropdown */}
             <div>
               <div className="text-sm font-medium mb-2">SEARCH BY</div>
@@ -177,16 +183,16 @@ export default function CancelPendingLoad() {
             {/* Date range filter */}
             <div className="flex-1">
               <div className="text-sm font-medium mb-2">FILTER BY DATE RANGE</div>
-              <DateRange 
-                dateRange={dateRange} 
-                onDateRangeChange={handleDateRangeChange} 
+              <DateRange
+                dateRange={dateRange}
+                onDateRangeChange={handleDateRangeChange}
               />
             </div>
-            
+
             {/* Search button */}
             <div className="pt-8">
-              <Button 
-                onClick={handleSearch} 
+              <Button
+                onClick={handleSearch}
                 className="bg-paycard-navy hover:bg-paycard-navy-800 text-white font-medium shadow-sm transition-all duration-200 ease-in-out"
               >
                 <Search className="h-4 w-4 mr-2" />
@@ -210,7 +216,7 @@ export default function CancelPendingLoad() {
             <TableBody>
               {results.length > 0 ? (
                 results.map((load, index) => (
-                  <TableRow 
+                  <TableRow
                     key={index}
                     className="cursor-pointer hover:bg-paycard-navy-100/30 transition-colors duration-150"
                     onClick={() => handleRowClick(load)}
@@ -240,7 +246,7 @@ export default function CancelPendingLoad() {
               Are you sure you want to cancel the following pending load?
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedLoad && (
             <div className="py-4 space-y-3 bg-paycard-navy-100/30 rounded-lg p-4">
               <div className="flex justify-between border-b border-paycard-navy-200 pb-2">
@@ -261,18 +267,18 @@ export default function CancelPendingLoad() {
               </div>
             </div>
           )}
-          
+
           <DialogFooter className="gap-3 pt-2">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => setConfirmDialogOpen(false)}
               className="border-paycard-navy-200 hover:bg-paycard-navy-100"
             >
               <X className="mr-2 h-4 w-4" />
               Cancel
             </Button>
-            <Button 
-              onClick={handleConfirmCancel} 
+            <Button
+              onClick={handleConfirmCancel}
               className="bg-paycard-navy hover:bg-paycard-navy-800 transition-colors"
             >
               Confirm
@@ -281,5 +287,7 @@ export default function CancelPendingLoad() {
         </DialogContent>
       </Dialog>
     </div>
+  ) : (
+    <span>No Permission</span>
   );
 }

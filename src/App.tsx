@@ -6,7 +6,6 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { ApolloProvider } from '@apollo/client';
 import { apolloClient } from './lib/apollo-client';
-import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
 import SharedUIDemo from "./pages/SharedUIDemo";

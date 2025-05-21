@@ -1,11 +1,12 @@
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { Wallet, CreditCard, AlertTriangle } from "lucide-react";
 import { useLoadFundsToOptionStore } from "@/store/useLoadFundsToOptionStore";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { FundsPageHeader } from "./components/FundsPageHeader";
+import useAuthentication from "@/hooks/useAuthentication.tsx";
 
 export default function LoadFundsFrom() {
   const navigate = useNavigate();
@@ -15,6 +16,13 @@ export default function LoadFundsFrom() {
     setSelectedLoadFundsToCard,
     setSelectedLoadFundsFrom
   } = useLoadFundsToOptionStore();
+
+  const pagePermission = 'read:load-cards'
+  const { getTokenSilently, hasPermission } = useAuthentication('payportal');
+
+  useEffect(() => {
+    getTokenSilently()
+  }, []);
 
   const handleCardLoadsClick = () => {
     try {
@@ -36,7 +44,7 @@ export default function LoadFundsFrom() {
     }
   };
 
-  return (
+  return hasPermission(pagePermission) ? (
     <div className="space-y-6">
       {error && (
         <Alert variant="destructive">
@@ -100,5 +108,5 @@ export default function LoadFundsFrom() {
         </button>
       </div>
     </div>
-  );
+  ) : (<span>No Permission</span>);
 }

@@ -1,13 +1,7 @@
 
 import React from "react";
 import { TimeInput } from "./time-input";
-
-interface CalendarTimeSectionProps {
-  showTimeInput?: boolean;
-  selected?: Date;
-  onSelect?: (date: Date, opts?: { fromTimeInput?: boolean }) => void;
-  timeLabel?: React.ReactNode;
-}
+import type { CalendarProps } from "./calendar";
 
 // Dedicated render function for time input, improving separation
 export function CalendarTimeSection({
@@ -15,19 +9,12 @@ export function CalendarTimeSection({
   selected,
   onSelect,
   timeLabel,
-}: CalendarTimeSectionProps) {
+}: Pick<CalendarProps, "showTimeInput" | "selected" | "onSelect" | "timeLabel">) {
   if (!showTimeInput || !selected) return null;
-  
-  const handleTimeChange = (value: Date) => {
-    if (onSelect) {
-      onSelect(value, { fromTimeInput: true });
-    }
-  };
-
   return (
     <TimeInput
       value={selected}
-      onChange={handleTimeChange}
+      onChange={onSelect}
       label={timeLabel}
     />
   );

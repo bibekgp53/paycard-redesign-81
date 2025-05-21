@@ -1,24 +1,20 @@
-
-import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, CalendarX, Layers, ChevronDown, ChevronRight } from "lucide-react";
+import { CreditCard, WalletCards, Bell, LogOut, Package, Link as LinkIcon, ChevronDown, ChevronRight, CalendarX, Layers } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
 import { useUserHeaderQuery } from "@/hooks/useUserHeaderQuery";
-import { 
+import { useAuth0 } from "@auth0/auth0-react";
+import {
   Sidebar as UISidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarItem,
-  SidebarContext
+  SidebarItem
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
-import { useContext, useState } from "react";
+import { useEffect } from "react";
 
 export function Sidebar() {
   const location = useLocation();
   const { data: userHeader } = useUserHeaderQuery();
-  const { collapsed } = useContext(SidebarContext);
-  const [cardsCollapsed, setCardsCollapsed] = useState(false);
-  const [fundsCollapsed, setFundsCollapsed] = useState(false);
-  const [demoCollapsed, setDemoCollapsed] = useState(false);
+  const { user, logout } = useAuth0();
 
   // Check if a submenu path is active
   const isSubmenuActive = (submenuItems = []) => {
@@ -50,180 +46,104 @@ export function Sidebar() {
     { icon: CalendarX, label: "Cancel Pending Load", path: "/cancel-pending-load" },
   ];
 
-  // Add the development/demo items
-  const demoMenuItems = [
+  const demoItems = [
     { icon: Layers, label: "Shared UI Demo", path: "/shared-ui" },
   ];
 
-  const toggleGroupCollapse = (group: string) => {
-    switch(group) {
-      case 'cards':
-        setCardsCollapsed(!cardsCollapsed);
-        break;
-      case 'funds':
-        setFundsCollapsed(!fundsCollapsed);
-        break;
-      case 'demo':
-        setDemoCollapsed(!demoCollapsed);
-        break;
-    }
-  };
-
   return (
-    <UISidebar className="bg-[#0F1F38] border-none">
+    <UISidebar
+      variant="full"
+      collapsible="none"
+    >
       <div className="flex flex-col h-full min-h-0">
         {/* Header section */}
-        <div className="p-4 flex items-center gap-2">
-          <div className="h-8 w-8 bg-paycard-salmon rounded"></div>
-          <span className="text-white font-semibold text-xl">PayCard</span>
+        <div className="p-2 flex items-center gap-2">
+          <span className="text-paycard-navy font-semibold text-xl">PayCard</span>
         </div>
 
         <SidebarContent>
-          <div className="pt-4 p-4">
-            <div className="text-sm text-white/90 pb-4">
-              Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '5000.00'}</span>
+          <div className="pt-0 p-0 -mt-1">
+            <div className="text-sm text-gray-300 pb-2 pl-4">
+              Your Balance: <span className="font-bold">R {userHeader?.balanceAccount?.toFixed(2) ?? '0.00'}</span>
             </div>
           </div>
-          
+
           <div className="flex flex-col gap-0 flex-1 min-h-0">
             {/* Cards Group */}
-            <div className="py-2 text-white/70">
-              <div className="flex items-center px-3 py-1.5 justify-between">
-                {!collapsed && (
-                  <>
-                    <span className="text-xs font-medium uppercase px-1.5">CARDS</span>
-                    <button 
-                      onClick={() => toggleGroupCollapse('cards')}
-                      className="text-gray-400 hover:text-white transition-colors p-0.5"
-                    >
-                      {cardsCollapsed ? (
-                        <ChevronRight size={16} className="text-paycard-salmon" />
-                      ) : (
-                        <ChevronDown size={16} />
+            <SidebarGroup title="Cards" collapsible defaultCollapsed={false}>
+              {cardMenuItems.map((item) => (
+                <div key={item.path} className="mb-0">
+                  <Link to={item.path}>
+                    <SidebarItem
+                      label={item.label}
+                      icon={<item.icon size={18} />}
+                      active={isActive(item.path)}
+                      className={cn(
+                        "hover:bg-paycard-salmon/40 hover:text-white transition-colors pl-8",
+                        isActive(item.path)
+                          ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon"
+                          : "text-gray-300"
                       )}
-                    </button>
-                  </>
-                )}
-              </div>
-              {(!collapsed && !cardsCollapsed) && (
-                <div>
-                  {cardMenuItems.map((item) => (
-                    <div key={item.path} className="mb-0">
-                      <Link to={item.path}>
-                        <SidebarItem
-                          label={item.label}
-                          icon={<item.icon size={18} className="text-white/90" />}
-                          active={isActive(item.path)}
-                          className={cn(
-                            "hover:bg-paycard-salmon/20 text-white/90 transition-colors pl-8 py-3",
-                            isActive(item.path)
-                              ? "bg-paycard-salmon text-white border-l-0"
-                              : "text-white/90"
-                          )}
-                        />
-                      </Link>
-                    </div>
-                  ))}
+                    />
+                  </Link>
                 </div>
-              )}
-            </div>
+              ))}
+            </SidebarGroup>
 
             {/* Funds Group */}
-            <div className="py-2 text-white/70">
-              <div className="flex items-center px-3 py-1.5 justify-between">
-                {!collapsed && (
-                  <>
-                    <span className="text-xs font-medium uppercase px-1.5">FUNDS</span>
-                    <button 
-                      onClick={() => toggleGroupCollapse('funds')}
-                      className="text-gray-400 hover:text-white transition-colors p-0.5"
-                    >
-                      {fundsCollapsed ? (
-                        <ChevronRight size={16} className="text-paycard-salmon" />
-                      ) : (
-                        <ChevronDown size={16} />
+            <SidebarGroup title="Funds" collapsible defaultCollapsed={false}>
+              {fundMenuItems.map((item) => (
+                <div key={item.path} className="mb-0">
+                  <Link to={item.path}>
+                    <SidebarItem
+                      label={item.label}
+                      icon={<item.icon size={18} />}
+                      active={isActive(item.path)}
+                      className={cn(
+                        "hover:bg-paycard-salmon/40 hover:text-white transition-colors pl-8",
+                        isActive(item.path)
+                          ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon"
+                          : "text-gray-300"
                       )}
-                    </button>
-                  </>
-                )}
-              </div>
-              {(!collapsed && !fundsCollapsed) && (
-                <div>
-                  {fundMenuItems.map((item) => (
-                    <div key={item.path} className="mb-0">
-                      <Link to={item.path}>
-                        <SidebarItem
-                          label={item.label}
-                          icon={<item.icon size={18} className="text-white/90" />}
-                          active={isActive(item.path)}
-                          className={cn(
-                            "hover:bg-paycard-salmon/20 text-white/90 transition-colors pl-8 py-3",
-                            isActive(item.path)
-                              ? "bg-paycard-salmon text-white border-l-0"
-                              : "text-white/90"
-                          )}
-                        />
-                      </Link>
-                    </div>
-                  ))}
+                    />
+                  </Link>
                 </div>
-              )}
-            </div>
-            
+              ))}
+            </SidebarGroup>
+
             {/* Demo Group */}
-            <div className="py-2 text-white/70">
-              <div className="flex items-center px-3 py-1.5 justify-between">
-                {!collapsed && (
-                  <>
-                    <span className="text-xs font-medium uppercase px-1.5">DEMO</span>
-                    <button 
-                      onClick={() => toggleGroupCollapse('demo')}
-                      className="text-gray-400 hover:text-white transition-colors p-0.5"
-                    >
-                      {demoCollapsed ? (
-                        <ChevronRight size={16} className="text-paycard-salmon" />
-                      ) : (
-                        <ChevronDown size={16} />
+            <SidebarGroup title="Demo" collapsible defaultCollapsed={false}>
+              {demoItems.map((item) => (
+                <div key={item.path} className="mb-0">
+                  <Link to={item.path}>
+                    <SidebarItem
+                      label={item.label}
+                      icon={<item.icon size={18} />}
+                      active={isActive(item.path)}
+                      className={cn(
+                        "hover:bg-paycard-salmon/40 hover:text-white transition-colors pl-8",
+                        isActive(item.path)
+                          ? "bg-paycard-salmon/40 text-white border-l-4 border-l-paycard-salmon"
+                          : "text-gray-300"
                       )}
-                    </button>
-                  </>
-                )}
-              </div>
-              {(!collapsed && !demoCollapsed) && (
-                <div>
-                  {demoMenuItems.map((item) => (
-                    <div key={item.path} className="mb-0">
-                      <Link to={item.path}>
-                        <SidebarItem
-                          label={item.label}
-                          icon={<item.icon size={18} className="text-white/90" />}
-                          active={isActive(item.path)}
-                          className={cn(
-                            "hover:bg-paycard-salmon/20 text-white/90 transition-colors pl-8 py-3",
-                            isActive(item.path)
-                              ? "bg-paycard-salmon text-white border-l-0"
-                              : "text-white/90"
-                          )}
-                        />
-                      </Link>
-                    </div>
-                  ))}
+                    />
+                  </Link>
                 </div>
-              )}
-            </div>
+              ))}
+            </SidebarGroup>
           </div>
         </SidebarContent>
 
         {/* Footer section */}
-        <div className="mt-auto border-t border-white/10">
-          <div className="p-4">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-white/90 text-sm">Test User</span>
-              <div className="flex items-center gap-2">
-                <button className="text-white/70 hover:text-white p-1 rounded-md transition-colors">
+        <div className="mt-auto border-t border-paycard-navy-800">
+          <div className="p-0">
+            <div className="flex items-center justify-between gap-2 min-h-[40px] pl-4 pr-2">
+              <span className="text-gray-300 text-sm leading-none">{user?.name || user?.nickname}</span>
+              <div className="flex items-center gap-1">
+                <button className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
                   <Bell size={18} />
                 </button>
-                <button className="text-white/70 hover:text-white p-1 rounded-md transition-colors">
+                <button onClick={() => logout()} className="text-gray-300 hover:text-paycard-salmon p-1 rounded-md transition-colors h-7 w-7 flex items-center justify-center">
                   <LogOut size={18} />
                 </button>
               </div>

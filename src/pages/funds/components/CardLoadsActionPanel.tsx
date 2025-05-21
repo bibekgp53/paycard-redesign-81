@@ -56,10 +56,10 @@ export function CardLoadsActionPanel({
   return (
     <div className="mt-6 space-y-6">
       <LoadEffectiveDate
+        effectiveDate={effectiveDate}
         selectedDate={selectedDate}
+        onEffectiveDateChange={setEffectiveDate}
         onSelectedDateChange={setSelectedDate}
-        disabled={false}
-        disablePastDates={true}
       />
       <div className="flex justify-end">
         <Button
@@ -74,3 +74,4 @@ export function CardLoadsActionPanel({
     </div>
   );
 }
+
