@@ -3,6 +3,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import federation from "@originjs/vite-plugin-federation";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -14,6 +15,17 @@ export default defineConfig(({ mode }) => ({
     react(),
     mode === 'development' &&
     componentTagger(),
+    federation({
+      name: 'paycard-app',
+      filename: 'remoteEntry.js',
+      exposes: {
+        './SharedUIDemo': './src/pages/SharedUIDemo.tsx',
+        './Sidebar': './src/components/layout/Sidebar.tsx',
+        './MainLayout': './src/components/layout/MainLayout.tsx',
+        './SharedUI': './src/libs/shared-ui/components/shared/index.js',
+      },
+      shared: ['react', 'react-dom', 'react-router-dom', '@tanstack/react-query']
+    }),
   ].filter(Boolean),
   resolve: {
     alias: {
@@ -26,11 +38,18 @@ export default defineConfig(({ mode }) => ({
     include: ['graphql']
   },
   build: {
+    target: 'esnext',
+    minify: false,
+    cssCodeSplit: false,
     commonjsOptions: {
       include: [/node_modules/],
     },
     rollupOptions: {
-      // Make sure graphql is properly bundled
+      output: {
+        format: 'esm',
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+      },
       external: ['react', 'react-dom']
     }
   }
