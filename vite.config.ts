@@ -21,7 +21,7 @@ export default defineConfig(({ mode }) => ({
       exposes: {
         "./PayCard": "./src/App.tsx"
       },
-      shared: ["react", "react-dom", "@apollo/client"]
+      shared: ["react", "react-dom", "@apollo/client", "@auth0/auth0-react"]
     }),
   ].filter(Boolean),
   resolve: {
