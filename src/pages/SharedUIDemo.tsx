@@ -1,10 +1,10 @@
 
 import React from 'react';
-import { Alert } from "@shared-ui/components/shared/Alert";
-import { Badge } from "@shared-ui/components/shared/Badge";
-import { Button } from "@shared-ui/components/shared/Button";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@shared-ui/components/shared/Card";
-import { Input } from "@shared-ui/components/shared/Input";
+import { Alert } from "@/libs/shared-ui/components/shared/Alert";
+import { Badge } from "@/libs/shared-ui/components/shared/Badge";
+import { Button } from "@/libs/shared-ui/components/shared/Button";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/libs/shared-ui/components/shared/Card";
+import { Input } from "@/libs/shared-ui/components/shared/Input";
 
 const SharedUIDemo = () => {
   return (
