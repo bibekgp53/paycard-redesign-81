@@ -3,12 +3,12 @@ import React from 'react';
 import { Alert } from "@shared-ui/components/shared/Alert";
 import { Badge } from "@shared-ui/components/shared/Badge";
 import { Button } from "@shared-ui/components/shared/Button";
-import { Card } from "@shared-ui/components/shared/Card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@shared-ui/components/shared/Card";
 import { Input } from "@shared-ui/components/shared/Input";
 
 const SharedUIDemo = () => {
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-8">Shared UI Components</h1>
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -41,19 +41,32 @@ const SharedUIDemo = () => {
               <Alert>This is a default alert</Alert>
               <Alert variant="success">This is a success alert</Alert>
               <Alert variant="warning">This is a warning alert</Alert>
-              <Alert variant="error">This is an error alert</Alert>
+              <Alert variant="danger">This is an error alert</Alert>
             </div>
           </section>
           
           <section>
             <h2 className="text-xl font-semibold mb-4">Cards</h2>
             <div className="space-y-4">
-              <Card title="Basic Card">
-                <p>This is a basic card component from the shared UI library.</p>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Basic Card</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>This is a basic card component from the shared UI library.</p>
+                </CardContent>
               </Card>
               
-              <Card title="Card with Footer" footer={<div className="text-right">Footer Content</div>}>
-                <p>This card includes a custom footer component.</p>
+              <Card>
+                <CardHeader>
+                  <CardTitle>Card with Footer</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>This card includes a custom footer component.</p>
+                </CardContent>
+                <CardFooter>
+                  <div className="text-right w-full">Footer Content</div>
+                </CardFooter>
               </Card>
             </div>
           </section>
